@@ -1,0 +1,17 @@
+target/
+*.class
+nbproject/private/
+nb-configuration.xml
+nbactions.xml
+build/
+nbbuild/
+nbdist/
+.nb-gradle/
+.mvn/wrapper/maven-wrapper.jar
+wlp/
+*.wlp/
+settings-local.xml
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
