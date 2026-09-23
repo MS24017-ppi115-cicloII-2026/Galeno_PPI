@@ -42,10 +42,9 @@ public abstract class DefaultDAO<T> implements DAOInterface<T> {
         if (registro != null) {
             try {
                 getEntityManger().merge(registro);
-
             } catch (Exception ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
-                throw new IllegalStateException("Error al actualizar el regsitro", ex);
+                throw new IllegalStateException("Error al actualizar el registro", ex);
             }
         } else {
             throw new IllegalArgumentException("El registro no puede ser nulo");
