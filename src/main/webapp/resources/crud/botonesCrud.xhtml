@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:p="http://primefaces.org/ui">
+
+
+    <cc:interface>
+        <cc:attribute name="modelo" required="true"/>
+        <cc:attribute name="update" required="true"
+                      shortDescription="Lista de ids separados por espacio a actualizar via ajax, ej: :frmTabla :mensajes :frmFormulario"/>
+    </cc:interface>
+
+
+    <cc:implementation>
+        <p:panelGrid columns="3" styleClass="ui-panelgrid-blank">
+            <p:commandButton value="Guardar" icon="pi pi-save"
+                             actionListener="#{cc.attrs.modelo.btnCrearhandler}"
+                             rendered="#{cc.attrs.modelo.estado == 'CREAR'}"
+                             update="#{cc.attrs.update}"/>
+            <p:commandButton value="Actualizar" icon="pi pi-refresh"
+                             actionListener="#{cc.attrs.modelo.btnModificarHandler}"
+                             rendered="#{cc.attrs.modelo.estado == 'MODIFICAR'}"
+                             update="#{cc.attrs.update}"/>
+            <p:commandButton value="Eliminar" icon="pi pi-trash" styleClass="ui-button-danger"
+                             actionListener="#{cc.attrs.modelo.btnEliminarHandler}"
+                             rendered="#{cc.attrs.modelo.estado == 'MODIFICAR'}"
+                             update="#{cc.attrs.update}">
+                <p:confirm header="Confirmación" message="¿Estás seguro de eliminar este registro?" icon="pi pi-info-circle"/>
+            </p:commandButton>
+            <p:commandButton value="Cancelar" icon="pi pi-times" styleClass="ui-button-secondary"
+                             actionListener="#{cc.attrs.modelo.btnCancelar}"
+                             immediate="true"
+                             update="#{cc.attrs.update}"/>
+        </p:panelGrid>
+    </cc:implementation>
+</html>
