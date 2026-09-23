@@ -1,5 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
+package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.Test;
