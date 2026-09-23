@@ -41,7 +41,7 @@ public abstract class DefaultDAO<T> implements DAOInterface<T> {
     public void actualizar(T registro) throws IllegalArgumentException, IllegalStateException {
         if (registro != null) {
             try {
-                getEntityManger().persist(registro);
+                getEntityManger().merge(registro);
 
             } catch (Exception ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
