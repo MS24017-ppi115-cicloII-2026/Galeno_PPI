@@ -43,7 +43,6 @@ public class Consulta implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_consulta")
     private UUID idConsulta;
     @Column(name = "fecha_inicio")

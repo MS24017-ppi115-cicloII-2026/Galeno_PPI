@@ -41,7 +41,6 @@ public class OrdenExamen implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_orden_examen")
     private UUID idOrdenExamen;
     @Column(name = "fecha_creacion")

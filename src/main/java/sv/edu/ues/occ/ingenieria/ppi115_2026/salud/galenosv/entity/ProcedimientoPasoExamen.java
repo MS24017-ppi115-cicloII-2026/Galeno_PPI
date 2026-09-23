@@ -40,7 +40,6 @@ public class ProcedimientoPasoExamen implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_procedimiento_paso_examen")
     private UUID idProcedimientoPasoExamen;
     @Column(name = "fecha_creacion")

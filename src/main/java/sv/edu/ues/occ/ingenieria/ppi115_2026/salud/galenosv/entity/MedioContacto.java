@@ -39,7 +39,6 @@ public class MedioContacto implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_medio_contacto")
     private UUID idMedioContacto;
     @Size(max = 2147483647)

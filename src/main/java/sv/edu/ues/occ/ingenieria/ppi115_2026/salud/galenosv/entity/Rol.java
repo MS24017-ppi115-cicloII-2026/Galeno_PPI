@@ -37,7 +37,6 @@ public class Rol implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_rol")
     private UUID idRol;
     @Size(max = 155)

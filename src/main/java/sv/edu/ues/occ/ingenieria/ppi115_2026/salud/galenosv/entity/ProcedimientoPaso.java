@@ -38,7 +38,6 @@ public class ProcedimientoPaso implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_procedimiento_paso")
     private UUID idProcedimientoPaso;
     @Size(max = 155)

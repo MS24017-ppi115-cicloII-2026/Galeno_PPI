@@ -38,7 +38,6 @@ public class Clinica implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_clinica")
     private UUID idClinica;
     @Basic(optional = false)

@@ -39,7 +39,6 @@ public class PersonaRol implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_persona_rol")
     private UUID idPersonaRol;
     @Column(name = "fecha_creacion")
