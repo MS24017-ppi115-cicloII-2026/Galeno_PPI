@@ -88,6 +88,13 @@ public abstract class AbstractModel<T> implements Serializable {
         }
         fc.addMessage(null, mensaje);
     }
+    public void btnEliminarHandler() {
+    if (this.registro != null) {
+        btnEliminarHandler(obtenerId(this.registro));
+    } else {
+        fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Registro no puede ser nulo", "Seleccione algun registro"));
+    }
+}
 
     public Estado_CRUD getEstado() {
         return estado;

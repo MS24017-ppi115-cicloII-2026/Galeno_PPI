@@ -3,74 +3,83 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
       xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
       xmlns:p="http://primefaces.org/ui">
-    <h:head>
-        <title><ui:insert name="titulo">GalenoSV</ui:insert></title>
-    </h:head>
-    <h:body>
-        <!--Mensajes globales para que los CRUDs puedan mostrar notificaciones -->
-        <h:form id="mensajesGlobales">
-            <p:growl id="growl-sticky" showDetail="true" />
-        </h:form>
+    <f:view locale="#{localeBean.idiomaCodigo}">
+        <h:head>
+            <title><ui:insert name="titulo">GalenoSV</ui:insert></title>
+        </h:head>
+        <h:body>
+            <!--Mensajes globales para que los CRUDs puedan mostrar notificaciones -->
+            <h:form id="mensajesGlobales">
+                <p:growl id="growl-sticky" showDetail="true" />
+            </h:form>
 
-        <!-- Contenedor Principal del Grid de PrimeFaces -->
-        <div class="ui-g">
-            
-            <!-- ÁREA 1: ENCABEZADO -->
-            <div class="ui-g-12" style="padding:0; margin-bottom: 10px;">
-                <!-- Columna Izquierda (Vacía para centrar el diseño) -->
-                <div class="ui-g-12 ui-md-4">
-                    <ui:insert name="encabezado_institucion">
+            <!-- Contenedor Principal del Grid de PrimeFaces -->
+            <div class="ui-g">
+
+                <!-- ÁREA 1: ENCABEZADO -->
+                <div class="ui-g-12" style="padding:0; margin-bottom: 10px;">
+                    <!-- Columna Izquierda (Vacía para centrar el diseño) -->
+                    <div class="ui-g-12 ui-md-4">
+                        <ui:insert name="encabezado_institucion">
+                        </ui:insert>
+                    </div>
+
+                    <!-- Columna Central (Logo más grande) -->
+                    <div class="ui-g-12 ui-md-4" style="text-align: center;">
+                        <ui:insert name="encabezado">
+                            <h:graphicImage library="imagenes" name="logogaleno.jpeg" alt="Logo GalenoSV" style="width: 280px;" />
+                        </ui:insert>
+                    </div>
+
+                    <!-- Columna Derecha (Idioma + Login visual) -->
+                    <div class="ui-g-12 ui-md-4" style="text-align: right;">
+                        <ui:insert name="menuusuario">
+                            <h:form id="frmMenuUsuario">
+                                <p:menubar style="display: inline-flex; float: right;">
+                                    <p:submenu label="#{msg['menu.idioma']}" icon="pi pi-globe">
+                                        <p:menuitem value="Espa&#241;ol" action="#{localeBean.cambiarIdioma('es')}" ajax="false"/>
+                                        <p:menuitem value="English" action="#{localeBean.cambiarIdioma('en')}" ajax="false"/>
+                                    </p:submenu>
+                                    <p:menuitem value="#{msg['menu.iniciar_sesion']}" icon="pi pi-user" disabled="true"/>
+                                </p:menubar>
+                            </h:form>
+                        </ui:insert>
+                    </div>
+                </div>
+
+                <!-- ÁREA 2: MENÚ LATERAL Y CONTENIDO CENTRAL -->
+                <div class="ui-g-12" style="padding:0;">
+
+                    <!-- Menú Izquierdo -->
+                    <div class="ui-g-12 ui-md-2" style="padding-top: 20px;">
+                        <ui:insert name="menuprincipal">
+                            <p:menu style="width: 100%;">
+                                <p:submenu label="#{msg['menu.opciones']}">
+                                    <p:menuitem value="#{msg['menu.inicio']}" icon="pi pi-home" />
+                                </p:submenu>
+                            </p:menu>
+                        </ui:insert>
+                    </div>
+
+                    <!-- Cuerpo Central -->
+                    <div class="ui-g-12 ui-md-10" style="padding: 20px;">
+                        <ui:insert name="cuerpo">
+                            Contenido por defecto
+                        </ui:insert>
+                    </div>
+
+                </div>
+
+                <!-- ÁREA 3: PIE DE PÁGINA -->
+                <div class="ui-g-12" style="padding:0; text-align: center; margin-top: 20px; border-top: 1px solid #ccc;">
+                    <ui:insert name="pie">
+                        <p style="color: gray;">© 2026 GalenoSV</p>
                     </ui:insert>
                 </div>
-                
-                <!-- Columna Central (Logo más grande) -->
-                <div class="ui-g-12 ui-md-4" style="text-align: center;">
-                    <ui:insert name="encabezado">
-                        <!-- Imagen centrada y con tamaño ajustado -->
-                        <h:graphicImage library="imagenes" name="logogaleno.jpeg" alt="Logo GalenoSV" style="width: 280px;" />
-                    </ui:insert>
-                </div>
-                
-                <!-- Columna Derecha (Menú de usuario futuro) -->
-                <div class="ui-g-12 ui-md-4">
-                    <ui:insert name="menuusuario">
-                        <!-- Espacio para el menú de preferencias/cerrar sesión -->
-                    </ui:insert>
-                </div>
+
             </div>
-
-            <!-- ÁREA 2: MENÚ LATERAL Y CONTENIDO CENTRAL -->
-            <div class="ui-g-12" style="padding:0;">
-                
-                <!-- Menú Izquierdo (Ocupa 2 de 12 columnas en pantallas medianas/grandes) -->
-                <div class="ui-g-12 ui-md-2" style="padding-top: 20px;">
-                    <ui:insert name="menuprincipal">
-                        <p:menu style="width: 100%;">
-                            <p:submenu label="Opciones">
-                                <p:menuitem value="Inicio" icon="pi pi-home" />
-                            </p:submenu>
-                        </p:menu>
-                    </ui:insert>
-                </div>
-
-                <!-- Cuerpo Central (Ocupa 10 de 12 columnas) -->
-                <div class="ui-g-12 ui-md-10" style="padding: 20px;">
-                    <!-- AQUÍ es donde se va a inyectar tu archivo TipoExamen.xhtml -->
-                    <ui:insert name="cuerpo">
-                        Contenido por defecto
-                    </ui:insert>
-                </div>
-                
-            </div>
-
-            <!-- ÁREA 3: PIE DE PÁGINA -->
-            <div class="ui-g-12" style="padding:0; text-align: center; margin-top: 20px; border-top: 1px solid #ccc;">
-                <ui:insert name="pie">
-                    <p style="color: gray;">© 2026 GaleanoSV</p>
-                </ui:insert>
-            </div>
-
-        </div>
-    </h:body>
+        </h:body>
+    </f:view>
 </html>
