@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="jakarta.faces.facelets"
+xmlns:h="jakarta.faces.html"
+xmlns:p="http://primefaces.org/ui"
+xmlns:f="jakarta.faces.core"
+xmlns:crud="jakarta.faces.composite/crud"
+template="./general.xhtml">
+
+```
+<ui:define name="titulo">
+    Gestión de Exámenes
+</ui:define>
+
+<ui:define name="cuerpo">
+
+    <h:form id="frmTabla">
+
+        <p:toolbar>
+            <p:toolbarGroup>
+
+                <p:commandButton value="Nuevo Examen"
+                                 icon="pi pi-plus"
+                                 actionListener="#{examenModels.btnNuevoHandler}"
+                                 update=":frmFormulario @form"
+                                 rendered="#{examenModels.estado == 'NINGUNO'}" />
+
+            </p:toolbarGroup>
+        </p:toolbar>
+
+        <p:dataTable id="tablaRegistros"
+                     value="#{examenModels.registros}"
+                     var="r"
+                     emptyMessage="No se encontraron exámenes"
+                     paginator="true"
+                     rows="10"
+                     style="margin-top: 10px;"
+                     selectionMode="single"
+                     selection="#{examenModels.registro}"
+                     rowKey="#{r.idExamen}">
+
+            <p:ajax event="rowSelect"
+                    update="@form" />
+
+            <p:ajax event="rowUnselect"
+                    update="@form" />
+
+            <p:ajax event="rowDblselect"
+                    listener="#{examenModels.btnSeleccionarRegistro(examenModels.registro.idExamen)}"
+                    update=":frmFormulario" />
+
+            <p:column headerText="ID">
+                <h:outputText value="#{r.idExamen}" />
+            </p:column>
+
+            <p:column headerText="Nombre">
+                <h:outputText value="#{r.nombre}" />
+            </p:column>
+
+            <p:column headerText="Activo">
+                <h:outputText value="#{r.activo ? 'Sí' : 'No'}" />
+            </p:column>
+
+            <p:column headerText="Observaciones">
+                <h:outputText value="#{r.observaciones}" />
+            </p:column>
+
+            <f:facet name="footer">
+
+                <p:commandButton id="btnModificar"
+                                 value="Modificar"
+                                 icon="pi pi-pencil"
+                                 actionListener="#{examenModels.btnSeleccionarRegistro(examenModels.registro.idExamen)}"
+                                 update=":frmFormulario"
+                                 disabled="#{empty examenModels.registro.idExamen}"
+                                 styleClass="ui-button-warning"
+                                 style="margin-right: 5px;" />
+
+                <p:commandButton id="btnEliminar"
+                                 value="Eliminar"
+                                 icon="pi pi-trash"
+                                 actionListener="#{examenModels.btnEliminarHandler(examenModels.registro.idExamen)}"
+                                 update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
+                                 disabled="#{empty examenModels.registro.idExamen}"
+                                 styleClass="ui-button-danger">
+
+                    <p:confirm header="Confirmación"
+                               message="¿Estás seguro de eliminar este examen?"
+                               icon="pi pi-info-circle"/>
+
+                </p:commandButton>
+
+            </f:facet>
+
+        </p:dataTable>
+
+        <p:confirmDialog global="true"
+                         showEffect="fade"
+                         hideEffect="fade"
+                         responsive="true"
+                         width="350">
+
+            <p:commandButton value="No"
+                             type="button"
+                             styleClass="ui-confirmdialog-no ui-button-flat"/>
+
+            <p:commandButton value="Sí"
+                             type="button"
+                             styleClass="ui-confirmdialog-yes" />
+
+        </p:confirmDialog>
+
+    </h:form>
+
+
+    <h:form id="frmFormulario">
+
+        <p:panel header="#{examenModels.estado == 'CREAR' ? 'Nuevo Examen' : 'Editar Examen'}"
+                 rendered="#{examenModels.estado != 'NINGUNO'}"
+                 style="margin-top: 20px;">
+
+            <h:panelGrid columns="2"
+                         cellpadding="5">
+
+                <p:outputLabel value="ID (Autogenerado):"
+                               rendered="#{examenModels.estado == 'CREAR'}"/>
+
+                <h:outputText value="#{examenModels.registro.idExamen}"
+                              rendered="#{examenModels.estado == 'CREAR'}"/>
+
+
+                <p:outputLabel for="txtNombre"
+                               value="Nombre:" />
+
+                <p:inputText id="txtNombre"
+                             value="#{examenModels.registro.nombre}"
+                             required="true"
+                             requiredMessage="El nombre del examen es obligatorio"
+                             maxlength="255" />
+
+
+                <p:outputLabel for="chkActivo"
+                               value="Activo:" />
+
+                <p:selectBooleanCheckbox id="chkActivo"
+                                         value="#{examenModels.registro.activo}" />
+
+
+                <p:outputLabel for="txtObservaciones"
+                               value="Observaciones:" />
+
+                <p:inputTextarea id="txtObservaciones"
+                                 value="#{examenModels.registro.observaciones}"
+                                 rows="3"
+                                 maxlength="5000" />
+
+            </h:panelGrid>
+
+            <f:facet name="footer">
+
+                <crud:botonesCrud
+                    modelo="#{examenModels}"
+                    update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+
+            </f:facet>
+
+        </p:panel>
+
+    </h:form>
+
+</ui:define>
+```
+
+</ui:composition>

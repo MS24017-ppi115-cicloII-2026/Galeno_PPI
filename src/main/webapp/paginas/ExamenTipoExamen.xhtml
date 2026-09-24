@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html>
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="jakarta.faces.facelets"
+xmlns:h="jakarta.faces.html"
+xmlns:p="http://primefaces.org/ui"
+xmlns:f="jakarta.faces.core"
+xmlns:crud="jakarta.faces.composite/crud"
+template="./general.xhtml">
+
+```
+<ui:define name="titulo">
+    Gestión de Exámenes y Tipos de Examen
+</ui:define>
+
+<ui:define name="cuerpo">
+
+    <h:form id="frmTabla">
+
+        <p:toolbar>
+            <p:toolbarGroup>
+
+                <p:commandButton value="Nueva Relación"
+                                 icon="pi pi-plus"
+                                 actionListener="#{examenTipoExamenModels.btnNuevoHandler}"
+                                 update=":frmFormulario @form" />
+
+            </p:toolbarGroup>
+        </p:toolbar>
+
+
+        <p:dataTable id="tablaRegistros"
+                     value="#{examenTipoExamenModels.registros}"
+                     var="r"
+                     emptyMessage="No se encontraron registros"
+                     paginator="true"
+                     rows="10"
+                     style="margin-top: 10px;"
+                     selectionMode="single"
+                     selection="#{examenTipoExamenModels.registro}"
+                     rowKey="#{r.idExamenTipoExamen}">
+
+            <p:ajax event="rowSelect"
+                    update="@form" />
+
+            <p:ajax event="rowUnselect"
+                    update="@form" />
+
+            <p:ajax event="rowDblselect"
+                    listener="#{examenTipoExamenModels.btnSeleccionarRegistro(examenTipoExamenModels.registro.idExamenTipoExamen)}"
+                    update=":frmFormulario" />
+
+
+            <p:column headerText="ID">
+
+                <h:outputText value="#{r.idExamenTipoExamen}" />
+
+            </p:column>
+
+
+            <p:column headerText="Examen">
+
+                <h:outputText value="#{r.idExamen.nombre}" />
+
+            </p:column>
+
+
+            <p:column headerText="Tipo de Examen">
+
+                <h:outputText value="#{r.idTipoExamen.nombre}" />
+
+            </p:column>
+
+
+            <p:column headerText="Fecha de creación">
+
+                <h:outputText value="#{r.fechaCreacion}">
+
+                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+
+                </h:outputText>
+
+            </p:column>
+
+
+            <p:column headerText="Observaciones">
+
+                <h:outputText value="#{r.observaciones}" />
+
+            </p:column>
+
+
+            <f:facet name="footer">
+
+                <p:commandButton id="btnModificar"
+                                 value="Modificar"
+                                 icon="pi pi-pencil"
+                                 actionListener="#{examenTipoExamenModels.btnSeleccionarRegistro(examenTipoExamenModels.registro.idExamenTipoExamen)}"
+                                 update=":frmFormulario"
+                                 disabled="#{empty examenTipoExamenModels.registro.idExamenTipoExamen}"
+                                 styleClass="ui-button-warning"
+                                 style="margin-right: 5px;" />
+
+
+                <p:commandButton id="btnEliminar"
+                                 value="Eliminar"
+                                 icon="pi pi-trash"
+                                 actionListener="#{examenTipoExamenModels.btnEliminarHandler(examenTipoExamenModels.registro.idExamenTipoExamen)}"
+                                 update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
+                                 disabled="#{empty examenTipoExamenModels.registro.idExamenTipoExamen}"
+                                 styleClass="ui-button-danger">
+
+                    <p:confirm header="Confirmación"
+                               message="¿Estás seguro de eliminar este registro?"
+                               icon="pi pi-info-circle" />
+
+                </p:commandButton>
+
+            </f:facet>
+
+        </p:dataTable>
+
+
+        <p:confirmDialog global="true"
+                         showEffect="fade"
+                         hideEffect="fade"
+                         responsive="true"
+                         width="350">
+
+            <p:commandButton value="No"
+                             type="button"
+                             styleClass="ui-confirmdialog-no ui-button-flat" />
+
+            <p:commandButton value="Sí"
+                             type="button"
+                             styleClass="ui-confirmdialog-yes" />
+
+        </p:confirmDialog>
+
+    </h:form>
+
+
+    <h:form id="frmFormulario">
+
+        <p:panel header="#{examenTipoExamenModels.estado == 'CREAR' ? 'Nuevo Registro' : 'Editar Registro'}"
+                 rendered="#{examenTipoExamenModels.estado != 'NINGUNO'}"
+                 style="margin-top: 20px;">
+
+            <h:panelGrid columns="2"
+                         cellpadding="5">
+
+
+                <p:outputLabel value="ID (Autogenerado):"
+                               rendered="#{examenTipoExamenModels.estado == 'CREAR'}" />
+
+                <h:outputText value="#{examenTipoExamenModels.registro.idExamenTipoExamen}"
+                              rendered="#{examenTipoExamenModels.estado == 'CREAR'}" />
+
+
+                <p:outputLabel for="cmbExamen"
+                               value="Examen:" />
+
+                <p:selectOneMenu id="cmbExamen"
+                                 value="#{examenTipoExamenModels.registro.idExamen}"
+                                 converter="examenConverter"
+                                 required="true"
+                                 requiredMessage="El examen es obligatorio">
+
+                    <f:selectItem itemLabel="Seleccione un examen"
+                                  itemValue="#{null}"
+                                  noSelectionOption="true" />
+
+                    <f:selectItems value="#{examenTipoExamenModels.examenes}"
+                                   var="ex"
+                                   itemValue="#{ex}"
+                                   itemLabel="#{ex.nombre}" />
+
+                </p:selectOneMenu>
+
+
+                <p:outputLabel for="cmbTipoExamen"
+                               value="Tipo de Examen:" />
+
+                <p:selectOneMenu id="cmbTipoExamen"
+                                 value="#{examenTipoExamenModels.registro.idTipoExamen}"
+                                 converter="tipoExamenConverter"
+                                 required="true"
+                                 requiredMessage="El tipo de examen es obligatorio">
+
+                    <f:selectItem itemLabel="Seleccione un tipo de examen"
+                                  itemValue="#{null}"
+                                  noSelectionOption="true" />
+
+                    <f:selectItems value="#{examenTipoExamenModels.tiposExamen}"
+                                   var="te"
+                                   itemValue="#{te}"
+                                   itemLabel="#{te.nombre}" />
+
+                </p:selectOneMenu>
+
+
+                <p:outputLabel for="txtObservaciones"
+                               value="Observaciones:" />
+
+                <p:inputTextarea id="txtObservaciones"
+                                 value="#{examenTipoExamenModels.registro.observaciones}"
+                                 rows="3"
+                                 required="true"
+                                 requiredMessage="Las observaciones son obligatorias" />
+
+            </h:panelGrid>
+
+
+            <f:facet name="footer">
+
+                <crud:botonesCrud
+                    modelo="#{examenTipoExamenModels}"
+                    update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky" />
+
+            </f:facet>
+
+        </p:panel>
+
+    </h:form>
+
+</ui:define>
+```
+
+</ui:composition>

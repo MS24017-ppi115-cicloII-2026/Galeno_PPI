@@ -1,0 +1,35 @@
+package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
+
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.Converter;
+import jakarta.faces.convert.FacesConverter;
+import java.util.UUID;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.TipoExamen;
+
+@FacesConverter("tipoExamenConverter")
+public class TipoExamenConverter implements Converter<TipoExamen> {
+
+
+@Override
+public TipoExamen getAsObject(FacesContext context, UIComponent component, String value) {
+
+    if (value == null || value.isBlank()) {
+        return null;
+    }
+
+    return new TipoExamen(UUID.fromString(value));
+}
+
+@Override
+public String getAsString(FacesContext context, UIComponent component, TipoExamen value) {
+
+    if (value == null || value.getIdTipoExamen() == null) {
+        return "";
+    }
+
+    return value.getIdTipoExamen().toString();
+}
+
+
+}
