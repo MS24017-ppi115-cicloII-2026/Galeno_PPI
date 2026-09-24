@@ -55,11 +55,26 @@
                     <!-- Menú Izquierdo -->
                     <div class="ui-g-12 ui-md-2" style="padding-top: 20px;">
                         <ui:insert name="menuprincipal">
-                            <p:menu style="width: 100%;">
-                                <p:submenu label="#{msg['menu.opciones']}">
-                                    <p:menuitem value="#{msg['menu.inicio']}" icon="pi pi-home" />
-                                </p:submenu>
-                            </p:menu>
+                            <h:form id="frmMenuPrincipal">
+                                <p:menu style="width: 100%;">
+                                    <p:submenu label="#{msg['menu.opciones']}">
+                                        <p:menuitem value="#{msg['menu.inicio']}" icon="pi pi-home" outcome="/index.xhtml"/>
+                                    </p:submenu>
+                                    
+                                    <p:submenu label="Gestión de Exámenes">
+                                        <p:menuitem value="Tipos de Examen" icon="pi pi-tags" outcome="/paginas/TipoExamen.xhtml" />
+                                        <p:menuitem value="Exámenes" icon="pi pi-file" outcome="/paginas/Examen.xhtml" />
+                                        <p:menuitem value="Examen / Tipo" icon="pi pi-link" outcome="/paginas/ExamenTipoExamen.xhtml" />
+                                    </p:submenu>
+                                    
+                                    <p:submenu label="Procedimientos Médicos">
+                                        <p:menuitem value="Procedimientos" icon="pi pi-briefcase" outcome="/paginas/Procedimiento.xhtml" />
+                                        <p:menuitem value="Pasos" icon="pi pi-list" outcome="/paginas/ProcedimientoPaso.xhtml" />
+                                        <p:menuitem value="Pasos por Examen" icon="pi pi-check-square" outcome="/paginas/ProcedimientoPasoExamen.xhtml" />
+                                        <p:menuitem value="Secuencias" icon="pi pi-sort-numeric-down" outcome="/paginas/ProcedimientoPasoSecuencia.xhtml" />
+                                    </p:submenu>
+                                </p:menu>
+                            </h:form>
                         </ui:insert>
                     </div>
 

@@ -23,9 +23,7 @@ public class ProcedimientoModels extends AbstractModel<Procedimiento> {
     @Override
     protected Procedimiento crearRegistroNuevo() {
         Procedimiento p = new Procedimiento(UUID.randomUUID());
-        // Si tu entidad Procedimiento tiene un campo de estado como 'activo', 
-        // puedes inicializarlo aquí, por ejemplo:
-        // p.setActivo(Boolean.TRUE);
+        p.setActivo(Boolean.TRUE);
         return p;
     }
 
