@@ -42,7 +42,6 @@ public class ConsultaProcedimiento implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_consulta_procedimiento")
     private UUID idConsultaProcedimiento;
     @Lob

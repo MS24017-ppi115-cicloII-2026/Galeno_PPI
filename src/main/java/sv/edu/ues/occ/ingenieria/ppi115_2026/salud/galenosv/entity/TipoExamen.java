@@ -37,7 +37,6 @@ public class TipoExamen implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_tipo_examen")
     private UUID idTipoExamen;
     @Size(max = 2147483647)

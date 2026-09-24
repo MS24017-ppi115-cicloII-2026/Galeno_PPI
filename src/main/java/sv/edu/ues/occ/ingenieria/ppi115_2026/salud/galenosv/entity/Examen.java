@@ -37,7 +37,6 @@ public class Examen implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_examen")
     private UUID idExamen;
     @Size(max = 255)

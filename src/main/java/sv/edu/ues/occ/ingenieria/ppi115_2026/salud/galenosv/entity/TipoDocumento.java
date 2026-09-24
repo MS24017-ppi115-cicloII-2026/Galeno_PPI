@@ -38,7 +38,6 @@ public class TipoDocumento implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_tipo_documento")
     private UUID idTipoDocumento;
     @Size(max = 155)

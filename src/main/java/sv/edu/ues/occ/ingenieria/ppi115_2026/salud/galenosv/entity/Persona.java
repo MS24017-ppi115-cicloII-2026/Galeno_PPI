@@ -41,7 +41,6 @@ public class Persona implements Serializable {
     @Id
     @Basic(optional = false)
     @NotNull
-    @Lob
     @Column(name = "id_persona")
     private UUID idPersona;
     @Size(max = 255)
