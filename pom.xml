@@ -47,15 +47,19 @@
             <version>5.17.0</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Mockito + JUnit 5 -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>5.17.0</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>15.0.6</version>
+            <classifier>jakarta</classifier>
+</dependency>
+        
     </dependencies>
 
     <build>
@@ -110,7 +114,15 @@
 
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>io.openliberty.tools</groupId>
+                <artifactId>liberty-maven-plugin</artifactId>
+               <version>3.12.1</version>
+               <configuration>
+                    <installDirectory>RUTADELSERVIDOR</installDirectory>
+                    <serverName>PPI_CLinica</serverName>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

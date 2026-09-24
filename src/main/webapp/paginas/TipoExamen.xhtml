@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
+                template="./general.xhtml">
+
+    <ui:define name="titulo">
+        Gestión de Tipos de Examen
+    </ui:define>
+
+    <ui:define name="cuerpo">
+        <h:form id="frmTabla">
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Nuevo Tipo de Examen" icon="pi pi-plus" 
+                                     actionListener="#{tipoExamenModels.btnNuevoHandler}" 
+                                     update=":frmFormulario @form" />
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <!-- selectionMode y rowKey habilitan la selección con clic -->
+            <p:dataTable id="tablaRegistros" value="#{tipoExamenModels.registros}" var="r" 
+                         emptyMessage="No se encontraron registros" paginator="true" rows="10"
+                         style="margin-top: 10px;"
+                         selectionMode="single" selection="#{tipoExamenModels.registro}" rowKey="#{r.idTipoExamen}">
+                
+                <!-- Eventos de PrimeFaces para clics -->
+                <p:ajax event="rowSelect" update="@form" />
+                <p:ajax event="rowUnselect" update="@form" />
+                <p:ajax event="rowDblselect" listener="#{tipoExamenModels.btnSeleccionarRegistro(tipoExamenModels.registro.idTipoExamen)}" update=":frmFormulario" />
+                
+                <p:column headerText="ID">
+                    <h:outputText value="#{r.idTipoExamen}" />
+                </p:column>
+
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{r.nombre}" />
+                </p:column>
+                
+                <p:column headerText="Activo">
+                    <h:outputText value="#{r.activo ? 'Sí' : 'No'}" />
+                </p:column>
+
+                <p:column headerText="Observaciones">
+                    <h:outputText value="#{r.observaciones}" />
+                </p:column>
+
+                <!-- Área inferior de la tabla para los botones de acción -->
+                <f:facet name="footer">
+                    <p:commandButton id="btnModificar" value="Modificar" icon="pi pi-pencil"
+                                     actionListener="#{tipoExamenModels.btnSeleccionarRegistro(tipoExamenModels.registro.idTipoExamen)}" 
+                                     update=":frmFormulario" 
+                                     disabled="#{empty tipoExamenModels.registro.idTipoExamen}" 
+                                     styleClass="ui-button-warning" style="margin-right: 5px;"/>
+                    
+                    <p:commandButton id="btnEliminar" value="Eliminar" icon="pi pi-trash"
+                                     actionListener="#{tipoExamenModels.btnEliminarHandler(tipoExamenModels.registro.idTipoExamen)}" 
+                                     update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form" 
+                                     disabled="#{empty tipoExamenModels.registro.idTipoExamen}" 
+                                     styleClass="ui-button-danger">
+                        <p:confirm header="Confirmación" message="¿Estás seguro de eliminar este registro?" icon="pi pi-info-circle"/>
+                    </p:commandButton>
+                </f:facet>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+            </p:confirmDialog>
+        </h:form>
+
+        <h:form id="frmFormulario">
+            <p:panel header="#{tipoExamenModels.estado == 'CREAR' ? 'Nuevo Registro' : 'Editar Registro'}" 
+                     rendered="#{tipoExamenModels.estado != 'NINGUNO'}"
+                     style="margin-top: 20px;">
+                
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel value="ID (Autogenerado):" rendered="#{tipoExamenModels.estado == 'CREAR'}"/>
+                    <h:outputText value="#{tipoExamenModels.registro.idTipoExamen}" rendered="#{tipoExamenModels.estado == 'CREAR'}"/>
+
+                    <p:outputLabel for="txtNombre" value="Nombre:" />
+                    <p:inputText id="txtNombre" value="#{tipoExamenModels.registro.nombre}" 
+                                 required="true" requiredMessage="El nombre es obligatorio" />
+
+                    <p:outputLabel for="chkActivo" value="Activo:" />
+                    <p:selectBooleanCheckbox id="chkActivo" value="#{tipoExamenModels.registro.activo}" />
+
+                    <p:outputLabel for="txtObservaciones" value="Observaciones:" />
+                    <p:inputTextarea id="txtObservaciones" value="#{tipoExamenModels.registro.observaciones}" rows="3" 
+                                      required="true" requiredMessage="Las observaciones son obligatorias" />
+                </h:panelGrid>
+
+                <f:facet name="footer">
+                    <crud:botonesCrud modelo="#{tipoExamenModels}" update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+                </f:facet>
+            </p:panel>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
