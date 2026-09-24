@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
+                template="./general.xhtml">
+
+    <ui:define name="titulo">
+        Gestión de Exámenes por Paso de Procedimiento
+    </ui:define>
+
+    <ui:define name="cuerpo">
+
+        <h:form id="frmTabla">
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Nueva Relación" icon="pi pi-plus"
+                                     actionListener="#{procedimientoPasoExamenModels.btnNuevoHandler}"
+                                     update=":frmFormulario @form"
+                                     rendered="#{procedimientoPasoExamenModels.estado == 'NINGUNO'}" />
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <p:dataTable id="tablaRegistros" value="#{procedimientoPasoExamenModels.registros}" var="r"
+                         emptyMessage="No se encontraron registros" paginator="true" rows="10"
+                         style="margin-top: 10px;"
+                         selectionMode="single" selection="#{procedimientoPasoExamenModels.registro}" rowKey="#{r.idProcedimientoPasoExamen}">
+
+                <p:ajax event="rowSelect" update="@form" />
+                <p:ajax event="rowUnselect" update="@form" />
+                <p:ajax event="rowDblselect" listener="#{procedimientoPasoExamenModels.btnSeleccionarRegistro(procedimientoPasoExamenModels.registro.idProcedimientoPasoExamen)}" update=":frmFormulario" />
+
+                <p:column headerText="ID">
+                    <h:outputText value="#{r.idProcedimientoPasoExamen}" />
+                </p:column>
+
+                <p:column headerText="Examen">
+                    <h:outputText value="#{r.idExamen.nombre}" />
+                </p:column>
+
+                <p:column headerText="Paso de Procedimiento">
+                    <h:outputText value="#{r.idProcedimientoPaso.nombre}" />
+                </p:column>
+
+                <p:column headerText="Activo">
+                    <h:outputText value="#{r.activo ? 'Sí' : 'No'}" />
+                </p:column>
+
+                <p:column headerText="Fecha de creación">
+                    <h:outputText value="#{r.fechaCreacion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Observaciones">
+                    <h:outputText value="#{r.observaciones}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton id="btnModificar" value="Modificar" icon="pi pi-pencil"
+                                     actionListener="#{procedimientoPasoExamenModels.btnSeleccionarRegistro(procedimientoPasoExamenModels.registro.idProcedimientoPasoExamen)}"
+                                     update=":frmFormulario"
+                                     disabled="#{empty procedimientoPasoExamenModels.registro.idProcedimientoPasoExamen}"
+                                     styleClass="ui-button-warning" style="margin-right: 5px;" />
+
+                    <p:commandButton id="btnEliminar" value="Eliminar" icon="pi pi-trash"
+                                     actionListener="#{procedimientoPasoExamenModels.btnEliminarHandler(procedimientoPasoExamenModels.registro.idProcedimientoPasoExamen)}"
+                                     update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
+                                     disabled="#{empty procedimientoPasoExamenModels.registro.idProcedimientoPasoExamen}"
+                                     styleClass="ui-button-danger">
+                        <p:confirm header="Confirmación" message="¿Estás seguro de eliminar este registro?" icon="pi pi-info-circle"/>
+                    </p:commandButton>
+                </f:facet>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+            </p:confirmDialog>
+        </h:form>
+
+        <h:form id="frmFormulario">
+            <p:panel header="#{procedimientoPasoExamenModels.estado == 'CREAR' ? 'Nuevo Registro' : 'Editar Registro'}"
+                     rendered="#{procedimientoPasoExamenModels.estado != 'NINGUNO'}"
+                     style="margin-top: 20px;">
+
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel value="ID (Autogenerado):" rendered="#{procedimientoPasoExamenModels.estado == 'CREAR'}"/>
+                    <h:outputText value="#{procedimientoPasoExamenModels.registro.idProcedimientoPasoExamen}" rendered="#{procedimientoPasoExamenModels.estado == 'CREAR'}"/>
+
+                    <p:outputLabel for="cmbExamen" value="Examen:" />
+                    <p:selectOneMenu id="cmbExamen" value="#{procedimientoPasoExamenModels.registro.idExamen}"
+                                     converter="examenConverter" required="true" requiredMessage="El examen es obligatorio">
+                        <f:selectItem itemLabel="Seleccione un examen" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{procedimientoPasoExamenModels.examenes}" var="ex" itemValue="#{ex}" itemLabel="#{ex.nombre}" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="cmbProcedimientoPaso" value="Paso de Procedimiento:" />
+                    <p:selectOneMenu id="cmbProcedimientoPaso" value="#{procedimientoPasoExamenModels.registro.idProcedimientoPaso}"
+                                     converter="procedimientoPasoConverter" required="true" requiredMessage="El paso de procedimiento es obligatorio">
+                        <f:selectItem itemLabel="Seleccione un paso" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{procedimientoPasoExamenModels.procedimientoPasos}" var="pp" itemValue="#{pp}" itemLabel="#{pp.nombre}" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="chkActivo" value="Activo:" />
+                    <p:selectBooleanCheckbox id="chkActivo" value="#{procedimientoPasoExamenModels.registro.activo}" />
+
+                    <p:outputLabel for="txtObservaciones" value="Observaciones:" />
+                    <p:inputTextarea id="txtObservaciones" value="#{procedimientoPasoExamenModels.registro.observaciones}" rows="3" />
+                </h:panelGrid>
+
+                <f:facet name="footer">
+                    <crud:botonesCrud modelo="#{procedimientoPasoExamenModels}" update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+                </f:facet>
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

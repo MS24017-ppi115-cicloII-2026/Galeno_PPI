@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
+                template="./general.xhtml">
+
+    <ui:define name="titulo">
+        Gestión de Secuencias de Pasos
+    </ui:define>
+
+    <ui:define name="cuerpo">
+
+        <h:form id="frmTabla">
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Nueva Secuencia" icon="pi pi-plus"
+                                     actionListener="#{procedimientoPasoSecuenciaModels.btnNuevoHandler}"
+                                     update=":frmFormulario @form"
+                                     rendered="#{procedimientoPasoSecuenciaModels.estado == 'NINGUNO'}" />
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <p:dataTable id="tablaRegistros" value="#{procedimientoPasoSecuenciaModels.registros}" var="r"
+                         emptyMessage="No se encontraron secuencias" paginator="true" rows="10"
+                         style="margin-top: 10px;"
+                         selectionMode="single" selection="#{procedimientoPasoSecuenciaModels.registro}" rowKey="#{r.idProcedimientoPasoSecuencia}">
+
+                <p:ajax event="rowSelect" update="@form" />
+                <p:ajax event="rowUnselect" update="@form" />
+                <p:ajax event="rowDblselect" listener="#{procedimientoPasoSecuenciaModels.btnSeleccionarRegistro(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}" update=":frmFormulario" />
+
+                <p:column headerText="ID">
+                    <h:outputText value="#{r.idProcedimientoPasoSecuencia}" />
+                </p:column>
+
+                <p:column headerText="Paso">
+                    <h:outputText value="#{r.idProcedimientoPaso.nombre}" />
+                </p:column>
+
+                <p:column headerText="Paso de Referencia (ID)">
+                    <h:outputText value="#{r.idProcedimientoPasoReferencia}" />
+                </p:column>
+
+                <p:column headerText="Tipo de Secuencia">
+                    <h:outputText value="#{r.tipoSecuencia}" />
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton id="btnModificar" value="Modificar" icon="pi pi-pencil"
+                                     actionListener="#{procedimientoPasoSecuenciaModels.btnSeleccionarRegistro(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}"
+                                     update=":frmFormulario"
+                                     disabled="#{empty procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia}"
+                                     styleClass="ui-button-warning" style="margin-right: 5px;" />
+
+                    <p:commandButton id="btnEliminar" value="Eliminar" icon="pi pi-trash"
+                                     actionListener="#{procedimientoPasoSecuenciaModels.btnEliminarHandler(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}"
+                                     update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
+                                     disabled="#{empty procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia}"
+                                     styleClass="ui-button-danger">
+                        <p:confirm header="Confirmación" message="¿Estás seguro de eliminar esta secuencia?" icon="pi pi-info-circle"/>
+                    </p:commandButton>
+                </f:facet>
+            </p:dataTable>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+            </p:confirmDialog>
+        </h:form>
+
+        <h:form id="frmFormulario">
+            <p:panel header="#{procedimientoPasoSecuenciaModels.estado == 'CREAR' ? 'Nueva Secuencia' : 'Editar Secuencia'}"
+                     rendered="#{procedimientoPasoSecuenciaModels.estado != 'NINGUNO'}"
+                     style="margin-top: 20px;">
+
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel value="ID (Autogenerado):" rendered="#{procedimientoPasoSecuenciaModels.estado == 'CREAR'}"/>
+                    <h:outputText value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia}" rendered="#{procedimientoPasoSecuenciaModels.estado == 'CREAR'}"/>
+
+                    <p:outputLabel for="cmbProcedimientoPaso" value="Paso:" />
+                    <p:selectOneMenu id="cmbProcedimientoPaso" value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPaso}"
+                                     converter="procedimientoPasoConverter" required="true" requiredMessage="El paso es obligatorio">
+                        <f:selectItem itemLabel="Seleccione un paso" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{procedimientoPasoSecuenciaModels.procedimientoPasos}" var="pp" itemValue="#{pp}" itemLabel="#{pp.nombre}" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="cmbPasoReferencia" value="Paso de Referencia:" />
+                    <p:selectOneMenu id="cmbPasoReferencia" value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoReferencia}"
+                                     required="true" requiredMessage="El paso de referencia es obligatorio">
+                        <f:selectItem itemLabel="Seleccione un paso de referencia" itemValue="#{null}" noSelectionOption="true" />
+                        <f:selectItems value="#{procedimientoPasoSecuenciaModels.procedimientoPasos}" var="ppr" itemValue="#{ppr.idProcedimientoPaso}" itemLabel="#{ppr.nombre}" />
+                    </p:selectOneMenu>
+
+                    <p:outputLabel for="txtTipoSecuencia" value="Tipo de Secuencia:" />
+                    <p:inputText id="txtTipoSecuencia" value="#{procedimientoPasoSecuenciaModels.registro.tipoSecuencia}"
+                                 required="true" requiredMessage="El tipo de secuencia es obligatorio" maxlength="100" />
+                </h:panelGrid>
+
+                <f:facet name="footer">
+                    <crud:botonesCrud modelo="#{procedimientoPasoSecuenciaModels}" update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+                </f:facet>
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

@@ -33,13 +33,39 @@ public class ExamenTipoExamenModels extends AbstractModel<ExamenTipoExamen> {
 
     @Override
     protected ExamenTipoExamen crearRegistroNuevo() {
-        ExamenTipoExamen ete = new ExamenTipoExamen(UUID.randomUUID());
-        return ete;
+        return new ExamenTipoExamen(UUID.randomUUID());
     }
 
     @Override
     protected UUID obtenerId(ExamenTipoExamen registro) {
         return registro.getIdExamenTipoExamen();
+    }
+
+    /**
+     * Prepara un nuevo vínculo para el Examen que se está configurando.
+     */
+    public void prepararNuevoParaExamen(UUID idExamen) {
+
+        this.registro = crearRegistroNuevo();
+
+        if (idExamen != null) {
+            this.registro.setIdExamen(new Examen(idExamen));
+        }
+
+        this.estado = Estado_CRUD.CREAR;
+    }
+
+    /**
+     * Devuelve únicamente los tipos de examen asociados
+     * al Examen seleccionado.
+     */
+    public List<ExamenTipoExamen> getRegistrosPorExamen(UUID idExamen) {
+
+        if (idExamen == null) {
+            return List.of();
+        }
+
+        return examenTipoExamenDAO.buscarPorExamen(idExamen);
     }
 
     public List<Examen> getExamenes() {
@@ -50,3 +76,4 @@ public class ExamenTipoExamenModels extends AbstractModel<ExamenTipoExamen> {
         return tipoExamenDAO.findRange(0, 100);
     }
 }
+
