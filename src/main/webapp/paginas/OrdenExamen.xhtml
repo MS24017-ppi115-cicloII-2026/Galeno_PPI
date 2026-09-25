@@ -1,58 +1,58 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui" xmlns:f="jakarta.faces.core" xmlns:crud="jakarta.faces.composite/crud" template="./general.xhtml">
-    <ui:define name="titulo"> Gestión de Órdenes de Examen </ui:define>
+    <ui:define name="titulo">#{msg['orden.titulo']}</ui:define>
     <ui:define name="cuerpo">
         <h:form id="frmTabla">
             <p:toolbar>
                 <p:toolbarGroup>
-                    <p:commandButton value="Nueva Orden de Examen" icon="pi pi-plus" actionListener="#{ordenExamenModels.btnNuevoHandler}" update=":frmFormulario @form"/>
+                    <p:commandButton value="#{msg['orden.btn_nuevo']}" icon="pi pi-plus" actionListener="#{ordenExamenModels.btnNuevoHandler}" update=":frmFormulario @form"/>
                 </p:toolbarGroup>
             </p:toolbar>
-            <p:dataTable id="tablaRegistros" value="#{ordenExamenModels.registros}" var="r" emptyMessage="No se encontraron registros" paginator="true" rows="10" style="margin-top: 10px;" selectionMode="single" selection="#{ordenExamenModels.registro}" rowKey="#{r.idOrdenExamen}">
+            <p:dataTable id="tablaRegistros" value="#{ordenExamenModels.registros}" var="r" emptyMessage="#{msg['global.msg_sin_registros']}" paginator="true" rows="10" style="margin-top: 10px;" selectionMode="single" selection="#{ordenExamenModels.registro}" rowKey="#{r.idOrdenExamen}">
                 <p:ajax event="rowSelect" update="@form"/>
                 <p:ajax event="rowUnselect" update="@form"/>
                 <p:ajax event="rowDblselect" listener="#{ordenExamenModels.btnSeleccionarRegistro(ordenExamenModels.registro.idOrdenExamen)}" update=":frmFormulario"/>
-                <p:column headerText="ID">
+                <p:column headerText="#{msg['global.id']}">
                     <h:outputText value="#{r.idOrdenExamen}"/>
                 </p:column>
-                <p:column headerText="Paciente / Persona">
+                <p:column headerText="#{msg['global.col_paciente']}">
                     <h:outputText value="#{r.idConsultaProcedimientoPaso.idConsultaProcedimiento.idConsulta.idPersonaRol.idPersona.nombres} #{r.idConsultaProcedimientoPaso.idConsultaProcedimiento.idConsulta.idPersonaRol.idPersona.apellidos}"/>
                 </p:column>
-                <p:column headerText="Estado del paso">
+                <p:column headerText="#{msg['orden.col_estado_paso']}">
                     <h:outputText value="#{r.idConsultaProcedimientoPaso.estado}"/>
                 </p:column>
-                <p:column headerText="Fecha creación">
+                <p:column headerText="#{msg['global.col_fecha_creacion']}">
                     <h:outputText value="#{r.fechaCreacion}">
                         <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Indicaciones">
+                <p:column headerText="#{msg['orden.col_indicaciones']}">
                     <h:outputText value="#{r.indicaciones}"/>
                 </p:column>
                 <f:facet name="footer">
-                    <p:commandButton id="btnModificar" value="Modificar" icon="pi pi-pencil" actionListener="#{ordenExamenModels.btnSeleccionarRegistro(ordenExamenModels.registro.idOrdenExamen)}" update=":frmFormulario" disabled="#{empty ordenExamenModels.registro.idOrdenExamen}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
-                    <p:commandButton id="btnEliminar" value="Eliminar" icon="pi pi-trash" actionListener="#{ordenExamenModels.btnEliminarHandler(ordenExamenModels.registro.idOrdenExamen)}" update=":mensajesGlobales:growl-sticky @form" disabled="#{empty ordenExamenModels.registro.idOrdenExamen}" styleClass="ui-button-danger">
-                        <p:confirm header="Confirmación" message="¿Estás seguro de eliminar este registro?" icon="pi pi-info-circle"/>
+                    <p:commandButton id="btnModificar" value="#{msg['global.modificar']}" icon="pi pi-pencil" actionListener="#{ordenExamenModels.btnSeleccionarRegistro(ordenExamenModels.registro.idOrdenExamen)}" update=":frmFormulario" disabled="#{empty ordenExamenModels.registro.idOrdenExamen}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
+                    <p:commandButton id="btnEliminar" value="#{msg['global.eliminar']}" icon="pi pi-trash" actionListener="#{ordenExamenModels.btnEliminarHandler(ordenExamenModels.registro.idOrdenExamen)}" update=":mensajesGlobales:growl-sticky @form" disabled="#{empty ordenExamenModels.registro.idOrdenExamen}" styleClass="ui-button-danger">
+                        <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['global.msg_confirm_eliminar']}" icon="pi pi-info-circle"/>
                     </p:commandButton>
                 </f:facet>
             </p:dataTable>
             <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes"/>
+                <p:commandButton value="#{msg['global.no']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="#{msg['global.si']}" type="button" styleClass="ui-confirmdialog-yes"/>
             </p:confirmDialog>
         </h:form>
         <h:form id="frmFormulario">
-            <p:panel header="#{ordenExamenModels.estado == 'CREAR' ? 'Nuevo Registro' : 'Editar Registro'}" rendered="#{ordenExamenModels.estado != 'NINGUNO'}" style="margin-top: 20px;">
+            <p:panel header="#{ordenExamenModels.estado == 'CREAR' ? msg['global.nuevo_registro'] : msg['global.editar_registro']}" rendered="#{ordenExamenModels.estado != 'NINGUNO'}" style="margin-top: 20px;">
                 <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel value="ID (Autogenerado):" rendered="#{ordenExamenModels.estado == 'CREAR'}"/>
+                    <p:outputLabel value="#{msg['global.lbl_id_autogenerado']}" rendered="#{ordenExamenModels.estado == 'CREAR'}"/>
                     <h:outputText value="#{ordenExamenModels.registro.idOrdenExamen}" rendered="#{ordenExamenModels.estado == 'CREAR'}"/>
-                    <p:outputLabel for="cmbPaso" value="Paso de procedimiento:"/>
-                    <p:selectOneMenu id="cmbPaso" value="#{ordenExamenModels.registro.idConsultaProcedimientoPaso}" converter="consultaProcedimientoPasoConverter" required="true" requiredMessage="Seleccione el paso del procedimiento" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="-- Seleccione --" itemValue="#{null}" noSelectionOption="true"/>
+                    <p:outputLabel for="cmbPaso" value="#{msg['orden.lbl_paso']}"/>
+                    <p:selectOneMenu id="cmbPaso" value="#{ordenExamenModels.registro.idConsultaProcedimientoPaso}" converter="consultaProcedimientoPasoConverter" required="true" requiredMessage="#{msg['orden.msg_req_paso']}" filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="#{msg['global.seleccione']}" itemValue="#{null}" noSelectionOption="true"/>
                         <f:selectItems value="#{consultaProcedimientoPasoModels.registros}" var="cpp" itemLabel="#{cpp.idConsultaProcedimiento.idConsulta.idPersonaRol.idPersona.nombres} #{cpp.idConsultaProcedimiento.idConsulta.idPersonaRol.idPersona.apellidos} - paso #{cpp.idConsultaProcedimientoPaso.toString().substring(0,8)}" itemValue="#{cpp}"/>
                     </p:selectOneMenu>
-                    <p:outputLabel for="calFechaCreacion" value="Fecha creación:"/>
+                    <p:outputLabel for="calFechaCreacion" value="#{msg['global.lbl_fecha_creacion']}"/>
                     <p:datePicker id="calFechaCreacion" value="#{ordenExamenModels.registro.fechaCreacion}" showTime="true" pattern="dd/MM/yyyy HH:mm" showIcon="true"/>
-                    <p:outputLabel for="txtIndicaciones" value="Indicaciones:"/>
+                    <p:outputLabel for="txtIndicaciones" value="#{msg['orden.lbl_indicaciones']}"/>
                     <p:inputTextarea id="txtIndicaciones" value="#{ordenExamenModels.registro.indicaciones}" rows="3"/>
                 </h:panelGrid>
                 <f:facet name="footer">
