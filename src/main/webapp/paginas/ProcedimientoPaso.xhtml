@@ -5,113 +5,158 @@
                 xmlns:h="jakarta.faces.html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="jakarta.faces.core"
-                xmlns:crud="jakarta.faces.composite/crud"
                 template="./general.xhtml">
 
-    <ui:define name="titulo">
-        Gestión de Pasos de Procedimiento
-    </ui:define>
+    <ui:define name="titulo">#{msg['paso.titulo']}</ui:define>
 
     <ui:define name="cuerpo">
 
+        <!-- ======================================================= -->
+        <!-- TABLA PRINCIPAL                                         -->
+        <!-- ======================================================= -->
         <h:form id="frmTabla">
-            <p:toolbar>
-                <p:toolbarGroup>
-                    <p:commandButton value="Nuevo Paso" icon="pi pi-plus"
-                                     actionListener="#{procedimientoPasoModels.btnNuevoHandler}"
-                                     update=":frmFormulario @form"
-                                     rendered="#{procedimientoPasoModels.estado == 'NINGUNO'}" />
-                </p:toolbarGroup>
-            </p:toolbar>
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <p:toolbar style="margin-bottom: 15px; border-radius: 8px;">
+                        <p:toolbarGroup>
+                            <p:commandButton value="#{msg['paso.btn_nuevo']}" icon="pi pi-plus"
+                                             actionListener="#{procedimientoPasoModels.btnNuevoHandler}"
+                                             update=":frmProcedimientoPaso" oncomplete="PF('dlgProcedimientoPaso').show()"
+                                             styleClass="ui-button-success" />
+                        </p:toolbarGroup>
+                    </p:toolbar>
 
-            <p:dataTable id="tablaRegistros" value="#{procedimientoPasoModels.registros}" var="r"
-                         emptyMessage="No se encontraron pasos" paginator="true" rows="10"
-                         style="margin-top: 10px;"
-                         selectionMode="single" selection="#{procedimientoPasoModels.registro}" rowKey="#{r.idProcedimientoPaso}">
+                    <p:dataTable id="tablaRegistros" value="#{procedimientoPasoModels.registros}" var="r"
+                                 emptyMessage="#{msg['paso.msg_vacio']}" paginator="true" rows="10"
+                                 selectionMode="single" selection="#{procedimientoPasoModels.registro}" 
+                                 rowKey="#{r.idProcedimientoPaso}"
+                                 stripedRows="true" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
 
-                <p:ajax event="rowSelect" update="@form" />
-                <p:ajax event="rowUnselect" update="@form" />
-                <p:ajax event="rowDblselect" listener="#{procedimientoPasoModels.btnSeleccionarRegistro(procedimientoPasoModels.registro.idProcedimientoPaso)}" update=":frmFormulario" />
+                        <p:ajax event="rowSelect" update="@form" />
+                        <p:ajax event="rowUnselect" update="@form" />
+                        <p:ajax event="rowDblselect" listener="#{procedimientoPasoModels.btnSeleccionarRegistro(procedimientoPasoModels.registro.idProcedimientoPaso)}" 
+                                update=":frmProcedimientoPaso" oncomplete="PF('dlgProcedimientoPaso').show()" />
 
-                <p:column headerText="ID">
-                    <h:outputText value="#{r.idProcedimientoPaso}" />
-                </p:column>
+                        <p:column headerText="#{msg['global.codigo_id']}" width="20%">
+                            <h:outputText value="#{r.idProcedimientoPaso}" style="font-family: monospace; color: gray;" />
+                        </p:column>
 
-                <p:column headerText="Nombre">
-                    <h:outputText value="#{r.nombre}" />
-                </p:column>
+                        <p:column headerText="#{msg['paso.col_nombre']}">
+                            <h:outputText value="#{r.nombre}" style="font-weight: bold;" />
+                        </p:column>
 
-                <p:column headerText="Procedimiento">
-                    <h:outputText value="#{r.idProcedimiento.nombre}" />
-                </p:column>
+                        <p:column headerText="#{msg['paso.col_procedimiento']}">
+                            <h:outputText value="#{r.idProcedimiento.nombre}" />
+                        </p:column>
 
-                <p:column headerText="Rol">
-                    <h:outputText value="#{r.idRol.nombre}" />
-                </p:column>
+                        <p:column headerText="#{msg['paso.col_rol']}">
+                            <h:outputText value="#{r.idRol.nombre}" styleClass="badge badge-info" />
+                        </p:column>
 
-                <p:column headerText="¿Indica fin?">
-                    <h:outputText value="#{r.indicaFin ? 'Sí' : 'No'}" />
-                </p:column>
+                        <p:column headerText="#{msg['paso.col_fin']}" width="15%" style="text-align: center;">
+                            <h:outputText value="#{msg['global.si']}" rendered="#{r.indicaFin}" styleClass="badge badge-activo" />
+                            <h:outputText value="#{msg['global.no']}" rendered="#{not r.indicaFin}" styleClass="badge badge-inactivo" />
+                        </p:column>
 
-                <f:facet name="footer">
-                    <p:commandButton id="btnModificar" value="Modificar" icon="pi pi-pencil"
-                                     actionListener="#{procedimientoPasoModels.btnSeleccionarRegistro(procedimientoPasoModels.registro.idProcedimientoPaso)}"
-                                     update=":frmFormulario"
-                                     disabled="#{empty procedimientoPasoModels.registro.idProcedimientoPaso}"
-                                     styleClass="ui-button-warning" style="margin-right: 5px;" />
+                        <f:facet name="footer">
+                            <div class="acciones-tabla">
+                                <p:commandButton id="btnModificar" value="#{msg['paso.btn_modificar']}" icon="pi pi-cog"
+                                                 actionListener="#{procedimientoPasoModels.btnSeleccionarRegistro(procedimientoPasoModels.registro.idProcedimientoPaso)}"
+                                                 update=":frmProcedimientoPaso" oncomplete="PF('dlgProcedimientoPaso').show()"
+                                                 disabled="#{empty procedimientoPasoModels.registro.idProcedimientoPaso}"
+                                                 styleClass="ui-button-primary" />
 
-                    <p:commandButton id="btnEliminar" value="Eliminar" icon="pi pi-trash"
-                                     actionListener="#{procedimientoPasoModels.btnEliminarHandler(procedimientoPasoModels.registro.idProcedimientoPaso)}"
-                                     update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
-                                     disabled="#{empty procedimientoPasoModels.registro.idProcedimientoPaso}"
-                                     styleClass="ui-button-danger">
-                        <p:confirm header="Confirmación" message="¿Estás seguro de eliminar este paso?" icon="pi pi-info-circle"/>
-                    </p:commandButton>
-                </f:facet>
-            </p:dataTable>
+                                <p:commandButton id="btnEliminar" value="#{msg['global.eliminar']}" icon="pi pi-trash"
+                                                 actionListener="#{procedimientoPasoModels.btnEliminarHandler(procedimientoPasoModels.registro.idProcedimientoPaso)}"
+                                                 update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
+                                                 disabled="#{empty procedimientoPasoModels.registro.idProcedimientoPaso}"
+                                                 styleClass="ui-button-danger ui-button-outlined">
+                                    <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['paso.msg_eliminar']}" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                            </div>
+                        </f:facet>
+                    </p:dataTable>
+                </div>
+            </div>
 
-            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="400">
+                <p:commandButton value="#{msg['global.cancelar']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="#{msg['global.si_eliminar']}" type="button" styleClass="ui-confirmdialog-yes ui-button-danger" />
             </p:confirmDialog>
         </h:form>
 
-        <h:form id="frmFormulario">
-            <p:panel header="#{procedimientoPasoModels.estado == 'CREAR' ? 'Nuevo Paso' : 'Editar Paso'}"
-                     rendered="#{procedimientoPasoModels.estado != 'NINGUNO'}"
-                     style="margin-top: 20px;">
+        <!-- ======================================================= -->
+        <!-- DIÁLOGO MODAL PRINCIPAL                                 -->
+        <!-- ======================================================= -->
+        <p:dialog header="#{procedimientoPasoModels.estado == 'CREAR' ? msg['paso.modal_crear'] : msg['paso.modal_config']}" 
+                  widgetVar="dlgProcedimientoPaso" modal="true" resizable="false" width="650" 
+                  dynamic="true" showEffect="fade" hideEffect="fade" appendTo="@(body)">
+            
+            <h:form id="frmProcedimientoPaso">
+                <p:outputPanel rendered="#{procedimientoPasoModels.registro != null}">
+                    
+                    <h:outputText value="#{msg['paso.ayuda_info']}" styleClass="texto-ayuda" style="margin-bottom: 20px; display: block;"/>
+                    
+                    <div class="ui-fluid ui-g">
+                        <div class="ui-g-12 campo-formulario">
+                            <p:outputLabel for="txtNombre" value="#{msg['paso.lbl_nombre']}" />
+                            <p:inputText id="txtNombre" value="#{procedimientoPasoModels.registro.nombre}"
+                                         required="true" requiredMessage="#{msg['paso.msg_req_nombre']}" maxlength="255" placeholder="Ej. Evaluación inicial" />
+                        </div>
 
-                <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel value="ID (Autogenerado):" rendered="#{procedimientoPasoModels.estado == 'CREAR'}"/>
-                    <h:outputText value="#{procedimientoPasoModels.registro.idProcedimientoPaso}" rendered="#{procedimientoPasoModels.estado == 'CREAR'}"/>
+                        <div class="ui-g-12 campo-formulario">
+                            <p:outputLabel for="cmbProcedimiento" value="#{msg['paso.lbl_proc']}" />
+                            <p:selectOneMenu id="cmbProcedimiento" value="#{procedimientoPasoModels.registro.idProcedimiento}"
+                                             converter="procedimientoConverter" required="true" requiredMessage="#{msg['paso.msg_req_proc']}">
+                                <f:selectItem itemLabel="#{msg['paso.sel_proc']}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{procedimientoPasoModels.procedimientos}" var="pr" itemValue="#{pr}" itemLabel="#{pr.nombre}" />
+                            </p:selectOneMenu>
+                        </div>
 
-                    <p:outputLabel for="txtNombre" value="Nombre:" />
-                    <p:inputText id="txtNombre" value="#{procedimientoPasoModels.registro.nombre}"
-                                 required="true" requiredMessage="El nombre del paso es obligatorio" maxlength="255" />
+                        <div class="ui-g-12 ui-md-8 campo-formulario">
+                            <p:outputLabel for="cmbRol" value="#{msg['paso.lbl_rol']}" />
+                            <p:selectOneMenu id="cmbRol" value="#{procedimientoPasoModels.registro.idRol}"
+                                             converter="rolConverter" required="true" requiredMessage="#{msg['paso.msg_req_rol']}">
+                                <f:selectItem itemLabel="#{msg['paso.sel_rol']}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{procedimientoPasoModels.roles}" var="rl" itemValue="#{rl}" itemLabel="#{rl.nombre}" />
+                            </p:selectOneMenu>
+                        </div>
 
-                    <p:outputLabel for="cmbProcedimiento" value="Procedimiento:" />
-                    <p:selectOneMenu id="cmbProcedimiento" value="#{procedimientoPasoModels.registro.idProcedimiento}"
-                                     converter="procedimientoConverter" required="true" requiredMessage="El procedimiento es obligatorio">
-                        <f:selectItem itemLabel="Seleccione un procedimiento" itemValue="#{null}" noSelectionOption="true" />
-                        <f:selectItems value="#{procedimientoPasoModels.procedimientos}" var="pr" itemValue="#{pr}" itemLabel="#{pr.nombre}" />
-                    </p:selectOneMenu>
+                        <div class="ui-g-12 ui-md-4 campo-formulario" style="display: flex; align-items: flex-end; padding-bottom: 10px;">
+                            <div class="ui-inputgroup">
+                                <span style="margin-right: 10px;">#{msg['paso.lbl_indica_fin']}</span>
+                                <p:toggleSwitch id="chkIndicaFin" value="#{procedimientoPasoModels.registro.indicaFin}" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p:divider />
+                    
+                    <!-- BOTONES DE CONTROL CON CIERRE AUTOMÁTICO -->
+                    <div style="text-align: right; padding-top: 10px;">
+                        <p:commandButton value="#{msg['global.guardar']}" icon="pi pi-save"
+                                         actionListener="#{procedimientoPasoModels.btnCrearhandler}"
+                                         update=":frmTabla :mensajesGlobales:growl-sticky"
+                                         oncomplete="if(!args.validationFailed) PF('dlgProcedimientoPaso').hide()"
+                                         rendered="#{procedimientoPasoModels.estado == 'CREAR'}"
+                                         styleClass="ui-button-success" style="margin-right: 5px;" />
 
-                    <p:outputLabel for="cmbRol" value="Rol:" />
-                    <p:selectOneMenu id="cmbRol" value="#{procedimientoPasoModels.registro.idRol}"
-                                     converter="rolConverter" required="true" requiredMessage="El rol es obligatorio">
-                        <f:selectItem itemLabel="Seleccione un rol" itemValue="#{null}" noSelectionOption="true" />
-                        <f:selectItems value="#{procedimientoPasoModels.roles}" var="rl" itemValue="#{rl}" itemLabel="#{rl.nombre}" />
-                    </p:selectOneMenu>
-
-                    <p:outputLabel for="chkIndicaFin" value="¿Indica fin del procedimiento?:" />
-                    <p:selectBooleanCheckbox id="chkIndicaFin" value="#{procedimientoPasoModels.registro.indicaFin}" />
-                </h:panelGrid>
-
-                <f:facet name="footer">
-                    <crud:botonesCrud modelo="#{procedimientoPasoModels}" update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
-                </f:facet>
-            </p:panel>
-        </h:form>
+                        <p:commandButton value="#{msg['global.actualizar']}" icon="pi pi-refresh"
+                                         actionListener="#{procedimientoPasoModels.btnModificarHandler()}"
+                                         update=":frmTabla :mensajesGlobales:growl-sticky"
+                                         oncomplete="if(!args.validationFailed) PF('dlgProcedimientoPaso').hide()"
+                                         rendered="#{procedimientoPasoModels.estado == 'MODIFICAR'}"
+                                         styleClass="ui-button-success" style="margin-right: 5px;" />
+                                         
+                        <p:commandButton value="#{msg['global.cancelar']}" icon="pi pi-times"
+                                         actionListener="#{procedimientoPasoModels.btnCancelar}"
+                                         update=":frmTabla"
+                                         oncomplete="PF('dlgProcedimientoPaso').hide()"
+                                         styleClass="ui-button-secondary ui-button-flat" immediate="true" />
+                    </div>
+                </p:outputPanel>
+            </h:form>
+        </p:dialog>
 
     </ui:define>
 </ui:composition>

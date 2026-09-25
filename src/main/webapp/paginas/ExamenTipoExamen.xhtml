@@ -1,231 +1,156 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-
 <!DOCTYPE html>
-
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-xmlns:ui="jakarta.faces.facelets"
-xmlns:h="jakarta.faces.html"
-xmlns:p="http://primefaces.org/ui"
-xmlns:f="jakarta.faces.core"
-xmlns:crud="jakarta.faces.composite/crud"
-template="./general.xhtml">
-
-```
-<ui:define name="titulo">
-    Gestión de Exámenes y Tipos de Examen
-</ui:define>
-
-<ui:define name="cuerpo">
-
-    <h:form id="frmTabla">
-
-        <p:toolbar>
-            <p:toolbarGroup>
-
-                <p:commandButton value="Nueva Relación"
-                                 icon="pi pi-plus"
-                                 actionListener="#{examenTipoExamenModels.btnNuevoHandler}"
-                                 update=":frmFormulario @form" />
-
-            </p:toolbarGroup>
-        </p:toolbar>
-
-
-        <p:dataTable id="tablaRegistros"
-                     value="#{examenTipoExamenModels.registros}"
-                     var="r"
-                     emptyMessage="No se encontraron registros"
-                     paginator="true"
-                     rows="10"
-                     style="margin-top: 10px;"
-                     selectionMode="single"
-                     selection="#{examenTipoExamenModels.registro}"
-                     rowKey="#{r.idExamenTipoExamen}">
-
-            <p:ajax event="rowSelect"
-                    update="@form" />
-
-            <p:ajax event="rowUnselect"
-                    update="@form" />
-
-            <p:ajax event="rowDblselect"
-                    listener="#{examenTipoExamenModels.btnSeleccionarRegistro(examenTipoExamenModels.registro.idExamenTipoExamen)}"
-                    update=":frmFormulario" />
-
-
-            <p:column headerText="ID">
-
-                <h:outputText value="#{r.idExamenTipoExamen}" />
-
-            </p:column>
-
-
-            <p:column headerText="Examen">
-
-                <h:outputText value="#{r.idExamen.nombre}" />
-
-            </p:column>
-
-
-            <p:column headerText="Tipo de Examen">
-
-                <h:outputText value="#{r.idTipoExamen.nombre}" />
-
-            </p:column>
-
-
-            <p:column headerText="Fecha de creación">
-
-                <h:outputText value="#{r.fechaCreacion}">
-
-                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
-
-                </h:outputText>
-
-            </p:column>
-
-
-            <p:column headerText="Observaciones">
-
-                <h:outputText value="#{r.observaciones}" />
-
-            </p:column>
-
-
-            <f:facet name="footer">
-
-                <p:commandButton id="btnModificar"
-                                 value="Modificar"
-                                 icon="pi pi-pencil"
-                                 actionListener="#{examenTipoExamenModels.btnSeleccionarRegistro(examenTipoExamenModels.registro.idExamenTipoExamen)}"
-                                 update=":frmFormulario"
-                                 disabled="#{empty examenTipoExamenModels.registro.idExamenTipoExamen}"
-                                 styleClass="ui-button-warning"
-                                 style="margin-right: 5px;" />
-
-
-                <p:commandButton id="btnEliminar"
-                                 value="Eliminar"
-                                 icon="pi pi-trash"
-                                 actionListener="#{examenTipoExamenModels.btnEliminarHandler(examenTipoExamenModels.registro.idExamenTipoExamen)}"
-                                 update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
-                                 disabled="#{empty examenTipoExamenModels.registro.idExamenTipoExamen}"
-                                 styleClass="ui-button-danger">
-
-                    <p:confirm header="Confirmación"
-                               message="¿Estás seguro de eliminar este registro?"
-                               icon="pi pi-info-circle" />
-
-                </p:commandButton>
-
-            </f:facet>
-
-        </p:dataTable>
-
-
-        <p:confirmDialog global="true"
-                         showEffect="fade"
-                         hideEffect="fade"
-                         responsive="true"
-                         width="350">
-
-            <p:commandButton value="No"
-                             type="button"
-                             styleClass="ui-confirmdialog-no ui-button-flat" />
-
-            <p:commandButton value="Sí"
-                             type="button"
-                             styleClass="ui-confirmdialog-yes" />
-
-        </p:confirmDialog>
-
-    </h:form>
-
-
-    <h:form id="frmFormulario">
-
-        <p:panel header="#{examenTipoExamenModels.estado == 'CREAR' ? 'Nuevo Registro' : 'Editar Registro'}"
-                 rendered="#{examenTipoExamenModels.estado != 'NINGUNO'}"
-                 style="margin-top: 20px;">
-
-            <h:panelGrid columns="2"
-                         cellpadding="5">
-
-
-                <p:outputLabel value="ID (Autogenerado):"
-                               rendered="#{examenTipoExamenModels.estado == 'CREAR'}" />
-
-                <h:outputText value="#{examenTipoExamenModels.registro.idExamenTipoExamen}"
-                              rendered="#{examenTipoExamenModels.estado == 'CREAR'}" />
-
-
-                <p:outputLabel for="cmbExamen"
-                               value="Examen:" />
-
-                <p:selectOneMenu id="cmbExamen"
-                                 value="#{examenTipoExamenModels.registro.idExamen}"
-                                 converter="examenConverter"
-                                 required="true"
-                                 requiredMessage="El examen es obligatorio">
-
-                    <f:selectItem itemLabel="Seleccione un examen"
-                                  itemValue="#{null}"
-                                  noSelectionOption="true" />
-
-                    <f:selectItems value="#{examenTipoExamenModels.examenes}"
-                                   var="ex"
-                                   itemValue="#{ex}"
-                                   itemLabel="#{ex.nombre}" />
-
-                </p:selectOneMenu>
-
-
-                <p:outputLabel for="cmbTipoExamen"
-                               value="Tipo de Examen:" />
-
-                <p:selectOneMenu id="cmbTipoExamen"
-                                 value="#{examenTipoExamenModels.registro.idTipoExamen}"
-                                 converter="tipoExamenConverter"
-                                 required="true"
-                                 requiredMessage="El tipo de examen es obligatorio">
-
-                    <f:selectItem itemLabel="Seleccione un tipo de examen"
-                                  itemValue="#{null}"
-                                  noSelectionOption="true" />
-
-                    <f:selectItems value="#{examenTipoExamenModels.tiposExamen}"
-                                   var="te"
-                                   itemValue="#{te}"
-                                   itemLabel="#{te.nombre}" />
-
-                </p:selectOneMenu>
-
-
-                <p:outputLabel for="txtObservaciones"
-                               value="Observaciones:" />
-
-                <p:inputTextarea id="txtObservaciones"
-                                 value="#{examenTipoExamenModels.registro.observaciones}"
-                                 rows="3"
-                                 required="true"
-                                 requiredMessage="Las observaciones son obligatorias" />
-
-            </h:panelGrid>
-
-
-            <f:facet name="footer">
-
-                <crud:botonesCrud
-                    modelo="#{examenTipoExamenModels}"
-                    update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky" />
-
-            </f:facet>
-
-        </p:panel>
-
-    </h:form>
-
-</ui:define>
-```
-
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="./general.xhtml">
+
+    <ui:define name="titulo">#{msg['ete.titulo']}</ui:define>
+
+    <ui:define name="cuerpo">
+
+        <!-- ======================================================= -->
+        <!-- TABLA PRINCIPAL                                         -->
+        <!-- ======================================================= -->
+        <h:form id="frmTabla">
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <p:toolbar style="margin-bottom: 15px; border-radius: 8px;">
+                        <p:toolbarGroup>
+                            <p:commandButton value="#{msg['ete.btn_nuevo']}" icon="pi pi-plus"
+                                             actionListener="#{examenTipoExamenModels.btnNuevoHandler}"
+                                             update=":frmExamenTipoExamen" oncomplete="PF('dlgExamenTipoExamen').show()"
+                                             styleClass="ui-button-success" />
+                        </p:toolbarGroup>
+                    </p:toolbar>
+
+                    <p:dataTable id="tablaRegistros" value="#{examenTipoExamenModels.registros}" var="r"
+                                 emptyMessage="#{msg['ete.msg_vacio']}" paginator="true" rows="10"
+                                 selectionMode="single" selection="#{examenTipoExamenModels.registro}" 
+                                 rowKey="#{r.idExamenTipoExamen}"
+                                 stripedRows="true" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+
+                        <p:ajax event="rowSelect" update="@form" />
+                        <p:ajax event="rowUnselect" update="@form" />
+                        <p:ajax event="rowDblselect" listener="#{examenTipoExamenModels.btnSeleccionarRegistro(examenTipoExamenModels.registro.idExamenTipoExamen)}" 
+                                update=":frmExamenTipoExamen" oncomplete="PF('dlgExamenTipoExamen').show()" />
+
+                        <p:column headerText="#{msg['global.codigo_id']}" width="20%">
+                            <h:outputText value="#{r.idExamenTipoExamen}" style="font-family: monospace; color: gray;" />
+                        </p:column>
+
+                        <p:column headerText="#{msg['ete.col_examen']}">
+                            <h:outputText value="#{r.idExamen.nombre}" style="font-weight: bold;" />
+                        </p:column>
+
+                        <p:column headerText="#{msg['ete.col_tipo']}">
+                            <h:outputText value="#{r.idTipoExamen.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="#{msg['ete.col_fecha']}" width="18%">
+                            <h:outputText value="#{r.fechaCreacion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="#{msg['global.observaciones']}">
+                            <h:outputText value="#{r.observaciones}" />
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <div class="acciones-tabla">
+                                <p:commandButton id="btnModificar" value="#{msg['ete.btn_modificar']}" icon="pi pi-cog"
+                                                 actionListener="#{examenTipoExamenModels.btnSeleccionarRegistro(examenTipoExamenModels.registro.idExamenTipoExamen)}"
+                                                 update=":frmExamenTipoExamen" oncomplete="PF('dlgExamenTipoExamen').show()"
+                                                 disabled="#{empty examenTipoExamenModels.registro.idExamenTipoExamen}"
+                                                 styleClass="ui-button-primary" />
+
+                                <p:commandButton id="btnEliminar" value="#{msg['global.eliminar']}" icon="pi pi-trash"
+                                                 actionListener="#{examenTipoExamenModels.btnEliminarHandler(examenTipoExamenModels.registro.idExamenTipoExamen)}"
+                                                 update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
+                                                 disabled="#{empty examenTipoExamenModels.registro.idExamenTipoExamen}"
+                                                 styleClass="ui-button-danger ui-button-outlined">
+                                    <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['ete.msg_eliminar']}" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                            </div>
+                        </f:facet>
+                    </p:dataTable>
+                </div>
+            </div>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="400">
+                <p:commandButton value="#{msg['global.cancelar']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="#{msg['global.si_eliminar']}" type="button" styleClass="ui-confirmdialog-yes ui-button-danger" />
+            </p:confirmDialog>
+        </h:form>
+
+        <!-- ======================================================= -->
+        <!-- DIÁLOGO MODAL PRINCIPAL                                 -->
+        <!-- ======================================================= -->
+        <p:dialog header="#{examenTipoExamenModels.estado == 'CREAR' ? msg['ete.modal_crear'] : msg['ete.modal_config']}" 
+                  widgetVar="dlgExamenTipoExamen" modal="true" resizable="false" width="600" 
+                  dynamic="true" showEffect="fade" hideEffect="fade" appendTo="@(body)">
+            
+            <h:form id="frmExamenTipoExamen">
+                <p:outputPanel rendered="#{examenTipoExamenModels.registro != null}">
+                    
+                    <h:outputText value="#{msg['ete.ayuda_info']}" styleClass="texto-ayuda" style="margin-bottom: 20px; display: block;"/>
+                    
+                    <div class="ui-fluid ui-g">
+                        <div class="ui-g-12 campo-formulario">
+                            <p:outputLabel for="cmbExamen" value="#{msg['ete.col_examen']}:" />
+                            <p:selectOneMenu id="cmbExamen" value="#{examenTipoExamenModels.registro.idExamen}"
+                                             converter="examenConverter" required="true" requiredMessage="#{msg['ete.msg_req_examen']}">
+                                <f:selectItem itemLabel="#{msg['ete.sel_examen']}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{examenTipoExamenModels.examenes}" var="ex" itemValue="#{ex}" itemLabel="#{ex.nombre}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="ui-g-12 campo-formulario">
+                            <p:outputLabel for="cmbTipoExamen" value="#{msg['ete.col_tipo']}:" />
+                            <p:selectOneMenu id="cmbTipoExamen" value="#{examenTipoExamenModels.registro.idTipoExamen}"
+                                             converter="tipoExamenConverter" required="true" requiredMessage="#{msg['ete.msg_req_tipo']}">
+                                <f:selectItem itemLabel="#{msg['ete.sel_tipo']}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{examenTipoExamenModels.tiposExamen}" var="te" itemValue="#{te}" itemLabel="#{te.nombre}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="ui-g-12 campo-formulario">
+                            <p:outputLabel for="txtObservaciones" value="#{msg['global.observaciones']}:" />
+                            <p:inputTextarea id="txtObservaciones" value="#{examenTipoExamenModels.registro.observaciones}"
+                                             rows="3" required="true" requiredMessage="#{msg['ete.msg_req_obs']}" placeholder="#{msg['tipo.ph_obs']}" />
+                        </div>
+                    </div>
+                    
+                    <p:divider />
+                    
+                    <!-- BOTONES DE CONTROL DE CIERRE AUTOMÁTICO -->
+                    <div style="text-align: right; padding-top: 10px;">
+                        <p:commandButton value="#{msg['global.guardar']}" icon="pi pi-save"
+                                         actionListener="#{examenTipoExamenModels.btnCrearhandler}"
+                                         update=":frmTabla :mensajesGlobales:growl-sticky"
+                                         oncomplete="if(!args.validationFailed) PF('dlgExamenTipoExamen').hide()"
+                                         rendered="#{examenTipoExamenModels.estado == 'CREAR'}"
+                                         styleClass="ui-button-success" style="margin-right: 5px;" />
+
+                        <p:commandButton value="#{msg['global.actualizar']}" icon="pi pi-refresh"
+                                         actionListener="#{examenTipoExamenModels.btnModificarHandler()}"
+                                         update=":frmTabla :mensajesGlobales:growl-sticky"
+                                         oncomplete="if(!args.validationFailed) PF('dlgExamenTipoExamen').hide()"
+                                         rendered="#{examenTipoExamenModels.estado == 'MODIFICAR'}"
+                                         styleClass="ui-button-success" style="margin-right: 5px;" />
+                                         
+                        <p:commandButton value="#{msg['global.cancelar']}" icon="pi pi-times"
+                                         actionListener="#{examenTipoExamenModels.btnCancelar}"
+                                         update=":frmTabla"
+                                         oncomplete="PF('dlgExamenTipoExamen').hide()"
+                                         styleClass="ui-button-secondary ui-button-flat" immediate="true" />
+                    </div>
+                </p:outputPanel>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
 </ui:composition>

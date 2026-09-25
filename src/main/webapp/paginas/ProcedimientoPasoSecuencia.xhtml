@@ -85,14 +85,16 @@
                     <p:selectOneMenu id="cmbProcedimientoPaso" value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPaso}"
                                      converter="procedimientoPasoConverter" required="true" requiredMessage="El paso es obligatorio">
                         <f:selectItem itemLabel="Seleccione un paso" itemValue="#{null}" noSelectionOption="true" />
-                        <f:selectItems value="#{procedimientoPasoSecuenciaModels.procedimientoPasos}" var="pp" itemValue="#{pp}" itemLabel="#{pp.nombre}" />
+                        <!-- CORREGIDO: Apunta a procedimientoPasoModels.registros -->
+                        <f:selectItems value="#{procedimientoPasoModels.registros}" var="pp" itemValue="#{pp}" itemLabel="#{pp.nombre}" />
                     </p:selectOneMenu>
 
                     <p:outputLabel for="cmbPasoReferencia" value="Paso de Referencia:" />
                     <p:selectOneMenu id="cmbPasoReferencia" value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoReferencia}"
                                      required="true" requiredMessage="El paso de referencia es obligatorio">
                         <f:selectItem itemLabel="Seleccione un paso de referencia" itemValue="#{null}" noSelectionOption="true" />
-                        <f:selectItems value="#{procedimientoPasoSecuenciaModels.procedimientoPasos}" var="ppr" itemValue="#{ppr.idProcedimientoPaso}" itemLabel="#{ppr.nombre}" />
+                        <!-- CORREGIDO: Apunta a procedimientoPasoModels.registros -->
+                        <f:selectItems value="#{procedimientoPasoModels.registros}" var="ppr" itemValue="#{ppr.idProcedimientoPaso}" itemLabel="#{ppr.nombre}" />
                     </p:selectOneMenu>
 
                     <p:outputLabel for="txtTipoSecuencia" value="Tipo de Secuencia:" />

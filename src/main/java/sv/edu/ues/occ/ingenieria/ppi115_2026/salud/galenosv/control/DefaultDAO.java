@@ -2,6 +2,7 @@ package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
 import java.lang.reflect.ParameterizedType;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -67,29 +68,31 @@ public abstract class DefaultDAO<T> implements DAOInterface<T> {
 
     
 
-    @Override
-    public T eliminar(UUID id) throws IllegalArgumentException, IllegalStateException {
+     public T eliminar(UUID id) throws IllegalArgumentException, IllegalStateException {
         if (id != null) {
             try {
                 T managed = getEntityManger().find(getEntityClass(), id);
                 if (managed != null) {
                     getEntityManger().remove(managed);
+                    getEntityManger().flush(); // fuerza el DELETE ahora, dentro de este try/catch
                 } else {
                     throw new IllegalArgumentException("No existe un registro con ese id");
                 }
             } catch (IllegalArgumentException ex) {
                 throw ex;
+            } catch (PersistenceException ex) {
+                Logger.getLogger(getClass().getName()).log(Level.WARNING,
+                        "No se pudo eliminar el registro {0}: probablemente esta en uso por otra tabla", id);
+                throw new DAOException("No se puede eliminar: el registro esta siendo utilizado en otra parte del sistema", ex);
             } catch (Exception ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
-                throw new IllegalStateException("Error al eliminar el registro", ex);
+                throw new DAOException("Error al eliminar el registro", ex);
             }
         } else {
             throw new IllegalArgumentException("El id no puede ser nulo");
         }
         return null;
-
     }
-
     @Override
     public List<T> findRange(int first, int max) throws IllegalArgumentException, IllegalStateException {
         if (first >= 0 && max > 0) {
