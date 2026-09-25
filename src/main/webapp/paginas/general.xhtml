@@ -60,18 +60,45 @@
                                     <p:submenu label="#{msg['menu.opciones']}">
                                         <p:menuitem value="#{msg['menu.inicio']}" icon="pi pi-home" outcome="/index.xhtml"/>
                                     </p:submenu>
-                                    
+
                                     <p:submenu label="Gestión de Exámenes">
                                         <p:menuitem value="Tipos de Examen" icon="pi pi-tags" outcome="/paginas/TipoExamen.xhtml" />
                                         <p:menuitem value="Exámenes" icon="pi pi-file" outcome="/paginas/Examen.xhtml" />
                                         <p:menuitem value="Examen / Tipo" icon="pi pi-link" outcome="/paginas/ExamenTipoExamen.xhtml" />
                                     </p:submenu>
-                                    
+
                                     <p:submenu label="Procedimientos Médicos">
                                         <p:menuitem value="Procedimientos" icon="pi pi-briefcase" outcome="/paginas/Procedimiento.xhtml" />
                                         <p:menuitem value="Pasos" icon="pi pi-list" outcome="/paginas/ProcedimientoPaso.xhtml" />
                                         <p:menuitem value="Pasos por Examen" icon="pi pi-check-square" outcome="/paginas/ProcedimientoPasoExamen.xhtml" />
                                         <p:menuitem value="Secuencias" icon="pi pi-sort-numeric-down" outcome="/paginas/ProcedimientoPasoSecuencia.xhtml" />
+                                    </p:submenu>
+                                    <p:submenu label="Consultas y Resultados">
+
+                                        <p:menuitem value="Documentos"
+                                                    icon="pi pi-file"
+                                                    outcome="/paginas/Documento.xhtml" />
+
+                                        <p:menuitem value="Consultas"
+                                                    icon="pi pi-search"
+                                                    outcome="/paginas/Consulta.xhtml" />
+
+                                        <p:menuitem value="Consulta / Procedimiento"
+                                                    icon="pi pi-link"
+                                                    outcome="/paginas/ConsultaProcedimiento.xhtml" />
+
+                                        <p:menuitem value="Consulta / Procedimiento / Paso"
+                                                    icon="pi pi-list"
+                                                    outcome="/paginas/ConsultaProcedimientoPaso.xhtml" />
+
+                                        <p:menuitem value="Órdenes de Examen"
+                                                    icon="pi pi-file-edit"
+                                                    outcome="/paginas/OrdenExamen.xhtml" />
+
+                                        <p:menuitem value="Resultados de Examen"
+                                                    icon="pi pi-check-circle"
+                                                    outcome="/paginas/ExamenResultado.xhtml" />
+
                                     </p:submenu>
                                 </p:menu>
                             </h:form>
