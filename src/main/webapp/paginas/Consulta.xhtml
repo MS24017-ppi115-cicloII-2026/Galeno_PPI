@@ -1,76 +1,229 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui" xmlns:f="jakarta.faces.core" xmlns:crud="jakarta.faces.composite/crud" template="./general.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
+                template="./general.xhtml">
+
     <ui:define name="titulo">#{msg['consulta.titulo']}</ui:define>
+
     <ui:define name="cuerpo">
+
         <h:form id="frmTabla">
+
             <p:toolbar>
                 <p:toolbarGroup>
-                    <p:commandButton value="#{msg['consulta.btn_nuevo']}" icon="pi pi-plus" actionListener="#{consultaModels.btnNuevoHandler}" update=":frmFormulario @form"/>
+                    <p:commandButton
+                        value="#{msg['consulta.btn_nuevo']}"
+                        icon="pi pi-plus"
+                        actionListener="#{consultaModels.btnNuevoHandler}"
+                        update=":frmFormulario @form"/>
                 </p:toolbarGroup>
             </p:toolbar>
-            <p:dataTable id="tablaRegistros" value="#{consultaModels.registros}" var="r" emptyMessage="#{msg['global.msg_sin_registros']}" paginator="true" rows="10" style="margin-top: 10px;" selectionMode="single" selection="#{consultaModels.registro}" rowKey="#{r.idConsulta}">
+
+            <p:dataTable
+                id="tablaRegistros"
+                value="#{consultaModels.registros}"
+                var="r"
+                emptyMessage="#{msg['consulta.msg_vacio']}"
+                paginator="true"
+                rows="10"
+                style="margin-top: 10px;"
+                selectionMode="single"
+                selection="#{consultaModels.registro}"
+                rowKey="#{r.idConsulta}">
+
                 <p:ajax event="rowSelect" update="@form"/>
                 <p:ajax event="rowUnselect" update="@form"/>
-                <p:ajax event="rowDblselect" listener="#{consultaModels.btnSeleccionarRegistro(consultaModels.registro.idConsulta)}" update=":frmFormulario"/>
+                <p:ajax
+                    event="rowDblselect"
+                    listener="#{consultaModels.btnSeleccionarRegistro(consultaModels.registro.idConsulta)}"
+                    update=":frmFormulario"/>
+
                 <p:column headerText="#{msg['global.id']}">
                     <h:outputText value="#{r.idConsulta}"/>
                 </p:column>
-                <p:column headerText="#{msg['global.col_paciente']}">
-                    <h:outputText value="#{r.idPersonaRol.idPersona.nombres} #{r.idPersonaRol.idPersona.apellidos}"/>
+
+                <p:column headerText="#{msg['consulta.col_persona']}">
+                    <h:outputText
+                        value="#{r.idPersonaRol.idPersona.nombres} #{r.idPersonaRol.idPersona.apellidos}"/>
                 </p:column>
-                <p:column headerText="#{msg['consulta.col_rol']}">
-                    <h:outputText value="#{r.idPersonaRol.idRol.nombre}"/>
-                </p:column>
-                <p:column headerText="#{msg['global.col_fecha_inicio']}">
+
+              
+
+                <p:column headerText="#{msg['consulta.col_fecha_inicio']}">
                     <h:outputText value="#{r.fechaInicio}">
-                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
+                        <f:convertDateTime
+                            pattern="dd/MM/yyyy HH:mm"
+                            timeZone="America/El_Salvador"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="#{msg['global.col_fecha_fin']}">
+
+                <p:column headerText="#{msg['consulta.col_fecha_fin']}">
                     <h:outputText value="#{r.fechaFin}">
-                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
+                        <f:convertDateTime
+                            pattern="dd/MM/yyyy HH:mm"
+                            timeZone="America/El_Salvador"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="#{msg['consulta.col_referencia']}">
+
+                <p:column headerText="#{msg['consulta.col_referencia_externa']}">
                     <h:outputText value="#{r.referenciaExterna}"/>
                 </p:column>
-                <p:column headerText="#{msg['global.observaciones']}">
+
+                <p:column headerText="#{msg['consulta.col_observaciones']}">
                     <h:outputText value="#{r.observaciones}"/>
                 </p:column>
+
                 <f:facet name="footer">
-                    <p:commandButton id="btnModificar" value="#{msg['global.modificar']}" icon="pi pi-pencil" actionListener="#{consultaModels.btnSeleccionarRegistro(consultaModels.registro.idConsulta)}" update=":frmFormulario" disabled="#{empty consultaModels.registro.idConsulta}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
-                    <p:commandButton id="btnEliminar" value="#{msg['global.eliminar']}" icon="pi pi-trash" actionListener="#{consultaModels.btnEliminarHandler(consultaModels.registro.idConsulta)}" update=":mensajesGlobales:growl-sticky @form" disabled="#{empty consultaModels.registro.idConsulta}" styleClass="ui-button-danger">
-                        <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['global.msg_confirm_eliminar']}" icon="pi pi-info-circle"/>
+
+                    <p:commandButton
+                        id="btnModificar"
+                        value="#{msg['consulta.btn_modificar']}"
+                        icon="pi pi-pencil"
+                        actionListener="#{consultaModels.btnSeleccionarRegistro(consultaModels.registro.idConsulta)}"
+                        update=":frmFormulario"
+                        disabled="#{empty consultaModels.registro.idConsulta}"
+                        styleClass="ui-button-warning"
+                        style="margin-right: 5px;"/>
+
+                    <p:commandButton
+                        id="btnEliminar"
+                        value="#{msg['global.eliminar']}"
+                        icon="pi pi-trash"
+                        actionListener="#{consultaModels.btnEliminarHandler(consultaModels.registro.idConsulta)}"
+                        update=":mensajesGlobales:growl-sticky @form"
+                        disabled="#{empty consultaModels.registro.idConsulta}"
+                        styleClass="ui-button-danger">
+
+                        <p:confirm
+                            header="#{msg['global.confirmacion']}"
+                            message="#{msg['consulta.msg_eliminar']}"
+                            icon="pi pi-info-circle"/>
+
                     </p:commandButton>
+
                 </f:facet>
+
             </p:dataTable>
-            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                <p:commandButton value="#{msg['global.no']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                <p:commandButton value="#{msg['global.si']}" type="button" styleClass="ui-confirmdialog-yes"/>
+
+            <p:confirmDialog
+                global="true"
+                showEffect="fade"
+                hideEffect="fade"
+                responsive="true"
+                width="350">
+
+                <p:commandButton
+                    value="#{msg['global.no']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-no ui-button-flat"/>
+
+                <p:commandButton
+                    value="#{msg['global.si']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes"/>
+
             </p:confirmDialog>
+
         </h:form>
+
+
         <h:form id="frmFormulario">
-            <p:panel header="#{consultaModels.estado == 'CREAR' ? msg['global.nuevo_registro'] : msg['global.editar_registro']}" rendered="#{consultaModels.estado != 'NINGUNO'}" style="margin-top: 20px;">
+
+            <p:panel
+                header="#{consultaModels.estado == 'CREAR' ? msg['consulta.modal_crear'] : msg['consulta.modal_config']}"
+                rendered="#{consultaModels.estado != 'NINGUNO'}"
+                style="margin-top: 20px;">
+
                 <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel value="#{msg['global.lbl_id_autogenerado']}" rendered="#{consultaModels.estado == 'CREAR'}"/>
-                    <h:outputText value="#{consultaModels.registro.idConsulta}" rendered="#{consultaModels.estado == 'CREAR'}"/>
-                    <p:outputLabel for="cmbPersonaRol" value="#{msg['consulta.lbl_persona_rol']}"/>
-                    <p:selectOneMenu id="cmbPersonaRol" value="#{consultaModels.registro.idPersonaRol}" converter="personaRolConverter" required="true" requiredMessage="#{msg['consulta.msg_req_persona_rol']}" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="#{msg['global.seleccione']}" itemValue="#{null}" noSelectionOption="true"/>
-                        <f:selectItems value="#{personaRolModels.registros}" var="pr" itemLabel="#{pr.idPersona.nombres} #{pr.idPersona.apellidos} - #{pr.idRol.nombre}" itemValue="#{pr}"/>
+
+                    <p:outputLabel
+                        value="#{msg['global.codigo_id']}"
+                        rendered="#{consultaModels.estado == 'CREAR'}"/>
+
+                    <h:outputText
+                        value="#{consultaModels.registro.idConsulta}"
+                        rendered="#{consultaModels.estado == 'CREAR'}"/>
+
+                    <p:outputLabel
+                        for="cmbPersonaRol"
+                        value="#{msg['consulta.lbl_persona']}"/>
+
+                    <p:selectOneMenu
+                        id="cmbPersonaRol"
+                        value="#{consultaModels.registro.idPersonaRol}"
+                        converter="personaRolConverter"
+                        required="true"
+                        requiredMessage="#{msg['consulta.msg_req_persona']}"
+                        filter="true"
+                        filterMatchMode="contains">
+
+                        <f:selectItem
+                            itemLabel="#{msg['consulta.sel_persona']}"
+                            itemValue="#{null}"
+                            noSelectionOption="true"/>
+
+                        <f:selectItems
+                            value="#{personaRolModels.registros}"
+                            var="pr"
+                            itemLabel="#{pr.idPersona.nombres} #{pr.idPersona.apellidos} - #{pr.idRol.nombre}"
+                            itemValue="#{pr}"/>
+
                     </p:selectOneMenu>
-                    <p:outputLabel for="calFechaInicio" value="#{msg['global.lbl_fecha_inicio']}"/>
-                    <p:datePicker id="calFechaInicio" value="#{consultaModels.registro.fechaInicio}" showTime="true" pattern="dd/MM/yyyy HH:mm" showIcon="true"/>
-                    <p:outputLabel for="calFechaFin" value="#{msg['global.lbl_fecha_fin']}"/>
-                    <p:datePicker id="calFechaFin" value="#{consultaModels.registro.fechaFin}" showTime="true" pattern="dd/MM/yyyy HH:mm" showIcon="true"/>
-                    <p:outputLabel for="txtReferencia" value="#{msg['consulta.lbl_referencia']}"/>
-                    <p:inputText id="txtReferencia" value="#{consultaModels.registro.referenciaExterna}"/>
-                    <p:outputLabel for="txtObservaciones" value="#{msg['global.lbl_observaciones']}"/>
-                    <p:inputTextarea id="txtObservaciones" value="#{consultaModels.registro.observaciones}" rows="3"/>
+
+                    <p:outputLabel
+                        for="calFechaInicio"
+                        value="#{msg['consulta.lbl_fecha_inicio']}"/>
+
+                    <p:datePicker
+                        id="calFechaInicio"
+                        value="#{consultaModels.registro.fechaInicio}"
+                        showTime="true"
+                        pattern="dd/MM/yyyy HH:mm"
+                        showIcon="true"/>
+
+                    <p:outputLabel
+                        for="calFechaFin"
+                        value="#{msg['consulta.lbl_fecha_fin']}"/>
+
+                    <p:datePicker
+                        id="calFechaFin"
+                        value="#{consultaModels.registro.fechaFin}"
+                        showTime="true"
+                        pattern="dd/MM/yyyy HH:mm"
+                        showIcon="true"/>
+
+                    <p:outputLabel
+                        for="txtReferencia"
+                        value="#{msg['consulta.lbl_referencia_externa']}"/>
+
+                    <p:inputText
+                        id="txtReferencia"
+                        value="#{consultaModels.registro.referenciaExterna}"/>
+
+                    <p:outputLabel
+                        for="txtObservaciones"
+                        value="#{msg['consulta.lbl_observaciones']}"/>
+
+                    <p:inputTextarea
+                        id="txtObservaciones"
+                        value="#{consultaModels.registro.observaciones}"
+                        rows="3"/>
+
                 </h:panelGrid>
+
                 <f:facet name="footer">
-                    <crud:botonesCrud modelo="#{consultaModels}" update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+                    <crud:botonesCrud
+                        modelo="#{consultaModels}"
+                        update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
                 </f:facet>
+
             </p:panel>
+
         </h:form>
+
     </ui:define>
-</ui:composition>>
+
+</ui:composition>

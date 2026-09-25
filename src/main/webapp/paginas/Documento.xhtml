@@ -1,70 +1,234 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui" xmlns:f="jakarta.faces.core" xmlns:crud="jakarta.faces.composite/crud" template="./general.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
+                template="./general.xhtml">
+
     <ui:define name="titulo">#{msg['doc.titulo']}</ui:define>
+
     <ui:define name="cuerpo">
+
         <h:form id="frmTabla">
+
             <p:toolbar>
                 <p:toolbarGroup>
-                    <p:commandButton value="#{msg['doc.btn_nuevo']}" icon="pi pi-plus" actionListener="#{documentoModels.btnNuevoHandler}" update=":frmFormulario @form"/>
+
+                    <p:commandButton
+                        value="#{msg['doc.btn_nuevo']}"
+                        icon="pi pi-plus"
+                        actionListener="#{documentoModels.btnNuevoHandler}"
+                        update=":frmFormulario @form"/>
+
                 </p:toolbarGroup>
             </p:toolbar>
-            <p:dataTable id="tablaRegistros" value="#{documentoModels.registros}" var="r" emptyMessage="#{msg['global.msg_sin_registros']}" paginator="true" rows="10" style="margin-top: 10px;" selectionMode="single" selection="#{documentoModels.registro}" rowKey="#{r.idDocumento}">
+
+            <p:dataTable
+                id="tablaRegistros"
+                value="#{documentoModels.registros}"
+                var="r"
+                emptyMessage="#{msg['doc.msg_vacio']}"
+                paginator="true"
+                rows="10"
+                style="margin-top: 10px;"
+                selectionMode="single"
+                selection="#{documentoModels.registro}"
+                rowKey="#{r.idDocumento}">
+
                 <p:ajax event="rowSelect" update="@form"/>
                 <p:ajax event="rowUnselect" update="@form"/>
-                <p:ajax event="rowDblselect" listener="#{documentoModels.btnSeleccionarRegistro(documentoModels.registro.idDocumento)}" update=":frmFormulario"/>
+
+                <p:ajax
+                    event="rowDblselect"
+                    listener="#{documentoModels.btnSeleccionarRegistro(documentoModels.registro.idDocumento)}"
+                    update=":frmFormulario"/>
+
                 <p:column headerText="#{msg['global.id']}">
                     <h:outputText value="#{r.idDocumento}"/>
                 </p:column>
+
                 <p:column headerText="#{msg['doc.col_persona']}">
-                    <h:outputText value="#{r.idPersona.nombres} #{r.idPersona.apellidos}"/>
+                    <h:outputText
+                        value="#{r.idPersona.nombres} #{r.idPersona.apellidos}"/>
                 </p:column>
-                <p:column headerText="#{msg['doc.col_tipo']}">
+
+                <p:column headerText="#{msg['doc.col_tipo_documento']}">
                     <h:outputText value="#{r.idTipoDocumento.nombre}"/>
                 </p:column>
+
                 <p:column headerText="#{msg['doc.col_valor']}">
                     <h:outputText value="#{r.valor}"/>
                 </p:column>
-                <p:column headerText="#{msg['doc.col_ruta']}">
+
+                <p:column headerText="#{msg['doc.col_ruta_fisica']}">
                     <h:outputText value="#{r.rutaFisica}"/>
                 </p:column>
+
                 <f:facet name="footer">
-                    <p:commandButton id="btnModificar" value="#{msg['global.modificar']}" icon="pi pi-pencil" actionListener="#{documentoModels.btnSeleccionarRegistro(documentoModels.registro.idDocumento)}" update=":frmFormulario" disabled="#{empty documentoModels.registro.idDocumento}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
-                    <p:commandButton id="btnEliminar" value="#{msg['global.eliminar']}" icon="pi pi-trash" actionListener="#{documentoModels.btnEliminarHandler(documentoModels.registro.idDocumento)}" update=":mensajesGlobales:growl-sticky @form" disabled="#{empty documentoModels.registro.idDocumento}" styleClass="ui-button-danger">
-                        <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['global.msg_confirm_eliminar']}" icon="pi pi-info-circle"/>
+
+                    <p:commandButton
+                        id="btnModificar"
+                        value="#{msg['doc.btn_modificar']}"
+                        icon="pi pi-pencil"
+                        actionListener="#{documentoModels.btnSeleccionarRegistro(documentoModels.registro.idDocumento)}"
+                        update=":frmFormulario"
+                        disabled="#{empty documentoModels.registro.idDocumento}"
+                        styleClass="ui-button-warning"
+                        style="margin-right: 5px;"/>
+
+                    <p:commandButton
+                        id="btnEliminar"
+                        value="#{msg['global.eliminar']}"
+                        icon="pi pi-trash"
+                        actionListener="#{documentoModels.btnEliminarHandler(documentoModels.registro.idDocumento)}"
+                        update=":mensajesGlobales:growl-sticky @form"
+                        disabled="#{empty documentoModels.registro.idDocumento}"
+                        styleClass="ui-button-danger">
+
+                        <p:confirm
+                            header="#{msg['global.confirmacion']}"
+                            message="#{msg['doc.msg_eliminar']}"
+                            icon="pi pi-info-circle"/>
+
                     </p:commandButton>
+
                 </f:facet>
+
             </p:dataTable>
-            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                <p:commandButton value="#{msg['global.no']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                <p:commandButton value="#{msg['global.si']}" type="button" styleClass="ui-confirmdialog-yes"/>
+
+            <p:confirmDialog
+                global="true"
+                showEffect="fade"
+                hideEffect="fade"
+                responsive="true"
+                width="350">
+
+                <p:commandButton
+                    value="#{msg['global.no']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-no ui-button-flat"/>
+
+                <p:commandButton
+                    value="#{msg['global.si']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes"/>
+
             </p:confirmDialog>
+
         </h:form>
+
+
         <h:form id="frmFormulario">
-            <p:panel header="#{documentoModels.estado == 'CREAR' ? msg['global.nuevo_registro'] : msg['global.editar_registro']}" rendered="#{documentoModels.estado != 'NINGUNO'}" style="margin-top: 20px;">
+
+            <p:panel
+                header="#{documentoModels.estado == 'CREAR' ? msg['doc.modal_crear'] : msg['doc.modal_config']}"
+                rendered="#{documentoModels.estado != 'NINGUNO'}"
+                style="margin-top: 20px;">
+
                 <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel value="#{msg['global.lbl_id_autogenerado']}" rendered="#{documentoModels.estado == 'CREAR'}"/>
-                    <h:outputText value="#{documentoModels.registro.idDocumento}" rendered="#{documentoModels.estado == 'CREAR'}"/>
-                    <p:outputLabel for="cmbPersona" value="#{msg['doc.lbl_persona']}"/>
-                    <p:selectOneMenu id="cmbPersona" value="#{documentoModels.registro.idPersona}" converter="personaConverter" required="true" requiredMessage="#{msg['doc.msg_req_persona']}" filter="true" filterMatchMode="contains">
-                        <f:selectItem itemLabel="#{msg['global.seleccione']}" itemValue="#{null}" noSelectionOption="true"/>
-                        <f:selectItems value="#{personaModels.registros}" var="per" itemLabel="#{per.nombres} #{per.apellidos}" itemValue="#{per}"/>
+
+                    <p:outputLabel
+                        value="#{msg['global.codigo_id']}"
+                        rendered="#{documentoModels.estado == 'CREAR'}"/>
+
+                    <h:outputText
+                        value="#{documentoModels.registro.idDocumento}"
+                        rendered="#{documentoModels.estado == 'CREAR'}"/>
+
+                    <p:outputLabel
+                        for="cmbPersona"
+                        value="#{msg['doc.lbl_persona']}"/>
+
+                    <p:selectOneMenu
+                        id="cmbPersona"
+                        value="#{documentoModels.registro.idPersona}"
+                        converter="personaConverter"
+                        required="true"
+                        requiredMessage="#{msg['doc.msg_req_persona']}"
+                        filter="true"
+                        filterMatchMode="contains">
+
+                        <f:selectItem
+                            itemLabel="#{msg['doc.sel_persona']}"
+                            itemValue="#{null}"
+                            noSelectionOption="true"/>
+
+                        <f:selectItems
+                            value="#{personaModels.registros}"
+                            var="per"
+                            itemLabel="#{per.nombres} #{per.apellidos}"
+                            itemValue="#{per}"/>
+
                     </p:selectOneMenu>
-                    <p:outputLabel for="cmbTipoDocumento" value="#{msg['doc.lbl_tipo']}"/>
-                    <p:selectOneMenu id="cmbTipoDocumento" value="#{documentoModels.registro.idTipoDocumento}" converter="tipoDocumentoConverter" required="true" requiredMessage="#{msg['doc.msg_req_tipo']}" filter="true" filterMatchMode="contains">
-                        <p:ajax event="change" update="txtIndicacionesTipo"/>
-                        <f:selectItem itemLabel="#{msg['global.seleccione']}" itemValue="#{null}" noSelectionOption="true"/>
-                        <f:selectItems value="#{tipoDocumentoModels.registros}" var="td" itemLabel="#{td.nombre}" itemValue="#{td}"/>
+
+                    <p:outputLabel
+                        for="cmbTipoDocumento"
+                        value="#{msg['doc.lbl_tipo_documento']}"/>
+
+                    <p:selectOneMenu
+                        id="cmbTipoDocumento"
+                        value="#{documentoModels.registro.idTipoDocumento}"
+                        converter="tipoDocumentoConverter"
+                        required="true"
+                        requiredMessage="#{msg['doc.msg_req_tipo_documento']}"
+                        filter="true"
+                        filterMatchMode="contains">
+
+                        <p:ajax
+                            event="change"
+                            update="txtIndicacionesTipo"/>
+
+                        <f:selectItem
+                            itemLabel="#{msg['doc.sel_tipo_documento']}"
+                            itemValue="#{null}"
+                            noSelectionOption="true"/>
+
+                        <f:selectItems
+                            value="#{tipoDocumentoModels.registros}"
+                            var="td"
+                            itemLabel="#{td.nombre}"
+                            itemValue="#{td}"/>
+
                     </p:selectOneMenu>
+
                     <h:outputText value=""/>
-                    <h:outputText id="txtIndicacionesTipo" value="#{documentoModels.registro.idTipoDocumento.indicaciones}" style="color: gray; font-size: 0.85em;"/>
-                    <p:outputLabel for="txtValor" value="#{msg['doc.lbl_valor']}"/>
-                    <p:inputText id="txtValor" value="#{documentoModels.registro.valor}" required="true" requiredMessage="#{msg['doc.msg_req_valor']}"/>
-                    <p:outputLabel for="txtRutaFisica" value="#{msg['doc.lbl_ruta']}"/>
-                    <p:inputText id="txtRutaFisica" value="#{documentoModels.registro.rutaFisica}"/>
+
+                    <h:outputText
+                        id="txtIndicacionesTipo"
+                        value="#{documentoModels.registro.idTipoDocumento.indicaciones}"
+                        style="color: gray; font-size: 0.85em;"/>
+
+                    <p:outputLabel
+                        for="txtValor"
+                        value="#{msg['doc.lbl_valor']}"/>
+
+                    <p:inputText
+                        id="txtValor"
+                        value="#{documentoModels.registro.valor}"
+                        required="true"
+                        requiredMessage="#{msg['doc.msg_req_valor']}"/>
+
+                    <p:outputLabel
+                        for="txtRutaFisica"
+                        value="#{msg['doc.lbl_ruta_fisica']}"/>
+
+                    <p:inputText
+                        id="txtRutaFisica"
+                        value="#{documentoModels.registro.rutaFisica}"/>
+
                 </h:panelGrid>
+
                 <f:facet name="footer">
-                    <crud:botonesCrud modelo="#{documentoModels}" update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+                    <crud:botonesCrud
+                        modelo="#{documentoModels}"
+                        update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
                 </f:facet>
+
             </p:panel>
+
         </h:form>
+
     </ui:define>
+
 </ui:composition>
