@@ -10,7 +10,7 @@
             <supported-locale>en</supported-locale>
         </locale-config>
         <resource-bundle>
-            <base-name>META-INF.resources.mensajes_crud</base-name>
+            <base-name>META-INF.resources.messages</base-name>
             <var>msg</var>
         </resource-bundle>
     </application>
