@@ -1,0 +1,243 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
+                template="./general.xhtml">
+
+    <ui:define name="titulo">#{msg['personaRol.titulo']}</ui:define>
+
+    <ui:define name="cuerpo">
+
+        <h:form id="frmTabla">
+
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton
+                        value="#{msg['personaRol.btn_nuevo']}"
+                        icon="pi pi-plus"
+                        actionListener="#{personaRolModel.btnNuevoHandler}"
+                        update=":frmFormulario @form"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <p:dataTable
+                id="tablaRegistros"
+                value="#{personaRolModel.registros}"
+                var="r"
+                emptyMessage="#{msg['personaRol.msg_vacio']}"
+                paginator="true"
+                rows="10"
+                style="margin-top: 10px;"
+                selectionMode="single"
+                selection="#{personaRolModel.registro}"
+                rowKey="#{r.idPersonaRol}">
+
+                <p:ajax event="rowSelect" update="@form"/>
+                <p:ajax event="rowUnselect" update="@form"/>
+
+                <p:ajax
+                    event="rowDblselect"
+                    listener="#{personaRolModel.btnSeleccionarRegistro(personaRolModel.registro.idPersonaRol)}"
+                    update=":frmFormulario"/>
+
+                <p:column headerText="#{msg['global.id']}">
+                    <h:outputText value="#{r.idPersonaRol}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['personaRol.col_persona']}">
+                    <h:outputText
+                        value="#{r.idPersona.nombres} #{r.idPersona.apellidos}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['personaRol.col_rol']}">
+                    <h:outputText value="#{r.idRol.nombre}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['personaRol.col_clinica']}">
+                    <h:outputText value="#{r.idClinica.nombre}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['personaRol.col_fecha_creacion']}">
+                    <h:outputText value="#{r.fechaCreacion}">
+                        <f:convertDateTime
+                            pattern="dd/MM/yyyy HH:mm"
+                            timeZone="America/El_Salvador"/>
+                    </h:outputText>
+                </p:column>
+
+                <f:facet name="footer">
+
+                    <p:commandButton
+                        id="btnModificar"
+                        value="#{msg['personaRol.btn_modificar']}"
+                        icon="pi pi-pencil"
+                        actionListener="#{personaRolModel.btnSeleccionarRegistro(personaRolModel.registro.idPersonaRol)}"
+                        update=":frmFormulario"
+                        disabled="#{empty personaRolModel.registro.idPersonaRol}"
+                        styleClass="ui-button-warning"
+                        style="margin-right: 5px;"/>
+
+                    <p:commandButton
+                        id="btnEliminar"
+                        value="#{msg['global.eliminar']}"
+                        icon="pi pi-trash"
+                        actionListener="#{personaRolModel.btnEliminarHandler(personaRolModel.registro.idPersonaRol)}"
+                        update=":mensajesGlobales:growl-sticky @form"
+                        disabled="#{empty personaRolModel.registro.idPersonaRol}"
+                        styleClass="ui-button-danger">
+
+                        <p:confirm
+                            header="#{msg['global.confirmacion']}"
+                            message="#{msg['personaRol.msg_eliminar']}"
+                            icon="pi pi-info-circle"/>
+
+                    </p:commandButton>
+
+                </f:facet>
+
+            </p:dataTable>
+
+            <p:confirmDialog
+                global="true"
+                showEffect="fade"
+                hideEffect="fade"
+                responsive="true"
+                width="350">
+
+                <p:commandButton
+                    value="#{msg['global.no']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-no ui-button-flat"/>
+
+                <p:commandButton
+                    value="#{msg['global.si']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes"/>
+
+            </p:confirmDialog>
+
+        </h:form>
+
+
+        <h:form id="frmFormulario">
+
+            <p:panel
+                header="#{personaRolModel.estado == 'CREAR' ? msg['personaRol.modal_crear'] : msg['personaRol.modal_config']}"
+                rendered="#{personaRolModel.estado != 'NINGUNO'}"
+                style="margin-top: 20px;">
+
+                <h:panelGrid columns="2" cellpadding="5">
+
+                    <p:outputLabel
+                        value="#{msg['global.codigo_id']}"
+                        rendered="#{personaRolModel.estado == 'CREAR'}"/>
+
+                    <h:outputText
+                        value="#{personaRolModel.registro.idPersonaRol}"
+                        rendered="#{personaRolModel.estado == 'CREAR'}"/>
+
+
+                    <p:outputLabel
+                        for="cmbPersona"
+                        value="#{msg['personaRol.lbl_persona']}"/>
+
+                    <p:selectOneMenu
+                        id="cmbPersona"
+                        value="#{personaRolModel.registro.idPersona}"
+                        converter="personaConverter"
+                        required="true"
+                        requiredMessage="#{msg['personaRol.msg_req_persona']}">
+
+                        <f:selectItem
+                            itemLabel="#{msg['personaRol.sel_persona']}"
+                            itemValue="#{null}"
+                            noSelectionOption="true"/>
+
+                        <f:selectItems
+                            value="#{personaModel.registros}"
+                            var="p"
+                            itemLabel="#{p.nombres} #{p.apellidos}"
+                            itemValue="#{p}"/>
+
+                    </p:selectOneMenu>
+
+
+                    <p:outputLabel
+                        for="cmbRol"
+                        value="#{msg['personaRol.lbl_rol']}"/>
+
+                    <p:selectOneMenu
+                        id="cmbRol"
+                        value="#{personaRolModel.registro.idRol}"
+                        converter="rolConverter"
+                        required="true"
+                        requiredMessage="#{msg['personaRol.msg_req_rol']}">
+
+                        <f:selectItem
+                            itemLabel="#{msg['personaRol.sel_rol']}"
+                            itemValue="#{null}"
+                            noSelectionOption="true"/>
+
+                        <f:selectItems
+                            value="#{rolModel.registros}"
+                            var="r"
+                            itemLabel="#{r.nombre}"
+                            itemValue="#{r}"/>
+
+                    </p:selectOneMenu>
+
+
+                    <p:outputLabel
+                        for="cmbClinica"
+                        value="#{msg['personaRol.lbl_clinica']}"/>
+
+                    <p:selectOneMenu
+                        id="cmbClinica"
+                        value="#{personaRolModel.registro.idClinica}"
+                        converter="clinicaConverter"
+                        required="true"
+                        requiredMessage="#{msg['personaRol.msg_req_clinica']}">
+
+                        <f:selectItem
+                            itemLabel="#{msg['personaRol.sel_clinica']}"
+                            itemValue="#{null}"
+                            noSelectionOption="true"/>
+
+                        <f:selectItems
+                            value="#{clinicaModel.registros}"
+                            var="c"
+                            itemLabel="#{c.nombre}"
+                            itemValue="#{c}"/>
+
+                    </p:selectOneMenu>
+
+
+                    <p:outputLabel
+                        value="#{msg['personaRol.lbl_fecha_creacion']}"/>
+
+                    <h:outputText value="#{personaRolModel.registro.fechaCreacion}">
+                        <f:convertDateTime
+                            pattern="dd/MM/yyyy HH:mm"
+                            timeZone="America/El_Salvador"/>
+                    </h:outputText>
+
+                </h:panelGrid>
+
+
+                <f:facet name="footer">
+
+                    <crud:botonesCrud
+                        modelo="#{personaRolModel}"
+                        update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+
+                </f:facet>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

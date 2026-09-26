@@ -1,0 +1,195 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
+                template="./general.xhtml">
+
+    <ui:define name="titulo">#{msg['tipoDocumento.titulo']}</ui:define>
+
+    <ui:define name="cuerpo">
+
+        <h:form id="frmTabla">
+
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton
+                        value="#{msg['tipoDocumento.btn_nuevo']}"
+                        icon="pi pi-plus"
+                        actionListener="#{tipoDocumentoModel.btnNuevoHandler}"
+                        update=":frmFormulario @form"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <p:dataTable
+                id="tablaRegistros"
+                value="#{tipoDocumentoModel.registros}"
+                var="r"
+                emptyMessage="#{msg['tipoDocumento.msg_vacio']}"
+                paginator="true"
+                rows="10"
+                style="margin-top: 10px;"
+                selectionMode="single"
+                selection="#{tipoDocumentoModel.registro}"
+                rowKey="#{r.idTipoDocumento}">
+
+                <p:ajax event="rowSelect" update="@form"/>
+                <p:ajax event="rowUnselect" update="@form"/>
+
+                <p:ajax
+                    event="rowDblselect"
+                    listener="#{tipoDocumentoModel.btnSeleccionarRegistro(tipoDocumentoModel.registro.idTipoDocumento)}"
+                    update=":frmFormulario"/>
+
+                <p:column headerText="#{msg['global.id']}">
+                    <h:outputText value="#{r.idTipoDocumento}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['tipoDocumento.col_nombre']}">
+                    <h:outputText value="#{r.nombre}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['tipoDocumento.col_indicaciones']}">
+                    <h:outputText value="#{r.indicaciones}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['tipoDocumento.col_expresion_regular']}">
+                    <h:outputText value="#{r.expresionRegular}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['tipoDocumento.col_activo']}">
+                    <h:outputText value="#{r.activo ? 'Sí' : 'No'}"/>
+                </p:column>
+
+                <f:facet name="footer">
+
+                    <p:commandButton
+                        id="btnModificar"
+                        value="#{msg['tipoDocumento.btn_modificar']}"
+                        icon="pi pi-pencil"
+                        actionListener="#{tipoDocumentoModel.btnSeleccionarRegistro(tipoDocumentoModel.registro.idTipoDocumento)}"
+                        update=":frmFormulario"
+                        disabled="#{empty tipoDocumentoModel.registro.idTipoDocumento}"
+                        styleClass="ui-button-warning"
+                        style="margin-right: 5px;"/>
+
+                    <p:commandButton
+                        id="btnEliminar"
+                        value="#{msg['global.eliminar']}"
+                        icon="pi pi-trash"
+                        actionListener="#{tipoDocumentoModel.btnEliminarHandler(tipoDocumentoModel.registro.idTipoDocumento)}"
+                        update=":mensajesGlobales:growl-sticky @form"
+                        disabled="#{empty tipoDocumentoModel.registro.idTipoDocumento}"
+                        styleClass="ui-button-danger">
+
+                        <p:confirm
+                            header="#{msg['global.confirmacion']}"
+                            message="#{msg['tipoDocumento.msg_eliminar']}"
+                            icon="pi pi-info-circle"/>
+
+                    </p:commandButton>
+
+                </f:facet>
+
+            </p:dataTable>
+
+            <p:confirmDialog
+                global="true"
+                showEffect="fade"
+                hideEffect="fade"
+                responsive="true"
+                width="350">
+
+                <p:commandButton
+                    value="#{msg['global.no']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-no ui-button-flat"/>
+
+                <p:commandButton
+                    value="#{msg['global.si']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes"/>
+
+            </p:confirmDialog>
+
+        </h:form>
+
+
+        <h:form id="frmFormulario">
+
+            <p:panel
+                header="#{tipoDocumentoModel.estado == 'CREAR' ? msg['tipoDocumento.modal_crear'] : msg['tipoDocumento.modal_config']}"
+                rendered="#{tipoDocumentoModel.estado != 'NINGUNO'}"
+                style="margin-top: 20px;">
+
+                <h:panelGrid columns="2" cellpadding="5">
+
+                    <p:outputLabel
+                        value="#{msg['global.codigo_id']}"
+                        rendered="#{tipoDocumentoModel.estado == 'CREAR'}"/>
+
+                    <h:outputText
+                        value="#{tipoDocumentoModel.registro.idTipoDocumento}"
+                        rendered="#{tipoDocumentoModel.estado == 'CREAR'}"/>
+
+
+                    <p:outputLabel
+                        for="txtNombre"
+                        value="#{msg['tipoDocumento.lbl_nombre']}"/>
+
+                    <p:inputText
+                        id="txtNombre"
+                        value="#{tipoDocumentoModel.registro.nombre}"
+                        required="true"
+                        requiredMessage="#{msg['tipoDocumento.msg_req_nombre']}"
+                        maxlength="155"/>
+
+
+                    <p:outputLabel
+                        for="txtIndicaciones"
+                        value="#{msg['tipoDocumento.lbl_indicaciones']}"/>
+
+                    <p:inputTextarea
+                        id="txtIndicaciones"
+                        value="#{tipoDocumentoModel.registro.indicaciones}"
+                        rows="4"
+                        maxlength="500"
+                        autoResize="false"/>
+
+
+                    <p:outputLabel
+                        for="txtExpresionRegular"
+                        value="#{msg['tipoDocumento.lbl_expresion_regular']}"/>
+
+                    <p:inputText
+                        id="txtExpresionRegular"
+                        value="#{tipoDocumentoModel.registro.expresionRegular}"
+                        maxlength="500"/>
+
+
+                    <p:outputLabel
+                        for="chkActivo"
+                        value="#{msg['tipoDocumento.lbl_activo']}"/>
+
+                    <p:selectBooleanCheckbox
+                        id="chkActivo"
+                        value="#{tipoDocumentoModel.registro.activo}"/>
+
+                </h:panelGrid>
+
+                <f:facet name="footer">
+
+                    <crud:botonesCrud
+                        modelo="#{tipoDocumentoModel}"
+                        update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+
+                </f:facet>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
