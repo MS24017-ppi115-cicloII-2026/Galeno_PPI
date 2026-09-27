@@ -1,5 +1,4 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
- 
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
