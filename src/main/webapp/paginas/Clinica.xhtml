@@ -1,0 +1,195 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
+                template="./general.xhtml">
+
+    <ui:define name="titulo">#{msg['clinica.titulo']}</ui:define>
+
+    <ui:define name="cuerpo">
+
+        <h:form id="frmTabla">
+
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton
+                        value="#{msg['clinica.btn_nuevo']}"
+                        icon="pi pi-plus"
+                        actionListener="#{clinicaModel.btnNuevoHandler}"
+                        update=":frmFormulario @form"/>
+                </p:toolbarGroup>
+            </p:toolbar>
+
+            <p:dataTable
+                id="tablaRegistros"
+                value="#{clinicaModel.registros}"
+                var="r"
+                emptyMessage="#{msg['clinica.msg_vacio']}"
+                paginator="true"
+                rows="10"
+                style="margin-top: 10px;"
+                selectionMode="single"
+                selection="#{clinicaModel.registro}"
+                rowKey="#{r.idClinica}">
+
+                <p:ajax event="rowSelect" update="@form"/>
+                <p:ajax event="rowUnselect" update="@form"/>
+
+                <p:ajax
+                    event="rowDblselect"
+                    listener="#{clinicaModel.btnSeleccionarRegistro(clinicaModel.registro.idClinica)}"
+                    update=":frmFormulario"/>
+
+                <p:column headerText="#{msg['global.id']}">
+                    <h:outputText value="#{r.idClinica}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['clinica.col_nombre']}">
+                    <h:outputText value="#{r.nombre}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['clinica.col_tipo']}">
+                    <h:outputText value="#{r.tipo}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['clinica.col_activo']}">
+                    <h:outputText value="#{r.activo ? 'Sí' : 'No'}"/>
+                </p:column>
+
+                <p:column headerText="#{msg['clinica.col_comentarios']}">
+                    <h:outputText value="#{r.comentarios}"/>
+                </p:column>
+
+                <f:facet name="footer">
+
+                    <p:commandButton
+                        id="btnModificar"
+                        value="#{msg['clinica.btn_modificar']}"
+                        icon="pi pi-pencil"
+                        actionListener="#{clinicaModel.btnSeleccionarRegistro(clinicaModel.registro.idClinica)}"
+                        update=":frmFormulario"
+                        disabled="#{empty clinicaModel.registro.idClinica}"
+                        styleClass="ui-button-warning"
+                        style="margin-right: 5px;"/>
+
+                    <p:commandButton
+                        id="btnEliminar"
+                        value="#{msg['global.eliminar']}"
+                        icon="pi pi-trash"
+                        actionListener="#{clinicaModel.btnEliminarHandler(clinicaModel.registro.idClinica)}"
+                        update=":mensajesGlobales:growl-sticky @form"
+                        disabled="#{empty clinicaModel.registro.idClinica}"
+                        styleClass="ui-button-danger">
+
+                        <p:confirm
+                            header="#{msg['global.confirmacion']}"
+                            message="#{msg['clinica.msg_eliminar']}"
+                            icon="pi pi-info-circle"/>
+
+                    </p:commandButton>
+
+                </f:facet>
+
+            </p:dataTable>
+
+            <p:confirmDialog
+                global="true"
+                showEffect="fade"
+                hideEffect="fade"
+                responsive="true"
+                width="350">
+
+                <p:commandButton
+                    value="#{msg['global.no']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-no ui-button-flat"/>
+
+                <p:commandButton
+                    value="#{msg['global.si']}"
+                    type="button"
+                    styleClass="ui-confirmdialog-yes"/>
+
+            </p:confirmDialog>
+
+        </h:form>
+
+
+        <h:form id="frmFormulario">
+
+            <p:panel
+                header="#{clinicaModel.estado == 'CREAR' ? msg['clinica.modal_crear'] : msg['clinica.modal_config']}"
+                rendered="#{clinicaModel.estado != 'NINGUNO'}"
+                style="margin-top: 20px;">
+
+                <h:panelGrid columns="2" cellpadding="5">
+
+                    <p:outputLabel
+                        value="#{msg['global.codigo_id']}"
+                        rendered="#{clinicaModel.estado == 'CREAR'}"/>
+
+                    <h:outputText
+                        value="#{clinicaModel.registro.idClinica}"
+                        rendered="#{clinicaModel.estado == 'CREAR'}"/>
+
+
+                    <p:outputLabel
+                        for="txtNombre"
+                        value="#{msg['clinica.lbl_nombre']}"/>
+
+                    <p:inputText
+                        id="txtNombre"
+                        value="#{clinicaModel.registro.nombre}"
+                        required="true"
+                        requiredMessage="#{msg['clinica.msg_req_nombre']}"
+                        maxlength="100"/>
+
+
+                    <p:outputLabel
+                        for="txtTipo"
+                        value="#{msg['clinica.lbl_tipo']}"/>
+
+                    <p:inputText
+                        id="txtTipo"
+                        value="#{clinicaModel.registro.tipo}"
+                        maxlength="50"/>
+
+
+                    <p:outputLabel
+                        for="chkActivo"
+                        value="#{msg['clinica.lbl_activo']}"/>
+
+                    <p:selectBooleanCheckbox
+                        id="chkActivo"
+                        value="#{clinicaModel.registro.activo}"/>
+
+
+                    <p:outputLabel
+                        for="txtComentarios"
+                        value="#{msg['clinica.lbl_comentarios']}"/>
+
+                    <p:inputTextarea
+                        id="txtComentarios"
+                        value="#{clinicaModel.registro.comentarios}"
+                        rows="4"
+                        maxlength="500"
+                        autoResize="false"/>
+
+                </h:panelGrid>
+
+                <f:facet name="footer">
+
+                    <crud:botonesCrud
+                        modelo="#{clinicaModel}"
+                        update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
+
+                </f:facet>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
