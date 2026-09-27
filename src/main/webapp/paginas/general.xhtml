@@ -5,7 +5,7 @@
       xmlns:ui="jakarta.faces.facelets"
       xmlns:f="jakarta.faces.core"
       xmlns:p="http://primefaces.org/ui">
-    <f:view locale="#{localeBean.idiomaCodigo}">
+    <f:view locale="#{localeBean.idioma}">
         <h:head>
             <title><ui:insert name="titulo">GalenoSV</ui:insert></title>
         </h:head>
@@ -41,6 +41,7 @@
                                     <p:submenu label="#{msg['menu.idioma']}" icon="pi pi-globe">
                                         <p:menuitem value="Espa&#241;ol" action="#{localeBean.cambiarIdioma('es')}" ajax="false"/>
                                         <p:menuitem value="English" action="#{localeBean.cambiarIdioma('en')}" ajax="false"/>
+                                        <p:menuitem value="&#20013;&#25991;&#65288;&#31616;&#20307;&#65289;" action="#{localeBean.cambiarIdioma('zh_CN')}" ajax="false"/>
                                     </p:submenu>
                                     <p:menuitem value="#{msg['menu.iniciar_sesion']}" icon="pi pi-user" disabled="true"/>
                                 </p:menubar>

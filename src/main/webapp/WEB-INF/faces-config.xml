@@ -8,6 +8,7 @@
             <default-locale>es</default-locale>
             <supported-locale>es</supported-locale>
             <supported-locale>en</supported-locale>
+            <supported-locale>zh_CN</supported-locale>
         </locale-config>
         <resource-bundle>
             <base-name>META-INF.resources.messages</base-name>

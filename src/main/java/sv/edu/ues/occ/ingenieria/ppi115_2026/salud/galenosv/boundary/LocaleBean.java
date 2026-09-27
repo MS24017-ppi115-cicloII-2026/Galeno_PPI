@@ -23,7 +23,8 @@ public class LocaleBean implements Serializable {
     }
 
     public void cambiarIdioma(String idiomaNuevo) {
-    this.idioma = new Locale(idiomaNuevo);
+    String[] partes = idiomaNuevo.split("_");
+    this.idioma = (partes.length == 2) ? new Locale(partes[0], partes[1]) : new Locale(idiomaNuevo);
     FacesContext fc = FacesContext.getCurrentInstance();
     fc.getViewRoot().setLocale(this.idioma);
     fc.getExternalContext().getSessionMap().put("localeSesion", this.idioma);
