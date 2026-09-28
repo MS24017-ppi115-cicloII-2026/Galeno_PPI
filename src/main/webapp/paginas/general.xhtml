@@ -10,38 +10,32 @@
             <title><ui:insert name="titulo">GalenoSV</ui:insert></title>
         </h:head>
         <h:body>
-            <!--Mensajes globales para que los CRUDs puedan mostrar notificaciones -->
             <h:form id="mensajesGlobales">
                 <p:growl id="growl-sticky" showDetail="true" />
             </h:form>
 
-            <!-- Contenedor Principal del Grid de PrimeFaces -->
             <div class="ui-g">
 
-                <!-- ÁREA 1: ENCABEZADO -->
                 <div class="ui-g-12" style="padding:0; margin-bottom: 10px;">
-                    <!-- Columna Izquierda (Vacía para centrar el diseño) -->
                     <div class="ui-g-12 ui-md-4">
                         <ui:insert name="encabezado_institucion">
                         </ui:insert>
                     </div>
 
-                    <!-- Columna Central (Logo más grande) -->
                     <div class="ui-g-12 ui-md-4" style="text-align: center;">
                         <ui:insert name="encabezado">
                             <h:graphicImage library="imagenes" name="logogaleno.jpeg" alt="Logo GalenoSV" style="width: 280px;" />
                         </ui:insert>
                     </div>
 
-                    <!-- Columna Derecha (Idioma + Login visual) -->
                     <div class="ui-g-12 ui-md-4" style="text-align: right;">
                         <ui:insert name="menuusuario">
                             <h:form id="frmMenuUsuario">
                                 <p:menubar style="display: inline-flex; float: right;">
                                     <p:submenu label="#{msg['menu.idioma']}" icon="pi pi-globe">
-                                        <p:menuitem value="Espa&#241;ol" action="#{localeBean.cambiarIdioma('es')}" ajax="false"/>
-                                        <p:menuitem value="English" action="#{localeBean.cambiarIdioma('en')}" ajax="false"/>
-                                        <p:menuitem value="&#20013;&#25991;&#65288;&#31616;&#20307;&#65289;" action="#{localeBean.cambiarIdioma('zh_CN')}" ajax="false"/>
+                                        <p:menuitem value="#{msg['menu.idioma.es']}" action="#{localeBean.cambiarIdioma('es')}"    ajax="false"/>
+                                        <p:menuitem value="#{msg['menu.idioma.en']}" action="#{localeBean.cambiarIdioma('en')}"    ajax="false"/>
+                                        <p:menuitem value="#{msg['menu.idioma.zh']}" action="#{localeBean.cambiarIdioma('zh_CN')}" ajax="false"/>
                                     </p:submenu>
                                     <p:menuitem value="#{msg['menu.iniciar_sesion']}" icon="pi pi-user" disabled="true"/>
                                 </p:menubar>
@@ -50,10 +44,8 @@
                     </div>
                 </div>
 
-                <!-- ÁREA 2: MENÚ LATERAL Y CONTENIDO CENTRAL -->
                 <div class="ui-g-12" style="padding:0;">
 
-                    <!-- Menú Izquierdo -->
                     <div class="ui-g-12 ui-md-2" style="padding-top: 20px;">
                         <ui:insert name="menuprincipal">
                             <h:form id="frmMenuPrincipal">
@@ -63,50 +55,31 @@
                                     </p:submenu>
 
                                     <p:submenu label="Gestión de Exámenes">
-                                        <p:menuitem value="Tipos de Examen" icon="pi pi-tags" outcome="/paginas/TipoExamen.xhtml" />
-                                        <p:menuitem value="Exámenes" icon="pi pi-file" outcome="/paginas/Examen.xhtml" />
-                                        <p:menuitem value="Examen / Tipo" icon="pi pi-link" outcome="/paginas/ExamenTipoExamen.xhtml" />
+                                        <p:menuitem value="Tipos de Examen" icon="pi pi-tags"  outcome="/paginas/TipoExamen.xhtml" />
+                                        <p:menuitem value="Exámenes"        icon="pi pi-file"  outcome="/paginas/Examen.xhtml" />
+                                        <p:menuitem value="Examen / Tipo"   icon="pi pi-link"  outcome="/paginas/ExamenTipoExamen.xhtml" />
                                     </p:submenu>
 
                                     <p:submenu label="Procedimientos Médicos">
-                                        <p:menuitem value="Procedimientos" icon="pi pi-briefcase" outcome="/paginas/Procedimiento.xhtml" />
-                                        <p:menuitem value="Pasos" icon="pi pi-list" outcome="/paginas/ProcedimientoPaso.xhtml" />
-                                        <p:menuitem value="Pasos por Examen" icon="pi pi-check-square" outcome="/paginas/ProcedimientoPasoExamen.xhtml" />
-                                        <p:menuitem value="Secuencias" icon="pi pi-sort-numeric-down" outcome="/paginas/ProcedimientoPasoSecuencia.xhtml" />
+                                        <p:menuitem value="Procedimientos" icon="pi pi-briefcase"        outcome="/paginas/Procedimiento.xhtml" />
+                                        <p:menuitem value="Pasos"          icon="pi pi-list"             outcome="/paginas/ProcedimientoPaso.xhtml" />
+                                        <p:menuitem value="Pasos por Examen" icon="pi pi-check-square"   outcome="/paginas/ProcedimientoPasoExamen.xhtml" />
+                                        <p:menuitem value="Secuencias"     icon="pi pi-sort-numeric-down" outcome="/paginas/ProcedimientoPasoSecuencia.xhtml" />
                                     </p:submenu>
+
                                     <p:submenu label="Consultas y Resultados">
-
-                                        <p:menuitem value="Documentos"
-                                                    icon="pi pi-file"
-                                                    outcome="/paginas/Documento.xhtml" />
-
-                                        <p:menuitem value="Consultas"
-                                                    icon="pi pi-search"
-                                                    outcome="/paginas/Consulta.xhtml" />
-
-                                        <p:menuitem value="Consulta / Procedimiento"
-                                                    icon="pi pi-link"
-                                                    outcome="/paginas/ConsultaProcedimiento.xhtml" />
-
-                                        <p:menuitem value="Consulta / Procedimiento / Paso"
-                                                    icon="pi pi-list"
-                                                    outcome="/paginas/ConsultaProcedimientoPaso.xhtml" />
-
-                                        <p:menuitem value="Órdenes de Examen"
-                                                    icon="pi pi-file-edit"
-                                                    outcome="/paginas/OrdenExamen.xhtml" />
-
-                                        <p:menuitem value="Resultados de Examen"
-                                                    icon="pi pi-check-circle"
-                                                    outcome="/paginas/ExamenResultado.xhtml" />
-
+                                        <p:menuitem value="Documentos"                    icon="pi pi-file"        outcome="/paginas/Documento.xhtml" />
+                                        <p:menuitem value="Consultas"                     icon="pi pi-search"      outcome="/paginas/Consulta.xhtml" />
+                                        <p:menuitem value="Consulta / Procedimiento"      icon="pi pi-link"        outcome="/paginas/ConsultaProcedimiento.xhtml" />
+                                        <p:menuitem value="Consulta / Procedimiento / Paso" icon="pi pi-list"      outcome="/paginas/ConsultaProcedimientoPaso.xhtml" />
+                                        <p:menuitem value="Órdenes de Examen"             icon="pi pi-file-edit"   outcome="/paginas/OrdenExamen.xhtml" />
+                                        <p:menuitem value="Resultados de Examen"          icon="pi pi-check-circle" outcome="/paginas/ExamenResultado.xhtml" />
                                     </p:submenu>
                                 </p:menu>
                             </h:form>
                         </ui:insert>
                     </div>
 
-                    <!-- Cuerpo Central -->
                     <div class="ui-g-12 ui-md-10" style="padding: 20px;">
                         <ui:insert name="cuerpo">
                             Contenido por defecto
@@ -115,7 +88,6 @@
 
                 </div>
 
-                <!-- ÁREA 3: PIE DE PÁGINA -->
                 <div class="ui-g-12" style="padding:0; text-align: center; margin-top: 20px; border-top: 1px solid #ccc;">
                     <ui:insert name="pie">
                         <p style="color: gray;">© 2026 GalenoSV</p>
