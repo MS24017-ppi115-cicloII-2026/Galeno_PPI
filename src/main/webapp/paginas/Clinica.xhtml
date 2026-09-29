@@ -17,21 +17,21 @@
                     <p:commandButton
                         value="#{msg['clinica.btn_nuevo']}"
                         icon="pi pi-plus"
-                        actionListener="#{clinicaModel.btnNuevoHandler}"
+                        actionListener="#{clinicaModels.btnNuevoHandler}"
                         update=":frmFormulario @form"/>
                 </p:toolbarGroup>
             </p:toolbar>
 
             <p:dataTable
                 id="tablaRegistros"
-                value="#{clinicaModel.registros}"
+                value="#{clinicaModels.registros}"
                 var="r"
                 emptyMessage="#{msg['clinica.msg_vacio']}"
                 paginator="true"
                 rows="10"
                 style="margin-top: 10px;"
                 selectionMode="single"
-                selection="#{clinicaModel.registro}"
+                selection="#{clinicaModels.registro}"
                 rowKey="#{r.idClinica}">
 
                 <p:ajax event="rowSelect" update="@form"/>
@@ -39,7 +39,7 @@
 
                 <p:ajax
                     event="rowDblselect"
-                    listener="#{clinicaModel.btnSeleccionarRegistro(clinicaModel.registro.idClinica)}"
+                    listener="#{clinicaModels.btnSeleccionarRegistro(clinicaModels.registro.idClinica)}"
                     update=":frmFormulario"/>
 
                 <p:column headerText="#{msg['global.id']}">
@@ -68,9 +68,9 @@
                         id="btnModificar"
                         value="#{msg['clinica.btn_modificar']}"
                         icon="pi pi-pencil"
-                        actionListener="#{clinicaModel.btnSeleccionarRegistro(clinicaModel.registro.idClinica)}"
+                        actionListener="#{clinicaModels.btnSeleccionarRegistro(clinicaModels.registro.idClinica)}"
                         update=":frmFormulario"
-                        disabled="#{empty clinicaModel.registro.idClinica}"
+                        disabled="#{empty clinicaModels.registro.idClinica}"
                         styleClass="ui-button-warning"
                         style="margin-right: 5px;"/>
 
@@ -78,9 +78,9 @@
                         id="btnEliminar"
                         value="#{msg['global.eliminar']}"
                         icon="pi pi-trash"
-                        actionListener="#{clinicaModel.btnEliminarHandler(clinicaModel.registro.idClinica)}"
+                        actionListener="#{clinicaModels.btnEliminarHandler(clinicaModels.registro.idClinica)}"
                         update=":mensajesGlobales:growl-sticky @form"
-                        disabled="#{empty clinicaModel.registro.idClinica}"
+                        disabled="#{empty clinicaModels.registro.idClinica}"
                         styleClass="ui-button-danger">
 
                         <p:confirm
@@ -119,19 +119,19 @@
         <h:form id="frmFormulario">
 
             <p:panel
-                header="#{clinicaModel.estado == 'CREAR' ? msg['clinica.modal_crear'] : msg['clinica.modal_config']}"
-                rendered="#{clinicaModel.estado != 'NINGUNO'}"
+                header="#{clinicaModels.estado == 'CREAR' ? msg['clinica.modal_crear'] : msg['clinica.modal_config']}"
+                rendered="#{clinicaModels.estado != 'NINGUNO'}"
                 style="margin-top: 20px;">
 
                 <h:panelGrid columns="2" cellpadding="5">
 
                     <p:outputLabel
                         value="#{msg['global.codigo_id']}"
-                        rendered="#{clinicaModel.estado == 'CREAR'}"/>
+                        rendered="#{clinicaModels.estado == 'CREAR'}"/>
 
                     <h:outputText
-                        value="#{clinicaModel.registro.idClinica}"
-                        rendered="#{clinicaModel.estado == 'CREAR'}"/>
+                        value="#{clinicaModels.registro.idClinica}"
+                        rendered="#{clinicaModels.estado == 'CREAR'}"/>
 
 
                     <p:outputLabel
@@ -140,7 +140,7 @@
 
                     <p:inputText
                         id="txtNombre"
-                        value="#{clinicaModel.registro.nombre}"
+                        value="#{clinicaModels.registro.nombre}"
                         required="true"
                         requiredMessage="#{msg['clinica.msg_req_nombre']}"
                         maxlength="100"/>
@@ -152,7 +152,7 @@
 
                     <p:inputText
                         id="txtTipo"
-                        value="#{clinicaModel.registro.tipo}"
+                        value="#{clinicaModels.registro.tipo}"
                         maxlength="50"/>
 
 
@@ -162,7 +162,7 @@
 
                     <p:selectBooleanCheckbox
                         id="chkActivo"
-                        value="#{clinicaModel.registro.activo}"/>
+                        value="#{clinicaModels.registro.activo}"/>
 
 
                     <p:outputLabel
@@ -171,7 +171,7 @@
 
                     <p:inputTextarea
                         id="txtComentarios"
-                        value="#{clinicaModel.registro.comentarios}"
+                        value="#{clinicaModels.registro.comentarios}"
                         rows="4"
                         maxlength="500"
                         autoResize="false"/>
@@ -181,7 +181,7 @@
                 <f:facet name="footer">
 
                     <crud:botonesCrud
-                        modelo="#{clinicaModel}"
+                        modelo="#{clinicaModels}"
                         update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
 
                 </f:facet>

@@ -1,0 +1,535 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="jakarta.faces.core"
+    template="./general.xhtml">
+
+    <ui:define name="titulo">
+        GalenoSV - Inicio
+    </ui:define>
+
+
+    <ui:define name="cuerpo">
+
+        <!-- ENCABEZADO DE BIENVENIDA -->
+        <div class="ui-g">
+
+            <div class="ui-g-12">
+
+                <p:panel
+                    style="
+                        border-radius: 12px;
+                        border: none;
+                        box-shadow: 0 3px 12px rgba(0,0,0,0.10);
+                        background: linear-gradient(135deg, #f8fbff, #eef5ff);
+                        margin-bottom: 20px;">
+
+                    <div style="padding: 10px 15px;">
+
+                        <p style="
+                            margin: 0 0 8px 0;
+                            font-size: 14px;
+                            color: #607d8b;
+                            font-weight: 600;">
+                            SISTEMA DE GESTIÓN MÉDICA
+                        </p>
+
+                        <h1 style="
+                            margin: 0;
+                            font-size: 32px;
+                            color: #263238;
+                            font-weight: 700;">
+                            Bienvenido a GalenoSV
+                        </h1>
+
+                        <p style="
+                            margin: 12px 0 0 0;
+                            font-size: 16px;
+                            line-height: 1.6;
+                            color: #546e7a;
+                            max-width: 900px;">
+                            Sistema diseñado para centralizar y facilitar la gestión
+                            de información clínica, pacientes, exámenes, procedimientos
+                            y consultas desde un solo lugar.
+                        </p>
+
+                    </div>
+
+                </p:panel>
+
+            </div>
+
+
+            <!-- ESTADÍSTICAS -->
+            <div class="ui-g-12 ui-md-4">
+
+                <p:panel
+                    style="
+                        border-radius: 10px;
+                        border: none;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                        height: 100%;">
+
+                    <div style="display: flex; align-items: center;">
+
+                        <div style="
+                            background: #e3f2fd;
+                            border-radius: 10px;
+                            width: 55px;
+                            height: 55px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-right: 15px;">
+
+                            <i
+                                class="pi pi-users"
+                                style="font-size: 24px; color: #1976d2;">
+                            </i>
+
+                        </div>
+
+                        <div>
+                            <div style="
+                                font-size: 13px;
+                                color: #78909c;">
+                                Pacientes
+                            </div>
+
+                            <div style="
+                                font-size: 25px;
+                                font-weight: bold;
+                                color: #263238;">
+                                Gestión centralizada
+                            </div>
+                        </div>
+
+                    </div>
+
+                </p:panel>
+
+            </div>
+
+
+            <div class="ui-g-12 ui-md-4">
+
+                <p:panel
+                    style="
+                        border-radius: 10px;
+                        border: none;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                        height: 100%;">
+
+                    <div style="display: flex; align-items: center;">
+
+                        <div style="
+                            background: #e0f2f1;
+                            border-radius: 10px;
+                            width: 55px;
+                            height: 55px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-right: 15px;">
+
+                            <i
+                                class="pi pi-file"
+                                style="font-size: 24px; color: #00897b;">
+                            </i>
+
+                        </div>
+
+                        <div>
+                            <div style="
+                                font-size: 13px;
+                                color: #78909c;">
+                                Expedientes
+                            </div>
+
+                            <div style="
+                                font-size: 25px;
+                                font-weight: bold;
+                                color: #263238;">
+                                Información organizada
+                            </div>
+                        </div>
+
+                    </div>
+
+                </p:panel>
+
+            </div>
+
+
+            <div class="ui-g-12 ui-md-4">
+
+                <p:panel
+                    style="
+                        border-radius: 10px;
+                        border: none;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                        height: 100%;">
+
+                    <div style="display: flex; align-items: center;">
+
+                        <div style="
+                            background: #fff3e0;
+                            border-radius: 10px;
+                            width: 55px;
+                            height: 55px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-right: 15px;">
+
+                            <i
+                                class="pi pi-shield"
+                                style="font-size: 24px; color: #ef6c00;">
+                            </i>
+
+                        </div>
+
+                        <div>
+                            <div style="
+                                font-size: 13px;
+                                color: #78909c;">
+                                Administración
+                            </div>
+
+                            <div style="
+                                font-size: 25px;
+                                font-weight: bold;
+                                color: #263238;">
+                                Procesos integrados
+                            </div>
+                        </div>
+
+                    </div>
+
+                </p:panel>
+
+            </div>
+
+
+            <!-- FUNCIONES PRINCIPALES -->
+            <div class="ui-g-12">
+
+                <p:panel
+                    header="Módulos principales"
+                    style="
+                        border-radius: 10px;
+                        border: none;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                        margin-top: 10px;">
+
+                    <p style="
+                        margin: 0 0 20px 0;
+                        color: #607d8b;
+                        font-size: 15px;">
+                        Desde el menú lateral puedes acceder a los diferentes módulos
+                        del sistema.
+                    </p>
+
+
+                    <div class="ui-g">
+
+                        <!-- PERSONAS -->
+                        <div class="ui-g-12 ui-md-6 ui-lg-3">
+
+                            <p:panel
+                                style="
+                                    border-radius: 10px;
+                                    border: 1px solid #e0e0e0;
+                                    box-shadow: none;
+                                    text-align: center;
+                                    height: 100%;">
+
+                                <i
+                                    class="pi pi-users"
+                                    style="
+                                        font-size: 34px;
+                                        color: #1976d2;
+                                        margin-bottom: 12px;">
+                                </i>
+
+                                <h3 style="
+                                    margin: 0 0 8px 0;
+                                    color: #37474f;">
+                                    Personas
+                                </h3>
+
+                                <p style="
+                                    margin: 0 0 15px 0;
+                                    color: #78909c;
+                                    font-size: 14px;
+                                    line-height: 1.5;">
+                                    Administración de personas,
+                                    documentos y medios de contacto.
+                                </p>
+
+                                <p:button
+                                    value="Ir a Personas"
+                                    icon="pi pi-arrow-right"
+                                    outcome="/paginas/Persona.xhtml"
+                                    styleClass="ui-button-outlined"/>
+
+                            </p:panel>
+
+                        </div>
+
+
+                        <!-- CLÍNICAS -->
+                        <div class="ui-g-12 ui-md-6 ui-lg-3">
+
+                            <p:panel
+                                style="
+                                    border-radius: 10px;
+                                    border: 1px solid #e0e0e0;
+                                    box-shadow: none;
+                                    text-align: center;
+                                    height: 100%;">
+
+                                <i
+                                    class="pi pi-building"
+                                    style="
+                                        font-size: 34px;
+                                        color: #00897b;
+                                        margin-bottom: 12px;">
+                                </i>
+
+                                <h3 style="
+                                    margin: 0 0 8px 0;
+                                    color: #37474f;">
+                                    Clínicas
+                                </h3>
+
+                                <p style="
+                                    margin: 0 0 15px 0;
+                                    color: #78909c;
+                                    font-size: 14px;
+                                    line-height: 1.5;">
+                                    Consulta y administración
+                                    de las clínicas registradas.
+                                </p>
+
+                                <p:button
+                                    value="Ir a Clínicas"
+                                    icon="pi pi-arrow-right"
+                                    outcome="/paginas/Clinica.xhtml"
+                                    styleClass="ui-button-outlined"/>
+
+                            </p:panel>
+
+                        </div>
+
+
+                        <!-- EXÁMENES -->
+                        <div class="ui-g-12 ui-md-6 ui-lg-3">
+
+                            <p:panel
+                                style="
+                                    border-radius: 10px;
+                                    border: 1px solid #e0e0e0;
+                                    box-shadow: none;
+                                    text-align: center;
+                                    height: 100%;">
+
+                                <i
+                                    class="pi pi-file"
+                                    style="
+                                        font-size: 34px;
+                                        color: #7e57c2;
+                                        margin-bottom: 12px;">
+                                </i>
+
+                                <h3 style="
+                                    margin: 0 0 8px 0;
+                                    color: #37474f;">
+                                    Exámenes
+                                </h3>
+
+                                <p style="
+                                    margin: 0 0 15px 0;
+                                    color: #78909c;
+                                    font-size: 14px;
+                                    line-height: 1.5;">
+                                    Gestión de exámenes
+                                    y sus tipos asociados.
+                                </p>
+
+                                <p:button
+                                    value="Ir a Exámenes"
+                                    icon="pi pi-arrow-right"
+                                    outcome="/paginas/Examen.xhtml"
+                                    styleClass="ui-button-outlined"/>
+
+                            </p:panel>
+
+                        </div>
+
+
+                        <!-- PROCEDIMIENTOS -->
+                        <div class="ui-g-12 ui-md-6 ui-lg-3">
+
+                            <p:panel
+                                style="
+                                    border-radius: 10px;
+                                    border: 1px solid #e0e0e0;
+                                    box-shadow: none;
+                                    text-align: center;
+                                    height: 100%;">
+
+                                <i
+                                    class="pi pi-briefcase"
+                                    style="
+                                        font-size: 34px;
+                                        color: #ef6c00;
+                                        margin-bottom: 12px;">
+                                </i>
+
+                                <h3 style="
+                                    margin: 0 0 8px 0;
+                                    color: #37474f;">
+                                    Procedimientos
+                                </h3>
+
+                                <p style="
+                                    margin: 0 0 15px 0;
+                                    color: #78909c;
+                                    font-size: 14px;
+                                    line-height: 1.5;">
+                                    Administración de procedimientos
+                                    y pasos médicos.
+                                </p>
+
+                                <p:button
+                                    value="Ir a Procedimientos"
+                                    icon="pi pi-arrow-right"
+                                    outcome="/paginas/Procedimiento.xhtml"
+                                    styleClass="ui-button-outlined"/>
+
+                            </p:panel>
+
+                        </div>
+
+                    </div>
+
+                </p:panel>
+
+            </div>
+
+
+            <!-- INFORMACIÓN DEL SISTEMA -->
+            <div class="ui-g-12 ui-md-8">
+
+                <p:panel
+                    header="Sobre GalenoSV"
+                    style="
+                        border-radius: 10px;
+                        border: none;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                        margin-top: 10px;
+                        height: 100%;">
+
+                    <p style="
+                        color: #546e7a;
+                        line-height: 1.7;
+                        margin-top: 0;">
+                        GalenoSV es una plataforma orientada a la gestión de
+                        información médica y administrativa. Su objetivo es
+                        centralizar los diferentes elementos relacionados con
+                        la atención de pacientes y facilitar el acceso a la
+                        información desde una interfaz organizada.
+                    </p>
+
+                    <p style="
+                        color: #546e7a;
+                        line-height: 1.7;">
+                        Utiliza el menú lateral para navegar entre los
+                        diferentes módulos disponibles.
+                    </p>
+
+                </p:panel>
+
+            </div>
+
+
+            <!-- ACCESO RÁPIDO -->
+            <div class="ui-g-12 ui-md-4">
+
+                <p:panel
+                    header="Acceso rápido"
+                    style="
+                        border-radius: 10px;
+                        border: none;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                        margin-top: 10px;
+                        height: 100%;">
+
+                    <p:menu style="width: 100%;">
+
+                        <p:menuitem
+                            value="Personas"
+                            icon="pi pi-user"
+                            outcome="/paginas/Persona.xhtml"/>
+
+                        <p:menuitem
+                            value="Clínicas"
+                            icon="pi pi-building"
+                            outcome="/paginas/Clinica.xhtml"/>
+
+                        <p:menuitem
+                            value="Exámenes"
+                            icon="pi pi-file"
+                            outcome="/paginas/Examen.xhtml"/>
+
+                        <p:menuitem
+                            value="Procedimientos"
+                            icon="pi pi-briefcase"
+                            outcome="/paginas/Procedimiento.xhtml"/>
+
+                    </p:menu>
+
+                </p:panel>
+
+            </div>
+
+
+            <!-- MENSAJE FINAL -->
+            <div class="ui-g-12">
+
+                <p:panel
+                    style="
+                        border-radius: 10px;
+                        border: none;
+                        background: #f8f9fa;
+                        margin-top: 10px;
+                        text-align: center;">
+
+                    <p style="
+                        margin: 5px 0;
+                        color: #607d8b;
+                        font-size: 14px;">
+
+                        <i
+                            class="pi pi-heart"
+                            style="margin-right: 5px;">
+                        </i>
+
+                        GalenoSV — Sistema de gestión de expedientes médicos
+
+                    </p>
+
+                </p:panel>
+
+            </div>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>
+
+
