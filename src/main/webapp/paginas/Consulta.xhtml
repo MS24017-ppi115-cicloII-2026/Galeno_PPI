@@ -50,8 +50,6 @@
                         value="#{r.idPersonaRol.idPersona.nombres} #{r.idPersonaRol.idPersona.apellidos}"/>
                 </p:column>
 
-              
-
                 <p:column headerText="#{msg['consulta.col_fecha_inicio']}">
                     <h:outputText value="#{r.fechaInicio}">
                         <f:convertDateTime
@@ -166,7 +164,7 @@
                             noSelectionOption="true"/>
 
                         <f:selectItems
-                            value="#{personaRolModels.registros}"
+                            value="#{personaRolModel.registros}"
                             var="pr"
                             itemLabel="#{pr.idPersona.nombres} #{pr.idPersona.apellidos} - #{pr.idRol.nombre}"
                             itemValue="#{pr}"/>
