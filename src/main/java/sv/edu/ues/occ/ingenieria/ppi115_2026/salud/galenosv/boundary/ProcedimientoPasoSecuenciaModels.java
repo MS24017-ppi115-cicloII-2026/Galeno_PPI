@@ -1,5 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
 
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -79,5 +81,53 @@ public class ProcedimientoPasoSecuenciaModels
         }
 
         return procedimientoPasoDAO.buscarPorProcedimiento(idProcedimiento);
+    }
+
+    private boolean vinculoValido() {
+        ProcedimientoPaso paso = (registro.getIdProcedimientoPaso() != null)
+                ? procedimientoPasoDAO.buscar(registro.getIdProcedimientoPaso().getIdProcedimientoPaso()) : null;
+        ProcedimientoPaso ref = (registro.getIdProcedimientoPasoReferencia() != null)
+                ? procedimientoPasoDAO.buscar(registro.getIdProcedimientoPasoReferencia()) : null;
+
+        if (paso != null && ref != null) {
+            if (paso.getIdProcedimientoPaso().equals(ref.getIdProcedimientoPaso())) {
+                rechazar("Un paso no puede depender de sí mismo.");
+                return false;
+            }
+            if (paso.getIdProcedimiento() != null && ref.getIdProcedimiento() != null
+                    && !paso.getIdProcedimiento().getIdProcedimiento()
+                            .equals(ref.getIdProcedimiento().getIdProcedimiento())) {
+                rechazar("El paso de referencia debe pertenecer al mismo procedimiento.");
+                return false;
+            }
+        }
+        if (paso != null && paso.getIdProcedimiento() != null
+                && !Boolean.TRUE.equals(paso.getIdProcedimiento().getActivo())) {
+            rechazar("El procedimiento \"" + paso.getIdProcedimiento().getNombre() + "\" está inactivo.");
+            return false;
+        }
+        return true;
+    }
+
+    private void rechazar(String detalle) {
+        fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                "No se puede guardar", detalle));
+        fc.validationFailed();
+    }
+
+    @Override
+    public void btnCrearhandler(ActionEvent ae) {
+        if (registro != null && !vinculoValido()) {
+            return;
+        }
+        super.btnCrearhandler(ae);
+    }
+
+    @Override
+    public void btnModificarHandler() {
+        if (registro != null && !vinculoValido()) {
+            return;
+        }
+        super.btnModificarHandler();
     }
 }

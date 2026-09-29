@@ -12,6 +12,8 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.TipoExamenDA
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Examen;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ExamenTipoExamen;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.TipoExamen;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.event.ActionEvent;
 
 @Named
 @ViewScoped
@@ -74,6 +76,44 @@ public class ExamenTipoExamenModels extends AbstractModel<ExamenTipoExamen> {
 
     public List<TipoExamen> getTiposExamen() {
         return tipoExamenDAO.findRange(0, 100);
+    }
+    private boolean vinculoValido() {
+    Examen ex = (registro.getIdExamen() != null)
+            ? examenDAO.buscar(registro.getIdExamen().getIdExamen()) : null;
+    TipoExamen te = (registro.getIdTipoExamen() != null)
+            ? tipoExamenDAO.buscar(registro.getIdTipoExamen().getIdTipoExamen()) : null;
+
+    if (ex != null && !Boolean.TRUE.equals(ex.getActivo())) {
+        rechazar("El examen \"" + ex.getNombre() + "\" está inactivo.");
+        return false;
+    }
+    if (te != null && !Boolean.TRUE.equals(te.getActivo())) {
+        rechazar("El tipo de examen \"" + te.getNombre() + "\" está inactivo.");
+        return false;
+    }
+    return true;
+}
+
+    private void rechazar(String detalle) {
+        fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                "No se puede guardar", detalle));
+        fc.validationFailed(); // evita que el diálogo se cierre
+    }
+
+    @Override
+    public void btnCrearhandler(ActionEvent ae) {
+        if (registro != null && !vinculoValido()) {
+            return;
+        }
+        super.btnCrearhandler(ae);
+    }
+
+    @Override
+    public void btnModificarHandler() {
+        if (registro != null && !vinculoValido()) {
+            return;
+        }
+        super.btnModificarHandler();
     }
 }
 

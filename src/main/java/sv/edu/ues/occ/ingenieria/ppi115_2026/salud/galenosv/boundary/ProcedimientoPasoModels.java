@@ -1,4 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
+
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -71,12 +74,49 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
         return procedimientoPasoDAO.buscarPorProcedimiento(idProcedimiento);
     }
 
+    /**
+     * Devuelve solo procedimientos activos.
+     */
     public List<Procedimiento> getProcedimientos() {
-        return procedimientoDAO.findRange(0, 1000);
+        return procedimientoDAO.findRange(0, 1000).stream()
+                .filter(p -> Boolean.TRUE.equals(p.getActivo()))
+                .toList();
     }
 
     public List<Rol> getRoles() {
         return rolDAO.findRange(0, 1000);
     }
-}
 
+    private boolean vinculoValido() {
+        Procedimiento pr = (registro.getIdProcedimiento() != null)
+                ? procedimientoDAO.buscar(registro.getIdProcedimiento().getIdProcedimiento()) : null;
+
+        if (pr != null && !Boolean.TRUE.equals(pr.getActivo())) {
+            rechazar("El procedimiento \"" + pr.getNombre() + "\" está inactivo.");
+            return false;
+        }
+        return true;
+    }
+
+    private void rechazar(String detalle) {
+        fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                "No se puede guardar", detalle));
+        fc.validationFailed();
+    }
+
+    @Override
+    public void btnCrearhandler(ActionEvent ae) {
+        if (registro != null && !vinculoValido()) {
+            return;
+        }
+        super.btnCrearhandler(ae);
+    }
+
+    @Override
+    public void btnModificarHandler() {
+        if (registro != null && !vinculoValido()) {
+            return;
+        }
+        super.btnModificarHandler();
+    }
+}
