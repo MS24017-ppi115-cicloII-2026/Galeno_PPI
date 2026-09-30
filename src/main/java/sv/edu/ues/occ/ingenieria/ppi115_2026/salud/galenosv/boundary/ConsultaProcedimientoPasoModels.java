@@ -54,12 +54,7 @@ public class ConsultaProcedimientoPasoModels extends AbstractModel<ConsultaProce
             );
         }
 
-        if (registro.getIdPersonaRol().getIdPersona() == null) {
-            return mostrarError(
-                    "Persona requerida",
-                    "La persona seleccionada no tiene una persona asociada."
-            );
-        }
+       
 
         if (registro.getEstado() == null
                 || registro.getEstado().isBlank()) {
@@ -72,6 +67,12 @@ public class ConsultaProcedimientoPasoModels extends AbstractModel<ConsultaProce
             return mostrarError(
                     "Fecha requerida",
                     "El paso de la consulta debe tener una fecha de inicio."
+            );
+        }  if (registro.getFechaFin() != null
+                && registro.getFechaFin().before(registro.getFechaInicio())) {
+            return mostrarError(
+                    "Fechas inválidas",
+                    "La fecha de fin no puede ser anterior a la fecha de inicio."
             );
         }
 
