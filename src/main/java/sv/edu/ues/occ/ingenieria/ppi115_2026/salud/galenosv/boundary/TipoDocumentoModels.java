@@ -8,7 +8,7 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.TipoDocumentoDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.TipoDocumento;
 
-@Named("tipoDocumentoModel")
+@Named("tipoDocumentoModels")
 @ViewScoped
 public class TipoDocumentoModels extends AbstractModel<TipoDocumento> {
 
