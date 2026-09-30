@@ -8,7 +8,7 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.PersonaDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Persona;
 
-@Named("personaModel")
+@Named("personaModels")
 @ViewScoped
 public class PersonaModels extends AbstractModel<Persona> {
 
