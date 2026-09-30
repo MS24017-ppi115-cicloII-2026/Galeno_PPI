@@ -1,35 +1,98 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:cc="jakarta.faces.composite"
       xmlns:p="http://primefaces.org/ui">
 
     <cc:interface>
-        <cc:attribute name="modelo" required="true"/>
-        <cc:attribute name="update" required="true"
-                      shortDescription="Lista de ids separados por espacio a actualizar via ajax, ej: :frmTabla :mensajes :frmFormulario"/>
+
+       
+        <cc:attribute name="modelo"
+                      required="true"/>
+
+       
+        <cc:attribute name="update"
+                      required="true"
+                      shortDescription="Lista de ids separados por espacio a actualizar via ajax"/>
+
+       
+        <cc:attribute name="oncompleteCrear"
+                      required="false"
+                      default=""/>
+
+      
+        <cc:attribute name="oncompleteModificar"
+                      required="false"
+                      default=""/>
+
+       
+        <cc:attribute name="oncompleteCancelar"
+                      required="false"
+                      default=""/>
+
+       
+        <cc:attribute name="oncompleteEliminar"
+                      required="false"
+                      default=""/>
+
     </cc:interface>
 
     <cc:implementation>
-        <p:panelGrid columns="3" styleClass="ui-panelgrid-blank">
-            <p:commandButton value="#{msg['crud.boton.crear']}" icon="pi pi-save"
-                             actionListener="#{cc.attrs.modelo.btnCrearhandler}"
-                             rendered="#{cc.attrs.modelo.estado == 'CREAR'}"
-                             update="#{cc.attrs.update}"/>
-            <p:commandButton value="#{msg['crud.boton.actualizar']}" icon="pi pi-refresh"
-                             actionListener="#{cc.attrs.modelo.btnModificarHandler}"
-                             rendered="#{cc.attrs.modelo.estado == 'MODIFICAR'}"
-                             update="#{cc.attrs.update}"/>
-            <p:commandButton value="#{msg['crud.boton.eliminar']}" icon="pi pi-trash" styleClass="ui-button-danger"
-                             actionListener="#{cc.attrs.modelo.btnEliminarHandler}"
-                             rendered="#{cc.attrs.modelo.estado == 'MODIFICAR'}"
-                             update="#{cc.attrs.update}">
-                <p:confirm header="#{msg['confirm.eliminar.header']}" message="#{msg['confirm.eliminar.mensaje']}" icon="pi pi-info-circle"/>
+
+        <p:panelGrid columns="4"
+                     styleClass="ui-panelgrid-blank botones-crud">
+
+            
+            <p:commandButton
+                    value="#{msg['crud.boton.crear']}"
+                    icon="pi pi-save"
+                    actionListener="#{cc.attrs.modelo.btnCrearhandler}"
+                    rendered="#{cc.attrs.modelo.estado == 'CREAR'}"
+                    update="#{cc.attrs.update}"
+                    oncomplete="#{cc.attrs.oncompleteCrear}"
+                    styleClass="ui-button-success"/>
+
+           
+            <p:commandButton
+                    value="#{msg['crud.boton.actualizar']}"
+                    icon="pi pi-refresh"
+                    actionListener="#{cc.attrs.modelo.btnModificarHandler}"
+                    rendered="#{cc.attrs.modelo.estado == 'MODIFICAR'}"
+                    update="#{cc.attrs.update}"
+                    oncomplete="#{cc.attrs.oncompleteModificar}"
+                    styleClass="ui-button-success"/>
+
+            
+            <p:commandButton
+                    value="#{msg['crud.boton.eliminar']}"
+                    icon="pi pi-trash"
+                    styleClass="ui-button-danger ui-button-outlined"
+                    actionListener="#{cc.attrs.modelo.btnEliminarHandler}"
+                    rendered="#{cc.attrs.modelo.estado == 'MODIFICAR'}"
+                    update="#{cc.attrs.update}"
+                    oncomplete="#{cc.attrs.oncompleteEliminar}">
+
+                <p:confirm
+                        header="#{msg['confirm.eliminar.header']}"
+                        message="#{msg['confirm.eliminar.mensaje']}"
+                        icon="pi pi-info-circle"/>
+
             </p:commandButton>
-            <p:commandButton value="#{msg['crud.boton.cancelar']}" icon="pi pi-times" styleClass="ui-button-secondary"
-                             actionListener="#{cc.attrs.modelo.btnCancelar}"
-                             immediate="true"
-                             update="#{cc.attrs.update}"/>
+
+           
+            <p:commandButton
+                    value="#{msg['crud.boton.cancelar']}"
+                    icon="pi pi-times"
+                    styleClass="ui-button-secondary ui-button-flat"
+                    actionListener="#{cc.attrs.modelo.btnCancelar}"
+                    immediate="true"
+                    update="#{cc.attrs.update}"
+                    oncomplete="#{cc.attrs.oncompleteCancelar}"/>
+
         </p:panelGrid>
+
     </cc:implementation>
+
 </html>

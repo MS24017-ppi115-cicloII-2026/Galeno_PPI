@@ -5,6 +5,7 @@
                 xmlns:h="jakarta.faces.html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
                 template="./general.xhtml">
 
     <ui:define name="titulo">#{msg['proc.titulo']}</ui:define>
@@ -155,25 +156,12 @@
                     
                     <p:divider />
                     <div style="text-align: right; padding-top: 10px;">
-                        <p:commandButton value="#{msg['global.guardar']}" icon="pi pi-save"
-                                         actionListener="#{procedimientoModels.btnCrearhandler}"
-                                         update=":frmTabla :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgProcedimiento').hide()"
-                                         rendered="#{procedimientoModels.estado == 'CREAR'}"
-                                         styleClass="ui-button-success" style="margin-right: 5px;" />
-
-                        <p:commandButton value="#{msg['global.actualizar']}" icon="pi pi-refresh"
-                                         actionListener="#{procedimientoModels.btnModificarHandler()}"
-                                         update=":frmTabla :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgProcedimiento').hide()"
-                                         rendered="#{procedimientoModels.estado == 'MODIFICAR'}"
-                                         styleClass="ui-button-success" style="margin-right: 5px;" />
-                                         
-                        <p:commandButton value="#{msg['global.cancelar']}" icon="pi pi-times"
-                                         actionListener="#{procedimientoModels.btnCancelar}"
-                                         update=":frmTabla"
-                                         oncomplete="PF('dlgProcedimiento').hide()"
-                                         styleClass="ui-button-secondary ui-button-flat" immediate="true" />
+                        <crud:botonesCrud
+                            modelo="#{procedimientoModels}"
+                            update=":frmTabla :mensajesGlobales:growl-sticky"
+                            oncompleteCrear="if(!args.validationFailed) PF('dlgProcedimiento').hide()"
+                            oncompleteModificar="if(!args.validationFailed) PF('dlgProcedimiento').hide()"
+                            oncompleteCancelar="PF('dlgProcedimiento').hide()"/>
                     </div>
                 </p:outputPanel>
             </h:form>
@@ -212,15 +200,12 @@
 
                             <p:divider />
                             <div style="text-align: right;">
-                                <p:commandButton value="#{msg['proc.btn_guardar_paso']}" icon="pi pi-save"
-                                                 actionListener="#{procedimientoPasoModels.btnCrearhandler}"
-                                                 update=":frmProcedimiento:tabVDetalles:dtPasos :frmDialogoPaso :mensajesGlobales:growl-sticky"
-                                                 rendered="#{procedimientoPasoModels.estado == 'CREAR'}" styleClass="ui-button-success" />
-                                                 
-                                <p:commandButton value="#{msg['proc.btn_actualizar_paso']}" icon="pi pi-save"
-                                                 actionListener="#{procedimientoPasoModels.btnModificarHandler()}"
-                                                 update=":frmProcedimiento:tabVDetalles:dtPasos :frmDialogoPaso :mensajesGlobales:growl-sticky"
-                                                 rendered="#{procedimientoPasoModels.estado == 'MODIFICAR'}" styleClass="ui-button-success" />
+                                <crud:botonesCrud
+                                    modelo="#{procedimientoPasoModels}"
+                                    update=":frmProcedimiento:tabVDetalles:dtPasos :frmDialogoPaso :mensajesGlobales:growl-sticky"
+                                    oncompleteCrear="if(!args.validationFailed) PF('dlgPaso').hide()"
+                                    oncompleteModificar="if(!args.validationFailed) PF('dlgPaso').hide()"
+                                    oncompleteCancelar="PF('dlgPaso').hide()"/>
                             </div>
                         </p:tab>
 
@@ -314,19 +299,12 @@
                     
                     <p:divider />
                     <div style="text-align: right;">
-                        <p:commandButton value="#{msg['proc.btn_asignar']}" icon="pi pi-check" 
-                                         actionListener="#{procedimientoPasoExamenModels.btnCrearhandler}"
-                                         update=":frmDialogoPaso:tabVPaso:dtPasoExamen :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgPasoExamen').hide()" 
-                                         rendered="#{procedimientoPasoExamenModels.estado == 'CREAR'}" 
-                                         styleClass="ui-button-success" />
-                                         
-                        <p:commandButton value="#{msg['global.actualizar']}" icon="pi pi-check" 
-                                         actionListener="#{procedimientoPasoExamenModels.btnModificarHandler()}"
-                                         update=":frmDialogoPaso:tabVPaso:dtPasoExamen :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgPasoExamen').hide()" 
-                                         rendered="#{procedimientoPasoExamenModels.estado == 'MODIFICAR'}" 
-                                         styleClass="ui-button-success" />
+                        <crud:botonesCrud
+                            modelo="#{procedimientoPasoExamenModels}"
+                            update=":frmDialogoPaso:tabVPaso:dtPasoExamen :mensajesGlobales:growl-sticky"
+                            oncompleteCrear="if(!args.validationFailed) PF('dlgPasoExamen').hide()"
+                            oncompleteModificar="if(!args.validationFailed) PF('dlgPasoExamen').hide()"
+                            oncompleteCancelar="PF('dlgPasoExamen').hide()"/>
                     </div>
                 </p:outputPanel>
             </h:form>
@@ -352,19 +330,12 @@
                     
                     <p:divider />
                     <div style="text-align: right;">
-                        <p:commandButton value="#{msg['proc.btn_guardar_regla']}" icon="pi pi-save" 
-                                         actionListener="#{procedimientoPasoSecuenciaModels.btnCrearhandler}"
-                                         update=":frmDialogoPaso:tabVPaso:dtPasoSecuencia :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgPasoSecuencia').hide()" 
-                                         rendered="#{procedimientoPasoSecuenciaModels.estado == 'CREAR'}" 
-                                         styleClass="ui-button-success" />
-                                         
-                        <p:commandButton value="#{msg['proc.btn_actualizar_regla']}" icon="pi pi-save" 
-                                         actionListener="#{procedimientoPasoSecuenciaModels.btnModificarHandler()}"
-                                         update=":frmDialogoPaso:tabVPaso:dtPasoSecuencia :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgPasoSecuencia').hide()" 
-                                         rendered="#{procedimientoPasoSecuenciaModels.estado == 'MODIFICAR'}" 
-                                         styleClass="ui-button-success" />
+                        <crud:botonesCrud
+                            modelo="#{procedimientoPasoSecuenciaModels}"
+                            update=":frmDialogoPaso:tabVPaso:dtPasoSecuencia :mensajesGlobales:growl-sticky"
+                            oncompleteCrear="if(!args.validationFailed) PF('dlgPasoSecuencia').hide()"
+                            oncompleteModificar="if(!args.validationFailed) PF('dlgPasoSecuencia').hide()"
+                            oncompleteCancelar="PF('dlgPasoSecuencia').hide()"/>
                     </div>
                 </p:outputPanel>
             </h:form>

@@ -5,15 +5,13 @@
                 xmlns:h="jakarta.faces.html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
                 template="./general.xhtml">
 
     <ui:define name="titulo">#{msg['paso.titulo']}</ui:define>
 
     <ui:define name="cuerpo">
 
-        <!-- ======================================================= -->
-        <!-- TABLA PRINCIPAL                                         -->
-        <!-- ======================================================= -->
         <h:form id="frmTabla">
             <div class="ui-g">
                 <div class="ui-g-12">
@@ -85,9 +83,6 @@
             </p:confirmDialog>
         </h:form>
 
-        <!-- ======================================================= -->
-        <!-- DIÁLOGO MODAL PRINCIPAL                                 -->
-        <!-- ======================================================= -->
         <p:dialog header="#{procedimientoPasoModels.estado == 'CREAR' ? msg['paso.modal_crear'] : msg['paso.modal_config']}" 
                   widgetVar="dlgProcedimientoPaso" modal="true" resizable="false" width="650" 
                   dynamic="true" showEffect="fade" hideEffect="fade" appendTo="@(body)">
@@ -132,27 +127,13 @@
                     
                     <p:divider />
                     
-                    <!-- BOTONES DE CONTROL CON CIERRE AUTOMÁTICO -->
                     <div style="text-align: right; padding-top: 10px;">
-                        <p:commandButton value="#{msg['global.guardar']}" icon="pi pi-save"
-                                         actionListener="#{procedimientoPasoModels.btnCrearhandler}"
-                                         update=":frmTabla :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgProcedimientoPaso').hide()"
-                                         rendered="#{procedimientoPasoModels.estado == 'CREAR'}"
-                                         styleClass="ui-button-success" style="margin-right: 5px;" />
-
-                        <p:commandButton value="#{msg['global.actualizar']}" icon="pi pi-refresh"
-                                         actionListener="#{procedimientoPasoModels.btnModificarHandler()}"
-                                         update=":frmTabla :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgProcedimientoPaso').hide()"
-                                         rendered="#{procedimientoPasoModels.estado == 'MODIFICAR'}"
-                                         styleClass="ui-button-success" style="margin-right: 5px;" />
-                                         
-                        <p:commandButton value="#{msg['global.cancelar']}" icon="pi pi-times"
-                                         actionListener="#{procedimientoPasoModels.btnCancelar}"
-                                         update=":frmTabla"
-                                         oncomplete="PF('dlgProcedimientoPaso').hide()"
-                                         styleClass="ui-button-secondary ui-button-flat" immediate="true" />
+                        <crud:botonesCrud
+                            modelo="#{procedimientoPasoModels}"
+                            update=":frmTabla :mensajesGlobales:growl-sticky"
+                            oncompleteCrear="if(!args.validationFailed) PF('dlgProcedimientoPaso').hide()"
+                            oncompleteModificar="if(!args.validationFailed) PF('dlgProcedimientoPaso').hide()"
+                            oncompleteCancelar="PF('dlgProcedimientoPaso').hide()"/>
                     </div>
                 </p:outputPanel>
             </h:form>

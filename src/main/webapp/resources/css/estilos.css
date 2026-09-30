@@ -1,9 +1,7 @@
-/* Estilos generales para mejorar la legibilidad */
 body .ui-widget {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Encabezados de paneles y diálogos más modernos */
 body .ui-panel .ui-panel-titlebar, 
 body .ui-dialog .ui-dialog-titlebar {
     background-color: #2c3e50;
@@ -12,7 +10,6 @@ body .ui-dialog .ui-dialog-titlebar {
     padding: 1rem;
 }
 
-/* Texto de ayuda e instrucciones */
 .texto-ayuda {
     color: #7f8c8d;
     font-size: 0.9em;
@@ -20,7 +17,6 @@ body .ui-dialog .ui-dialog-titlebar {
     display: block;
 }
 
-/* Badges para estados */
 .badge {
     padding: 4px 10px;
     border-radius: 12px;
@@ -29,22 +25,39 @@ body .ui-dialog .ui-dialog-titlebar {
     color: white;
     text-transform: uppercase;
 }
-.badge-activo { background-color: #27ae60; }
-.badge-inactivo { background-color: #e74c3c; }
-.badge-info { background-color: #2980b9; }
 
-/* Contenedores de botones de acción en tablas */
+.badge-activo {
+    background-color: #27ae60;
+}
+
+.badge-inactivo {
+    background-color: #e74c3c;
+}
+
+.badge-info {
+    background-color: #2980b9;
+}
+
 .acciones-tabla .ui-button {
     margin-right: 5px;
 }
 
-/* Espaciado de formularios fluidos */
 .campo-formulario {
     margin-bottom: 15px;
 }
+
 .campo-formulario label {
     font-weight: 600;
     color: #34495e;
     margin-bottom: 5px;
     display: block;
+}
+
+/* Botones CRUD */
+.botones-crud {
+    margin-top: 10px;
+}
+
+.botones-crud .ui-button {
+    margin-right: 5px;
 }

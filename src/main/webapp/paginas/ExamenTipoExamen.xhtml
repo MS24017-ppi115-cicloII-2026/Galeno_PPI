@@ -5,15 +5,13 @@
                 xmlns:h="jakarta.faces.html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="jakarta.faces.core"
+                xmlns:crud="jakarta.faces.composite/crud"
                 template="./general.xhtml">
 
     <ui:define name="titulo">#{msg['ete.titulo']}</ui:define>
 
     <ui:define name="cuerpo">
 
-        <!-- ======================================================= -->
-        <!-- TABLA PRINCIPAL                                         -->
-        <!-- ======================================================= -->
         <h:form id="frmTabla">
             <div class="ui-g">
                 <div class="ui-g-12">
@@ -86,9 +84,6 @@
             </p:confirmDialog>
         </h:form>
 
-        <!-- ======================================================= -->
-        <!-- DIÁLOGO MODAL PRINCIPAL                                 -->
-        <!-- ======================================================= -->
         <p:dialog header="#{examenTipoExamenModels.estado == 'CREAR' ? msg['ete.modal_crear'] : msg['ete.modal_config']}" 
                   widgetVar="dlgExamenTipoExamen" modal="true" resizable="false" width="600" 
                   dynamic="true" showEffect="fade" hideEffect="fade" appendTo="@(body)">
@@ -126,27 +121,13 @@
                     
                     <p:divider />
                     
-                    <!-- BOTONES DE CONTROL DE CIERRE AUTOMÁTICO -->
                     <div style="text-align: right; padding-top: 10px;">
-                        <p:commandButton value="#{msg['global.guardar']}" icon="pi pi-save"
-                                         actionListener="#{examenTipoExamenModels.btnCrearhandler}"
-                                         update=":frmTabla :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgExamenTipoExamen').hide()"
-                                         rendered="#{examenTipoExamenModels.estado == 'CREAR'}"
-                                         styleClass="ui-button-success" style="margin-right: 5px;" />
-
-                        <p:commandButton value="#{msg['global.actualizar']}" icon="pi pi-refresh"
-                                         actionListener="#{examenTipoExamenModels.btnModificarHandler()}"
-                                         update=":frmTabla :mensajesGlobales:growl-sticky"
-                                         oncomplete="if(!args.validationFailed) PF('dlgExamenTipoExamen').hide()"
-                                         rendered="#{examenTipoExamenModels.estado == 'MODIFICAR'}"
-                                         styleClass="ui-button-success" style="margin-right: 5px;" />
-                                         
-                        <p:commandButton value="#{msg['global.cancelar']}" icon="pi pi-times"
-                                         actionListener="#{examenTipoExamenModels.btnCancelar}"
-                                         update=":frmTabla"
-                                         oncomplete="PF('dlgExamenTipoExamen').hide()"
-                                         styleClass="ui-button-secondary ui-button-flat" immediate="true" />
+                        <crud:botonesCrud
+                            modelo="#{examenTipoExamenModels}"
+                            update=":frmTabla :mensajesGlobales:growl-sticky"
+                            oncompleteCrear="if(!args.validationFailed) PF('dlgExamenTipoExamen').hide()"
+                            oncompleteModificar="if(!args.validationFailed) PF('dlgExamenTipoExamen').hide()"
+                            oncompleteCancelar="PF('dlgExamenTipoExamen').hide()"/>
                     </div>
                 </p:outputPanel>
             </h:form>
