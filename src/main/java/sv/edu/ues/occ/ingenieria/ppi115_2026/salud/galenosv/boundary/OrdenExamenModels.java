@@ -5,6 +5,7 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.Date;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.OrdenExamenDAO;
@@ -22,9 +23,11 @@ public class OrdenExamenModels extends AbstractModel<OrdenExamen> {
         return ordenExamenDAO;
     }
 
-    @Override
+       @Override
     protected OrdenExamen crearRegistroNuevo() {
-        return new OrdenExamen(UUID.randomUUID());
+        OrdenExamen orden = new OrdenExamen(UUID.randomUUID());
+        orden.setFechaCreacion(new Date());
+        return orden;
     }
 
     @Override
