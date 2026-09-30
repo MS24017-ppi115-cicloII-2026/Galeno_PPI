@@ -58,6 +58,12 @@ public class ConsultaProcedimientoModels extends AbstractModel<ConsultaProcedimi
                     "Fecha requerida",
                     "El procedimiento de la consulta debe tener una fecha de inicio."
             );
+        }  if (registro.getFechaFin() != null
+                && registro.getFechaFin().before(registro.getFechaInicio())) {
+            return mostrarError(
+                    "Fechas inválidas",
+                    "La fecha de fin no puede ser anterior a la fecha de inicio."
+            );
         }
 
         return true;
