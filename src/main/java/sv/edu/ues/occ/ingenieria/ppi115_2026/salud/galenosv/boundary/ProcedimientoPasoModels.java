@@ -5,6 +5,7 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
@@ -75,12 +76,21 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
     }
 
     /**
-     * Devuelve solo procedimientos activos.
+     * Devuelve procedimientos activos más el actual del registro.
      */
     public List<Procedimiento> getProcedimientos() {
-        return procedimientoDAO.findRange(0, 1000).stream()
+        List<Procedimiento> lista = new ArrayList<>(procedimientoDAO.findRange(0, 1000).stream()
                 .filter(p -> Boolean.TRUE.equals(p.getActivo()))
-                .toList();
+                .toList());
+        if (registro != null && registro.getIdProcedimiento() != null
+                && lista.stream().noneMatch(p -> p.getIdProcedimiento()
+                        .equals(registro.getIdProcedimiento().getIdProcedimiento()))) {
+            Procedimiento actual = procedimientoDAO.buscar(registro.getIdProcedimiento().getIdProcedimiento());
+            if (actual != null) {
+                lista.add(actual);
+            }
+        }
+        return lista;
     }
 
     public List<Rol> getRoles() {
@@ -88,12 +98,29 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
     }
 
     private boolean vinculoValido() {
+        if (registro.getNombre() == null || registro.getNombre().isBlank()) {
+            rechazar("El nombre es obligatorio.");
+            return false;
+        }
+        String nombre = registro.getNombre().trim();
+        registro.setNombre(nombre);
+
         Procedimiento pr = (registro.getIdProcedimiento() != null)
                 ? procedimientoDAO.buscar(registro.getIdProcedimiento().getIdProcedimiento()) : null;
 
-        if (pr != null && !Boolean.TRUE.equals(pr.getActivo())) {
+        if (estado == Estado_CRUD.CREAR && pr != null && !Boolean.TRUE.equals(pr.getActivo())) {
             rechazar("El procedimiento \"" + pr.getNombre() + "\" está inactivo.");
             return false;
+        }
+        if (pr != null) {
+            boolean duplicado = getRegistrosPorProcedimiento(pr.getIdProcedimiento()).stream()
+                    .anyMatch(x -> x.getNombre() != null
+                            && x.getNombre().trim().equalsIgnoreCase(nombre)
+                            && !x.getIdProcedimientoPaso().equals(registro.getIdProcedimientoPaso()));
+            if (duplicado) {
+                rechazar("El procedimiento \"" + pr.getNombre() + "\" ya tiene un paso llamado \"" + nombre + "\".");
+                return false;
+            }
         }
         return true;
     }

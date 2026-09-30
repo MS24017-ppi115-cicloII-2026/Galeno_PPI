@@ -5,6 +5,7 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
@@ -80,12 +81,20 @@ public class ProcedimientoPasoExamenModels extends AbstractModel<ProcedimientoPa
     }
 
     /**
-     * Devuelve solo exámenes activos.
+     * Devuelve exámenes activos más el actual del registro.
      */
     public List<Examen> getExamenes() {
-        return examenDAO.findRange(0, 1000).stream()
+        List<Examen> lista = new ArrayList<>(examenDAO.findRange(0, 1000).stream()
                 .filter(e -> Boolean.TRUE.equals(e.getActivo()))
-                .toList();
+                .toList());
+        if (registro != null && registro.getIdExamen() != null
+                && lista.stream().noneMatch(e -> e.getIdExamen().equals(registro.getIdExamen().getIdExamen()))) {
+            Examen actual = examenDAO.buscar(registro.getIdExamen().getIdExamen());
+            if (actual != null) {
+                lista.add(actual);
+            }
+        }
+        return lista;
     }
 
     private boolean vinculoValido() {
@@ -94,14 +103,25 @@ public class ProcedimientoPasoExamenModels extends AbstractModel<ProcedimientoPa
         ProcedimientoPaso pp = (registro.getIdProcedimientoPaso() != null)
                 ? procedimientoPasoDAO.buscar(registro.getIdProcedimientoPaso().getIdProcedimientoPaso()) : null;
 
-        if (ex != null && !Boolean.TRUE.equals(ex.getActivo())) {
+        boolean crear = estado == Estado_CRUD.CREAR;
+
+        if (crear && ex != null && !Boolean.TRUE.equals(ex.getActivo())) {
             rechazar("El examen \"" + ex.getNombre() + "\" está inactivo.");
             return false;
         }
-        if (pp != null && pp.getIdProcedimiento() != null
+        if (crear && pp != null && pp.getIdProcedimiento() != null
                 && !Boolean.TRUE.equals(pp.getIdProcedimiento().getActivo())) {
             rechazar("El procedimiento \"" + pp.getIdProcedimiento().getNombre() + "\" está inactivo.");
             return false;
+        }
+        if (ex != null && pp != null) {
+            boolean duplicado = getRegistrosPorPaso(pp.getIdProcedimientoPaso()).stream()
+                    .anyMatch(x -> x.getIdExamen().getIdExamen().equals(ex.getIdExamen())
+                            && !x.getIdProcedimientoPasoExamen().equals(registro.getIdProcedimientoPasoExamen()));
+            if (duplicado) {
+                rechazar("El examen \"" + ex.getNombre() + "\" ya está asignado a este paso.");
+                return false;
+            }
         }
         return true;
     }

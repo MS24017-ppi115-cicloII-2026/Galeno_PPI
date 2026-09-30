@@ -8,105 +8,124 @@
                 xmlns:crud="jakarta.faces.composite/crud"
                 template="./general.xhtml">
 
-    <ui:define name="titulo">
-        Gestión de Secuencias de Pasos
-    </ui:define>
+    <ui:define name="titulo">#{msg['pps.titulo']}</ui:define>
 
     <ui:define name="cuerpo">
 
         <h:form id="frmTabla">
-            <p:toolbar>
-                <p:toolbarGroup>
-                    <p:commandButton value="Nueva Secuencia" icon="pi pi-plus"
-                                     actionListener="#{procedimientoPasoSecuenciaModels.btnNuevoHandler}"
-                                     update=":frmFormulario @form"
-                                     rendered="#{procedimientoPasoSecuenciaModels.estado == 'NINGUNO'}" />
-                </p:toolbarGroup>
-            </p:toolbar>
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <p:toolbar style="margin-bottom: 15px; border-radius: 8px;">
+                        <p:toolbarGroup>
+                            <p:commandButton value="#{msg['pps.btn_nuevo']}" icon="pi pi-plus"
+                                             actionListener="#{procedimientoPasoSecuenciaModels.btnNuevoHandler}"
+                                             update=":frmProcedimientoPasoSecuencia" oncomplete="PF('dlgProcedimientoPasoSecuencia').show()"
+                                             styleClass="ui-button-success" />
+                        </p:toolbarGroup>
+                    </p:toolbar>
 
-            <p:dataTable id="tablaRegistros" value="#{procedimientoPasoSecuenciaModels.registros}" var="r"
-                         emptyMessage="No se encontraron secuencias" paginator="true" rows="10"
-                         style="margin-top: 10px;"
-                         selectionMode="single" selection="#{procedimientoPasoSecuenciaModels.registro}" rowKey="#{r.idProcedimientoPasoSecuencia}">
+                    <p:dataTable id="tablaRegistros" value="#{procedimientoPasoSecuenciaModels.registros}" var="r"
+                                 emptyMessage="#{msg['pps.msg_vacio']}" paginator="true" rows="10"
+                                 selectionMode="single" selection="#{procedimientoPasoSecuenciaModels.registro}" 
+                                 rowKey="#{r.idProcedimientoPasoSecuencia}"
+                                 stripedRows="true" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
 
-                <p:ajax event="rowSelect" update="@form" />
-                <p:ajax event="rowUnselect" update="@form" />
-                <p:ajax event="rowDblselect" listener="#{procedimientoPasoSecuenciaModels.btnSeleccionarRegistro(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}" update=":frmFormulario" />
+                        <p:ajax event="rowSelect" update="@form" />
+                        <p:ajax event="rowUnselect" update="@form" />
+                        <p:ajax event="rowDblselect" listener="#{procedimientoPasoSecuenciaModels.btnSeleccionarRegistro(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}" 
+                                update=":frmProcedimientoPasoSecuencia" oncomplete="PF('dlgProcedimientoPasoSecuencia').show()" />
 
-                <p:column headerText="ID">
-                    <h:outputText value="#{r.idProcedimientoPasoSecuencia}" />
-                </p:column>
+                        <p:column headerText="#{msg['global.codigo_id']}" width="20%">
+                            <h:outputText value="#{r.idProcedimientoPasoSecuencia}" style="font-family: monospace; color: gray;" />
+                        </p:column>
 
-                <p:column headerText="Paso">
-                    <h:outputText value="#{r.idProcedimientoPaso.nombre}" />
-                </p:column>
+                        <p:column headerText="#{msg['pps.col_paso']}">
+                            <h:outputText value="#{r.idProcedimientoPaso.nombre}" style="font-weight: bold;" />
+                        </p:column>
 
-                <p:column headerText="Paso de Referencia (ID)">
-                    <h:outputText value="#{r.idProcedimientoPasoReferencia}" />
-                </p:column>
+                        <p:column headerText="#{msg['pps.col_paso_ref']}">
+                            <h:outputText value="#{r.idProcedimientoPasoReferencia}" />
+                        </p:column>
 
-                <p:column headerText="Tipo de Secuencia">
-                    <h:outputText value="#{r.tipoSecuencia}" />
-                </p:column>
+                        <p:column headerText="#{msg['pps.col_tipo_sec']}" width="20%">
+                            <h:outputText value="#{r.tipoSecuencia}" styleClass="badge badge-info" />
+                        </p:column>
 
-                <f:facet name="footer">
-                    <p:commandButton id="btnModificar" value="Modificar" icon="pi pi-pencil"
-                                     actionListener="#{procedimientoPasoSecuenciaModels.btnSeleccionarRegistro(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}"
-                                     update=":frmFormulario"
-                                     disabled="#{empty procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia}"
-                                     styleClass="ui-button-warning" style="margin-right: 5px;" />
+                        <f:facet name="footer">
+                            <div class="acciones-tabla">
+                                <p:commandButton id="btnModificar" value="#{msg['pps.btn_modificar']}" icon="pi pi-cog"
+                                                 actionListener="#{procedimientoPasoSecuenciaModels.btnSeleccionarRegistro(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}"
+                                                 update=":frmProcedimientoPasoSecuencia" oncomplete="PF('dlgProcedimientoPasoSecuencia').show()"
+                                                 disabled="#{empty procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia}"
+                                                 styleClass="ui-button-primary" />
 
-                    <p:commandButton id="btnEliminar" value="Eliminar" icon="pi pi-trash"
-                                     actionListener="#{procedimientoPasoSecuenciaModels.btnEliminarHandler(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}"
-                                     update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
-                                     disabled="#{empty procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia}"
-                                     styleClass="ui-button-danger">
-                        <p:confirm header="Confirmación" message="¿Estás seguro de eliminar esta secuencia?" icon="pi pi-info-circle"/>
-                    </p:commandButton>
-                </f:facet>
-            </p:dataTable>
+                                <p:commandButton id="btnEliminar" value="#{msg['global.eliminar']}" icon="pi pi-trash"
+                                                 actionListener="#{procedimientoPasoSecuenciaModels.btnEliminarHandler(procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia)}"
+                                                 update="frmTabla:tablaRegistros :mensajesGlobales:growl-sticky @form"
+                                                 disabled="#{empty procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia}"
+                                                 styleClass="ui-button-danger ui-button-outlined">
+                                    <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['pps.msg_eliminar']}" icon="pi pi-exclamation-triangle"/>
+                                </p:commandButton>
+                            </div>
+                        </f:facet>
+                    </p:dataTable>
+                </div>
+            </div>
 
-            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
-                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-                <p:commandButton value="Sí" type="button" styleClass="ui-confirmdialog-yes" />
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="400">
+                <p:commandButton value="#{msg['global.cancelar']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="#{msg['global.si_eliminar']}" type="button" styleClass="ui-confirmdialog-yes ui-button-danger" />
             </p:confirmDialog>
         </h:form>
 
-        <h:form id="frmFormulario">
-            <p:panel header="#{procedimientoPasoSecuenciaModels.estado == 'CREAR' ? 'Nueva Secuencia' : 'Editar Secuencia'}"
-                     rendered="#{procedimientoPasoSecuenciaModels.estado != 'NINGUNO'}"
-                     style="margin-top: 20px;">
+        <p:dialog header="#{procedimientoPasoSecuenciaModels.estado == 'CREAR' ? msg['pps.modal_crear'] : msg['pps.modal_config']}" 
+                  widgetVar="dlgProcedimientoPasoSecuencia" modal="true" resizable="false" width="600" 
+                  dynamic="true" showEffect="fade" hideEffect="fade" appendTo="@(body)">
+            
+            <h:form id="frmProcedimientoPasoSecuencia">
+                <p:outputPanel rendered="#{procedimientoPasoSecuenciaModels.registro != null}">
+                    
+                    <h:outputText value="#{msg['pps.ayuda_info']}" styleClass="texto-ayuda" style="margin-bottom: 20px; display: block;"/>
+                    
+                    <div class="ui-fluid ui-g">
+                        <div class="ui-g-12 campo-formulario">
+                            <p:outputLabel for="cmbProcedimientoPaso" value="#{msg['pps.lbl_paso']}:" />
+                            <p:selectOneMenu id="cmbProcedimientoPaso" value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPaso}"
+                                             converter="procedimientoPasoConverter" required="true" requiredMessage="#{msg['pps.msg_req_paso']}">
+                                <f:selectItem itemLabel="#{msg['pps.sel_paso']}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{procedimientoPasoModels.registros}" var="pp" itemValue="#{pp}" itemLabel="#{pp.nombre}" />
+                            </p:selectOneMenu>
+                        </div>
 
-                <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel value="ID (Autogenerado):" rendered="#{procedimientoPasoSecuenciaModels.estado == 'CREAR'}"/>
-                    <h:outputText value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoSecuencia}" rendered="#{procedimientoPasoSecuenciaModels.estado == 'CREAR'}"/>
+                        <div class="ui-g-12 campo-formulario">
+                            <p:outputLabel for="cmbPasoReferencia" value="#{msg['pps.lbl_paso_ref']}:" />
+                            <p:selectOneMenu id="cmbPasoReferencia" value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoReferencia}"
+                                             required="true" requiredMessage="#{msg['pps.msg_req_paso_ref']}">
+                                <f:selectItem itemLabel="#{msg['pps.sel_paso_ref']}" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItems value="#{procedimientoPasoModels.registros}" var="ppr" itemValue="#{ppr.idProcedimientoPaso}" itemLabel="#{ppr.nombre}" />
+                            </p:selectOneMenu>
+                        </div>
 
-                    <p:outputLabel for="cmbProcedimientoPaso" value="Paso:" />
-                    <p:selectOneMenu id="cmbProcedimientoPaso" value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPaso}"
-                                     converter="procedimientoPasoConverter" required="true" requiredMessage="El paso es obligatorio">
-                        <f:selectItem itemLabel="Seleccione un paso" itemValue="#{null}" noSelectionOption="true" />
-                        <!-- CORREGIDO: Apunta a procedimientoPasoModels.registros -->
-                        <f:selectItems value="#{procedimientoPasoModels.registros}" var="pp" itemValue="#{pp}" itemLabel="#{pp.nombre}" />
-                    </p:selectOneMenu>
-
-                    <p:outputLabel for="cmbPasoReferencia" value="Paso de Referencia:" />
-                    <p:selectOneMenu id="cmbPasoReferencia" value="#{procedimientoPasoSecuenciaModels.registro.idProcedimientoPasoReferencia}"
-                                     required="true" requiredMessage="El paso de referencia es obligatorio">
-                        <f:selectItem itemLabel="Seleccione un paso de referencia" itemValue="#{null}" noSelectionOption="true" />
-                        <!-- CORREGIDO: Apunta a procedimientoPasoModels.registros -->
-                        <f:selectItems value="#{procedimientoPasoModels.registros}" var="ppr" itemValue="#{ppr.idProcedimientoPaso}" itemLabel="#{ppr.nombre}" />
-                    </p:selectOneMenu>
-
-                    <p:outputLabel for="txtTipoSecuencia" value="Tipo de Secuencia:" />
-                    <p:inputText id="txtTipoSecuencia" value="#{procedimientoPasoSecuenciaModels.registro.tipoSecuencia}"
-                                 required="true" requiredMessage="El tipo de secuencia es obligatorio" maxlength="100" />
-                </h:panelGrid>
-
-                <f:facet name="footer">
-                    <crud:botonesCrud modelo="#{procedimientoPasoSecuenciaModels}" update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
-                </f:facet>
-            </p:panel>
-        </h:form>
+                        <div class="ui-g-12 campo-formulario">
+                            <p:outputLabel for="txtTipoSecuencia" value="#{msg['pps.lbl_tipo_sec']}:" />
+                            <p:inputText id="txtTipoSecuencia" value="#{procedimientoPasoSecuenciaModels.registro.tipoSecuencia}"
+                                         required="true" requiredMessage="#{msg['pps.msg_req_tipo_sec']}" maxlength="100" placeholder="Ej. AFTER, BEFORE, REQUIRED" />
+                        </div>
+                    </div>
+                    
+                    <p:divider />
+                    
+                    <div style="text-align: right; padding-top: 10px;">
+                        <crud:botonesCrud
+                            modelo="#{procedimientoPasoSecuenciaModels}"
+                            update=":frmTabla :mensajesGlobales:growl-sticky"
+                            oncompleteCrear="if(!args.validationFailed) PF('dlgProcedimientoPasoSecuencia').hide()"
+                            oncompleteModificar="if(!args.validationFailed) PF('dlgProcedimientoPasoSecuencia').hide()"
+                            oncompleteCancelar="PF('dlgProcedimientoPasoSecuencia').hide()"/>
+                    </div>
+                </p:outputPanel>
+            </h:form>
+        </p:dialog>
 
     </ui:define>
 </ui:composition>

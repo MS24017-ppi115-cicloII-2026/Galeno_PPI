@@ -5,7 +5,11 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ProcedimientoPasoDAO;
@@ -17,6 +21,8 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Procedimiento
 @ViewScoped
 public class ProcedimientoPasoSecuenciaModels
         extends AbstractModel<ProcedimientoPasoSecuencia> {
+
+    private static final int MAX_TIPO_SECUENCIA = 100;
 
     @Inject
     ProcedimientoPasoSecuenciaDAO procedimientoPasoSecuenciaDAO;
@@ -83,7 +89,44 @@ public class ProcedimientoPasoSecuenciaModels
         return procedimientoPasoDAO.buscarPorProcedimiento(idProcedimiento);
     }
 
+    /**
+     * Recorre las dependencias desde ref; hay ciclo si alcanza a paso.
+     * Se ignora el propio registro para no contar su valor anterior al modificar.
+     */
+    private boolean hayCiclo(UUID paso, UUID ref) {
+        Set<UUID> visitados = new HashSet<>();
+        Deque<UUID> pendientes = new ArrayDeque<>();
+        pendientes.push(ref);
+        while (!pendientes.isEmpty()) {
+            UUID actual = pendientes.pop();
+            if (actual.equals(paso)) {
+                return true;
+            }
+            if (!visitados.add(actual)) {
+                continue;
+            }
+            for (ProcedimientoPasoSecuencia s : getRegistrosPorPaso(actual)) {
+                if (s.getIdProcedimientoPasoReferencia() != null
+                        && !s.getIdProcedimientoPasoSecuencia().equals(registro.getIdProcedimientoPasoSecuencia())) {
+                    pendientes.push(s.getIdProcedimientoPasoReferencia());
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean vinculoValido() {
+        if (registro.getTipoSecuencia() == null || registro.getTipoSecuencia().isBlank()) {
+            rechazar("El tipo de secuencia es obligatorio.");
+            return false;
+        }
+        String tipo = registro.getTipoSecuencia().trim().toUpperCase();
+        if (tipo.length() > MAX_TIPO_SECUENCIA) {
+            rechazar("El tipo de secuencia no puede exceder " + MAX_TIPO_SECUENCIA + " caracteres.");
+            return false;
+        }
+        registro.setTipoSecuencia(tipo);
+
         ProcedimientoPaso paso = (registro.getIdProcedimientoPaso() != null)
                 ? procedimientoPasoDAO.buscar(registro.getIdProcedimientoPaso().getIdProcedimientoPaso()) : null;
         ProcedimientoPaso ref = (registro.getIdProcedimientoPasoReferencia() != null)
@@ -100,8 +143,20 @@ public class ProcedimientoPasoSecuenciaModels
                 rechazar("El paso de referencia debe pertenecer al mismo procedimiento.");
                 return false;
             }
+            boolean duplicado = getRegistrosPorPaso(paso.getIdProcedimientoPaso()).stream()
+                    .anyMatch(x -> ref.getIdProcedimientoPaso().equals(x.getIdProcedimientoPasoReferencia())
+                            && !x.getIdProcedimientoPasoSecuencia().equals(registro.getIdProcedimientoPasoSecuencia()));
+            if (duplicado) {
+                rechazar("Esta dependencia ya existe para el paso \"" + paso.getNombre() + "\".");
+                return false;
+            }
+            if (hayCiclo(paso.getIdProcedimientoPaso(), ref.getIdProcedimientoPaso())) {
+                rechazar("Dependencia circular: \"" + ref.getNombre() + "\" ya depende, directa o indirectamente, de \""
+                        + paso.getNombre() + "\".");
+                return false;
+            }
         }
-        if (paso != null && paso.getIdProcedimiento() != null
+        if (estado == Estado_CRUD.CREAR && paso != null && paso.getIdProcedimiento() != null
                 && !Boolean.TRUE.equals(paso.getIdProcedimiento().getActivo())) {
             rechazar("El procedimiento \"" + paso.getIdProcedimiento().getNombre() + "\" está inactivo.");
             return false;
