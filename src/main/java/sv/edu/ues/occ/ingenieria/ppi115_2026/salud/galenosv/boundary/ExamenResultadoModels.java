@@ -5,6 +5,7 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.Date;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ExamenResultadoDAO;
@@ -22,9 +23,13 @@ public class ExamenResultadoModels extends AbstractModel<ExamenResultado> {
         return examenResultadoDAO;
     }
 
-    @Override
+
+    
+        @Override
     protected ExamenResultado crearRegistroNuevo() {
-        return new ExamenResultado(UUID.randomUUID());
+        ExamenResultado resultado = new ExamenResultado(UUID.randomUUID());
+        resultado.setFechaCreacion(new Date());
+        return resultado;
     }
 
     @Override
