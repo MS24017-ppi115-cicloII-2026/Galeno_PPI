@@ -37,19 +37,26 @@ import java.util.UUID;
 public class OrdenExamen implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "id_orden_examen")
     private UUID idOrdenExamen;
+
+    @NotNull(message = "La fecha de creación es obligatoria")
     @Column(name = "fecha_creacion")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
+
     @Size(max = 2147483647)
     @Column(name = "indicaciones")
     private String indicaciones;
+
     @OneToMany(mappedBy = "idOrdenExamen", fetch = FetchType.LAZY)
     private Collection<ExamenResultado> examenResultadoCollection;
+
+    @NotNull(message = "El paso de la consulta es obligatorio")
     @JoinColumn(name = "id_consulta_procedimiento_paso", referencedColumnName = "id_consulta_procedimiento_paso")
     @ManyToOne(fetch = FetchType.LAZY)
     private ConsultaProcedimientoPaso idConsultaProcedimientoPaso;
@@ -125,5 +132,5 @@ public class OrdenExamen implements Serializable {
     public String toString() {
         return "sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.OrdenExamen[ idOrdenExamen=" + idOrdenExamen + " ]";
     }
-    
+
 }

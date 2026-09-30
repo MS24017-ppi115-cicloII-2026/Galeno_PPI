@@ -38,24 +38,34 @@ import java.util.UUID;
 public class ConsultaProcedimiento implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "id_consulta_procedimiento")
     private UUID idConsultaProcedimiento;
+
+    @NotNull(message = "El procedimiento es obligatorio")
     @Column(name = "id_procedimiento")
     private UUID idProcedimiento;
+
+    @NotNull(message = "La fecha de inicio es obligatoria")
     @Column(name = "fecha_inicio")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaInicio;
+
     @Column(name = "fecha_fin")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaFin;
+
     @Size(max = 2147483647)
     @Column(name = "observaciones")
     private String observaciones;
+
     @OneToMany(mappedBy = "idConsultaProcedimiento", fetch = FetchType.LAZY)
     private Collection<ConsultaProcedimientoPaso> consultaProcedimientoPasoCollection;
+
+    @NotNull(message = "La consulta es obligatoria")
     @JoinColumn(name = "id_consulta", referencedColumnName = "id_consulta")
     @ManyToOne(fetch = FetchType.LAZY)
     private Consulta idConsulta;
@@ -147,5 +157,5 @@ public class ConsultaProcedimiento implements Serializable {
     public String toString() {
         return "sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimiento[ idConsultaProcedimiento=" + idConsultaProcedimiento + " ]";
     }
-    
+
 }

@@ -17,6 +17,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
@@ -38,26 +39,37 @@ import java.util.UUID;
 public class ConsultaProcedimientoPaso implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "id_consulta_procedimiento_paso")
     private UUID idConsultaProcedimientoPaso;
+
+    @NotNull(message = "La fecha de inicio es obligatoria")
     @Column(name = "fecha_inicio")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaInicio;
+
     @Column(name = "fecha_fin")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaFin;
+
+    @NotBlank(message = "El estado es obligatorio")
     @Size(max = 20)
     @Column(name = "estado")
     private String estado;
+
+    @NotNull(message = "La consulta-procedimiento es obligatoria")
     @JoinColumn(name = "id_consulta_procedimiento", referencedColumnName = "id_consulta_procedimiento")
     @ManyToOne(fetch = FetchType.LAZY)
     private ConsultaProcedimiento idConsultaProcedimiento;
+
+    @NotNull(message = "La persona responsable es obligatoria")
     @JoinColumn(name = "id_persona_rol", referencedColumnName = "id_persona_rol")
     @ManyToOne(fetch = FetchType.LAZY)
     private PersonaRol idPersonaRol;
+
     @OneToMany(mappedBy = "idConsultaProcedimientoPaso", fetch = FetchType.LAZY)
     private Collection<OrdenExamen> ordenExamenCollection;
 
@@ -148,5 +160,5 @@ public class ConsultaProcedimientoPaso implements Serializable {
     public String toString() {
         return "sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimientoPaso[ idConsultaProcedimientoPaso=" + idConsultaProcedimientoPaso + " ]";
     }
-    
+
 }

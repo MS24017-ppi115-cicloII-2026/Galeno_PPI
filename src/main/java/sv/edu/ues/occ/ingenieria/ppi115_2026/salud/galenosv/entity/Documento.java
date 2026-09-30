@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
@@ -32,20 +33,28 @@ import java.util.UUID;
 public class Documento implements Serializable {
 
     private static final long serialVersionUID = 1L;
+       
+
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "id_documento")
     private UUID idDocumento;
-    @Size(max = 2147483647)
+
+    @NotBlank(message = "El valor del documento es obligatorio")
     @Column(name = "valor")
     private String valor;
+
     @Size(max = 2147483647)
     @Column(name = "ruta_fisica")
     private String rutaFisica;
+
+    @NotNull(message = "La persona es obligatoria")
     @JoinColumn(name = "id_persona", referencedColumnName = "id_persona")
     @ManyToOne(fetch = FetchType.LAZY)
     private Persona idPersona;
+
+    @NotNull(message = "El tipo de documento es obligatorio")
     @JoinColumn(name = "id_tipo_documento", referencedColumnName = "id_tipo_documento")
     @ManyToOne(fetch = FetchType.LAZY)
     private TipoDocumento idTipoDocumento;

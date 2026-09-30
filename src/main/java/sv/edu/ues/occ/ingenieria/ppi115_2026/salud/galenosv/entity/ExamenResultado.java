@@ -16,6 +16,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
@@ -37,23 +38,31 @@ import java.util.UUID;
 public class ExamenResultado implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "id_examen_resultado")
     private UUID idExamenResultado;
+
+    @NotNull(message = "La fecha de creación es obligatoria")
     @Column(name = "fecha_creacion")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCreacion;
-    @Size(max = 2147483647)
+
+    @NotBlank(message = "El resultado es obligatorio")
     @Column(name = "resultado")
     private String resultado;
+
     @Size(max = 2147483647)
     @Column(name = "interpretacion")
     private String interpretacion;
+
     @Size(max = 2147483647)
     @Column(name = "ruta_atestado")
     private String rutaAtestado;
+
+    @NotNull(message = "La orden de examen es obligatoria")
     @JoinColumn(name = "id_orden_examen", referencedColumnName = "id_orden_examen")
     @ManyToOne(fetch = FetchType.LAZY)
     private OrdenExamen idOrdenExamen;
@@ -137,5 +146,5 @@ public class ExamenResultado implements Serializable {
     public String toString() {
         return "sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ExamenResultado[ idExamenResultado=" + idExamenResultado + " ]";
     }
-    
+
 }
