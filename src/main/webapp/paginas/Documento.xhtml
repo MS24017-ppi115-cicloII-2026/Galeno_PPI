@@ -155,7 +155,7 @@
                             noSelectionOption="true"/>
 
                         <f:selectItems
-                            value="#{personaModels.registros}"
+                            value="#{personaModel.registros}"
                             var="per"
                             itemLabel="#{per.nombres} #{per.apellidos}"
                             itemValue="#{per}"/>
@@ -185,7 +185,7 @@
                             noSelectionOption="true"/>
 
                         <f:selectItems
-                            value="#{tipoDocumentoModels.registros}"
+                            value="#{tipoDocumentoModel.registros}"
                             var="td"
                             itemLabel="#{td.nombre}"
                             itemValue="#{td}"/>
