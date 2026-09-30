@@ -1,5 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
 
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -22,12 +24,70 @@ public class ConsultaProcedimientoModels extends AbstractModel<ConsultaProcedimi
 
     @Override
     protected ConsultaProcedimiento crearRegistroNuevo() {
-        ConsultaProcedimiento cp = new ConsultaProcedimiento(UUID.randomUUID());
-        return cp;
+        return new ConsultaProcedimiento(UUID.randomUUID());
     }
 
     @Override
     protected UUID obtenerId(ConsultaProcedimiento registro) {
         return registro.getIdConsultaProcedimiento();
+    }
+
+    private boolean validarRegistro() {
+        if (registro == null) {
+            return mostrarError(
+                    "Registro inválido",
+                    "El registro no puede ser nulo."
+            );
+        }
+
+        if (registro.getIdConsulta() == null) {
+            return mostrarError(
+                    "Consulta requerida",
+                    "Debe seleccionar una consulta."
+            );
+        }
+
+        if (registro.getIdProcedimiento() == null) {
+            return mostrarError(
+                    "Procedimiento requerido",
+                    "Debe seleccionar un procedimiento."
+            );
+        }
+        if (registro.getFechaInicio() == null) {
+            return mostrarError(
+                    "Fecha requerida",
+                    "El procedimiento de la consulta debe tener una fecha de inicio."
+            );
+        }
+
+        return true;
+    }
+
+    private boolean mostrarError(String resumen, String detalle) {
+        fc.addMessage(
+                null,
+                new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        resumen,
+                        detalle
+                )
+        );
+
+        fc.validationFailed();
+        return false;
+    }
+
+    @Override
+    public void btnCrearhandler(ActionEvent ae) {
+        if (validarRegistro()) {
+            super.btnCrearhandler(ae);
+        }
+    }
+
+    @Override
+    public void btnModificarHandler() {
+        if (validarRegistro()) {
+            super.btnModificarHandler();
+        }
     }
 }
