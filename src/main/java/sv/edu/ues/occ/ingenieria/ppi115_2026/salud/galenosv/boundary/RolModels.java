@@ -3,6 +3,7 @@ package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.List;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.RolDAO;
@@ -31,5 +32,9 @@ public class RolModels extends AbstractModel<Rol> {
     @Override
     protected UUID obtenerId(Rol registro) {
         return registro.getIdRol();
+    }
+
+    public List<Rol> getRolesActivos() {
+        return rolDAO.buscarRolesActivos();
     }
 }
