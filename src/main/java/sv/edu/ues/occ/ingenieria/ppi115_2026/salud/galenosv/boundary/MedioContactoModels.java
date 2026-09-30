@@ -9,27 +9,29 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.MedioContactoDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.MedioContacto;
 
-@Named
+@Named("medioContactoModel")
 @ViewScoped
 public class MedioContactoModels extends AbstractModel<MedioContacto> {
 
-    @Inject
-    MedioContactoDAO medioContactoDAO;
+@Inject
+MedioContactoDAO medioContactoDAO;
 
-    @Override
-    protected DAOInterface<MedioContacto> getDAO() {
-        return medioContactoDAO;
-    }
-
-    @Override
-    protected MedioContacto crearRegistroNuevo() {
-        MedioContacto mc = new MedioContacto(UUID.randomUUID());
-        mc.setFechaCreacion(new Date());
-        return mc;
-    }
-
-    @Override
-    protected UUID obtenerId(MedioContacto registro) {
-        return registro.getIdMedioContacto();
-    }
+@Override
+protected DAOInterface<MedioContacto> getDAO() {
+    return medioContactoDAO;
 }
+
+@Override
+protected MedioContacto crearRegistroNuevo() {
+    MedioContacto mc = new MedioContacto(UUID.randomUUID());
+    mc.setFechaCreacion(new Date());
+    return mc;
+}
+
+@Override
+protected UUID obtenerId(MedioContacto registro) {
+    return registro.getIdMedioContacto();
+}
+
+}
+

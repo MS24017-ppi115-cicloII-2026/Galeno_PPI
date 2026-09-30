@@ -54,4 +54,15 @@ public class RolDAO extends DefaultDAO<Rol> {
 
         return q.getResultList();
     }
+
+    public List<Rol> buscarRolesActivos() {
+        TypedQuery<Rol> q = getEntityManger().createQuery(
+                "SELECT r FROM Rol r "
+                + "WHERE r.activo = TRUE "
+                + "ORDER BY r.nombre",
+                Rol.class
+        );
+        return q.getResultList();
+    }
+
 }

@@ -38,6 +38,23 @@ public class PersonaDAO extends DefaultDAO<Persona> {
         return q.getResultList();
     }
 
+    public List<Persona> buscarPersonasSinRol() {
+    TypedQuery<Persona> q = getEntityManger().createQuery(
+            "SELECT p "
+            + "FROM Persona p "
+            + "WHERE NOT EXISTS ("
+            + "    SELECT pr "
+            + "    FROM PersonaRol pr "
+            + "    WHERE pr.idPersona = p"
+            + ") "
+            + "ORDER BY p.nombres, p.apellidos",
+            Persona.class
+    );
+
+    return q.getResultList();
+}
+    
+    
     public List<Persona> buscarPorApellidos(String apellidos) {
         if (apellidos == null || apellidos.isBlank()) {
             throw new IllegalArgumentException(
