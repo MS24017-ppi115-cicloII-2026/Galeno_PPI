@@ -9,7 +9,7 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.PersonaRolDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 
-@Named("personaRolModels")
+@Named("personaRolModel")
 @ViewScoped
 public class PersonaRolModels extends AbstractModel<PersonaRol> {
 
