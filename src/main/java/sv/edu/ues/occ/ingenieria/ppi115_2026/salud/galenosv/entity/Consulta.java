@@ -39,26 +39,35 @@ import java.util.UUID;
 public class Consulta implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @Id
     @Basic(optional = false)
     @NotNull
     @Column(name = "id_consulta")
     private UUID idConsulta;
+
+    @NotNull(message = "La fecha de inicio es obligatoria")
     @Column(name = "fecha_inicio")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaInicio;
+
     @Column(name = "fecha_fin")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaFin;
+
     @Size(max = 2147483647)
     @Column(name = "referencia_externa")
     private String referenciaExterna;
+
     @Size(max = 2147483647)
     @Column(name = "observaciones")
     private String observaciones;
+
+    @NotNull(message = "La persona es obligatoria")
     @JoinColumn(name = "id_persona_rol", referencedColumnName = "id_persona_rol")
     @ManyToOne(fetch = FetchType.LAZY)
     private PersonaRol idPersonaRol;
+
     @OneToMany(mappedBy = "idConsulta", fetch = FetchType.LAZY)
     private Collection<ConsultaProcedimiento> consultaProcedimientoCollection;
 
@@ -149,5 +158,5 @@ public class Consulta implements Serializable {
     public String toString() {
         return "sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Consulta[ idConsulta=" + idConsulta + " ]";
     }
-    
+
 }

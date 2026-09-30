@@ -47,18 +47,22 @@ public class ConsultaModels extends AbstractModel<Consulta> {
             );
         }
 
-        if (registro.getIdPersonaRol().getIdPersona() == null) {
-            return mostrarError(
-                    "Persona requerida",
-                    "La persona seleccionada no tiene una persona asociada."
-            );
-        }
+     
         if (registro.getFechaInicio() == null) {
             return mostrarError(
                     "Fecha requerida",
                     "La consulta debe tener una fecha de inicio."
             );
         }
+          if (registro.getFechaFin() != null
+                && registro.getFechaFin().before(registro.getFechaInicio())) {
+            return mostrarError(
+                    "Fechas inválidas",
+                    "La fecha de fin no puede ser anterior a la fecha de inicio."
+            );
+        }
+
+       
 
         return true;
     }
