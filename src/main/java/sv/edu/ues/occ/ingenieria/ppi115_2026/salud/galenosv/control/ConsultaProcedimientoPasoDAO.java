@@ -17,43 +17,65 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 
 @Stateless
 @LocalBean
-public class ConsultaProcedimientoPasoDAO extends DefaultDAO<ConsultaProcedimientoPaso>{
+public class ConsultaProcedimientoPasoDAO extends DefaultDAO<ConsultaProcedimientoPaso> {
+
     private ConsultaProcedimiento idConsultaProcedimiento;
     private PersonaRol idPersonaRol;
-     @PersistenceContext(unitName = "GalenoSV")
-EntityManager em;
+    @PersistenceContext(unitName = "GalenoSV")
+    EntityManager em;
+
     @Override
     public EntityManager getEntityManger() {
-       return em;
+        return em;
     }
+
     public List<ConsultaProcedimientoPaso> buscarPorConsultaProcedimiento(UUID idConsultaProcedimiento) {
-    if (idConsultaProcedimiento == null) {
-        throw new IllegalArgumentException("El idConsultaProcedimiento no puede ser nulo");
+        if (idConsultaProcedimiento == null) {
+            throw new IllegalArgumentException("El idConsultaProcedimiento no puede ser nulo");
+        }
+
+        TypedQuery<ConsultaProcedimientoPaso> q = getEntityManger().createQuery(
+                "SELECT c FROM ConsultaProcedimientoPaso c "
+                + "WHERE c.idConsultaProcedimiento.idConsultaProcedimiento = :id",
+                ConsultaProcedimientoPaso.class
+        );
+
+        q.setParameter("id", idConsultaProcedimiento);
+
+        return q.getResultList();
     }
 
-    TypedQuery<ConsultaProcedimientoPaso> q = getEntityManger().createQuery(
-            "SELECT c FROM ConsultaProcedimientoPaso c "
-            + "WHERE c.idConsultaProcedimiento.idConsultaProcedimiento = :id",
-            ConsultaProcedimientoPaso.class
-    );
-
-    q.setParameter("id", idConsultaProcedimiento);
-
-    return q.getResultList();
-}
     public List<ConsultaProcedimientoPaso> buscarPorPersonaRol(UUID idPersonaRol) {
-    if (idPersonaRol == null) {
-        throw new IllegalArgumentException("El idPersonaRol no puede ser nulo");
+        if (idPersonaRol == null) {
+            throw new IllegalArgumentException("El idPersonaRol no puede ser nulo");
+        }
+
+        TypedQuery<ConsultaProcedimientoPaso> q = getEntityManger().createQuery(
+                "SELECT c FROM ConsultaProcedimientoPaso c "
+                + "WHERE c.idPersonaRol.idPersonaRol = :id",
+                ConsultaProcedimientoPaso.class
+        );
+
+        q.setParameter("id", idPersonaRol);
+
+        return q.getResultList();
     }
 
-    TypedQuery<ConsultaProcedimientoPaso> q = getEntityManger().createQuery(
-            "SELECT c FROM ConsultaProcedimientoPaso c "
-            + "WHERE c.idPersonaRol.idPersonaRol = :id",
-            ConsultaProcedimientoPaso.class
-    );
+    public List<PersonaRol> buscarPersonasExcluyendoRol(String nombreRol) {
+        if (nombreRol == null || nombreRol.isBlank()) {
+            throw new IllegalArgumentException("El nombre del rol no puede estar vacío");
+        }
 
-    q.setParameter("id", idPersonaRol);
+        TypedQuery<PersonaRol> q = getEntityManger().createQuery(
+                "SELECT p FROM PersonaRol p "
+                + "JOIN FETCH p.idPersona "
+                + "JOIN FETCH p.idRol "
+                + "WHERE LOWER(p.idRol.nombre) <> :nombre",
+                PersonaRol.class
+        );
 
-    return q.getResultList();
-}
+        q.setParameter("nombre", nombreRol.toLowerCase());
+
+        return q.getResultList();
+    }
 }
