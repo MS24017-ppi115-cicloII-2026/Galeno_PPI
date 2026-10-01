@@ -34,4 +34,21 @@ EntityManager em;
 
     return q.getResultList();
 }
+        public List<PersonaRol> buscarPersonasPorNombreRol(String nombreRol) {
+        if (nombreRol == null || nombreRol.isBlank()) {
+            throw new IllegalArgumentException("El nombre del rol no puede estar vacío");
+        }
+
+        TypedQuery<PersonaRol> q = getEntityManger().createQuery(
+                "SELECT p FROM PersonaRol p "
+                + "JOIN FETCH p.idPersona "
+                + "JOIN FETCH p.idRol "
+                + "WHERE LOWER(p.idRol.nombre) = :nombre",
+                PersonaRol.class
+        );
+
+        q.setParameter("nombre", nombreRol.toLowerCase());
+
+        return q.getResultList();
+    }
 }
