@@ -5,10 +5,12 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.List;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ConsultaDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Consulta;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 
 @Named
 @ViewScoped
@@ -20,6 +22,16 @@ public class ConsultaModels extends AbstractModel<Consulta> {
     @Override
     protected DAOInterface<Consulta> getDAO() {
         return consultaDAO;
+    }
+    private static final String ROL_PACIENTE = "paciente";
+
+    private List<PersonaRol> pacientes;
+
+    public List<PersonaRol> getPacientes() {
+        if (pacientes == null) {
+            pacientes = consultaDAO.buscarPersonasPorNombreRol(ROL_PACIENTE);
+        }
+        return pacientes;
     }
 
     @Override
@@ -39,7 +51,18 @@ public class ConsultaModels extends AbstractModel<Consulta> {
                     "La consulta no puede ser nula."
             );
         }
+        //
+        UUID idSeleccionado = registro.getIdPersonaRol().getIdPersonaRol();
+        boolean esPaciente = getPacientes().stream()
+                .anyMatch(p -> p.getIdPersonaRol().equals(idSeleccionado));
 
+        if (!esPaciente) {
+            return mostrarError(
+                    "Paciente inválido",
+                    "La persona seleccionada no tiene el rol de paciente."
+            );
+        }
+        //
         if (registro.getIdPersonaRol() == null) {
             return mostrarError(
                     "Persona requerida",
@@ -47,22 +70,19 @@ public class ConsultaModels extends AbstractModel<Consulta> {
             );
         }
 
-     
         if (registro.getFechaInicio() == null) {
             return mostrarError(
                     "Fecha requerida",
                     "La consulta debe tener una fecha de inicio."
             );
         }
-          if (registro.getFechaFin() != null
+        if (registro.getFechaFin() != null
                 && registro.getFechaFin().before(registro.getFechaInicio())) {
             return mostrarError(
                     "Fechas inválidas",
                     "La fecha de fin no puede ser anterior a la fecha de inicio."
             );
         }
-
-       
 
         return true;
     }
