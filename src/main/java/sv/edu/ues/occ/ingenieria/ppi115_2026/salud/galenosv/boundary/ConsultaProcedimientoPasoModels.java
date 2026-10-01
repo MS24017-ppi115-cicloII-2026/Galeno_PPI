@@ -5,10 +5,12 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.List;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ConsultaProcedimientoPasoDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimientoPaso;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 
 @Named
 @ViewScoped
@@ -30,6 +32,17 @@ public class ConsultaProcedimientoPasoModels extends AbstractModel<ConsultaProce
     @Override
     protected UUID obtenerId(ConsultaProcedimientoPaso registro) {
         return registro.getIdConsultaProcedimientoPaso();
+    }
+    private static final String ROL_PACIENTE = "paciente";
+
+    private List<PersonaRol> responsables;
+
+    public List<PersonaRol> getResponsables() {
+        if (responsables == null) {
+            responsables = consultaProcedimientoPasoDAO
+                    .buscarPersonasExcluyendoRol(ROL_PACIENTE);
+        }
+        return responsables;
     }
 
     private boolean validarRegistro() {
@@ -53,8 +66,16 @@ public class ConsultaProcedimientoPasoModels extends AbstractModel<ConsultaProce
                     "Debe seleccionar la persona responsable del paso."
             );
         }
+        UUID idSeleccionado = registro.getIdPersonaRol().getIdPersonaRol();
+        boolean esResponsableValido = getResponsables().stream()
+                .anyMatch(p -> p.getIdPersonaRol().equals(idSeleccionado));
 
-       
+        if (!esResponsableValido) {
+            return mostrarError(
+                    "Responsable inválido",
+                    "Un paciente no puede ser el responsable de un paso."
+            );
+        }
 
         if (registro.getEstado() == null
                 || registro.getEstado().isBlank()) {
@@ -68,7 +89,8 @@ public class ConsultaProcedimientoPasoModels extends AbstractModel<ConsultaProce
                     "Fecha requerida",
                     "El paso de la consulta debe tener una fecha de inicio."
             );
-        }  if (registro.getFechaFin() != null
+        }
+        if (registro.getFechaFin() != null
                 && registro.getFechaFin().before(registro.getFechaInicio())) {
             return mostrarError(
                     "Fechas inválidas",
