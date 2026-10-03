@@ -17,27 +17,6 @@ body .ui-dialog .ui-dialog-titlebar {
     display: block;
 }
 
-.badge {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.85em;
-    font-weight: bold;
-    color: white;
-    text-transform: uppercase;
-}
-
-.badge-activo {
-    background-color: #27ae60;
-}
-
-.badge-inactivo {
-    background-color: #e74c3c;
-}
-
-.badge-info {
-    background-color: #2980b9;
-}
-
 .acciones-tabla .ui-button {
     margin-right: 5px;
 }

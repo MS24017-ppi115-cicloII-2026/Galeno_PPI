@@ -48,12 +48,11 @@
                         </p:column>
 
                         <p:column headerText="#{msg['paso.col_rol']}">
-                            <h:outputText value="#{r.idRol.nombre}" styleClass="badge badge-info" />
+                            <h:outputText value="#{r.idRol.nombre}" />
                         </p:column>
 
                         <p:column headerText="#{msg['paso.col_fin']}" width="15%" style="text-align: center;">
-                            <h:outputText value="#{msg['global.si']}" rendered="#{r.indicaFin}" styleClass="badge badge-activo" />
-                            <h:outputText value="#{msg['global.no']}" rendered="#{not r.indicaFin}" styleClass="badge badge-inactivo" />
+<h:outputText value="#{r.indicaFin ? msg['global.si'] : msg['global.no']}" />
                         </p:column>
 
                         <f:facet name="footer">

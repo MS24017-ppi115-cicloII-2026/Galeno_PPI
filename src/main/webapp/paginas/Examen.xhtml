@@ -41,9 +41,12 @@ template="./general.xhtml">
                         <h:outputText value="#{r.nombre}" style="font-weight: bold;" />
                     </p:column>
 
+                    <p:column headerText="#{msg['global.observaciones']}" width="30%">
+                        <h:outputText value="#{r.observaciones}" />
+                    </p:column>
+
                     <p:column headerText="#{msg['global.estado']}" width="15%" style="text-align: center;">
-                        <h:outputText value="#{msg['global.activo']}" rendered="#{r.activo}" styleClass="badge badge-activo" />
-                        <h:outputText value="#{msg['global.inactivo']}" rendered="#{not r.activo}" styleClass="badge badge-inactivo" />
+                        <h:outputText value="#{r.activo ? msg['global.activo'] : msg['global.inactivo']}" />
                     </p:column>
 
                     <f:facet name="footer">
