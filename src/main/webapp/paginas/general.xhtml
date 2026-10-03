@@ -12,11 +12,12 @@
             <title>
                 <ui:insert name="titulo">GalenoSV</ui:insert>
             </title>
+
+            <h:outputStylesheet library="css" name="estilos.css" />
         </h:head>
 
         <h:body>
 
-            <!-- Mensajes globales para que los CRUDs puedan mostrar notificaciones -->
             <h:form id="mensajesGlobales">
                 <p:growl id="growl-sticky" showDetail="true" />
             </h:form>
@@ -74,9 +75,40 @@
                                     </p:submenu>
 
                                     <p:menuitem
-                                        value="#{msg['menu.iniciar_sesion']}"
+                                        value="#{msg['consulta.sesion_no_iniciada']}"
                                         icon="pi pi-user"
-                                        disabled="true"/>
+                                        disabled="true"
+                                        rendered="#{not sesionModels.sesionIniciada}"/>
+
+                                    <p:submenu
+                                        label="#{sesionModels.nombrePersona}"
+                                        icon="pi pi-user"
+                                        rendered="#{sesionModels.sesionIniciada}">
+
+                                        <p:menuitem
+                                            value="#{msg['menu.cerrar_sesion']}"
+                                            icon="pi pi-sign-out"
+                                            actionListener="#{sesionModels.cerrarSesion}"
+                                            ajax="false"/>
+
+                                    </p:submenu>
+
+                                    <p:submenu
+                                        label="#{msg['consulta.sesion_clinica']}"
+                                        icon="pi pi-building"
+                                        rendered="#{sesionModels.sesionIniciada}">
+
+                                        <p:menuitem
+                                            value="#{empty sesionModels.nombreClinica ? msg['consulta.sesion_sin_clinica'] : sesionModels.nombreClinica}"
+                                            icon="pi pi-building"
+                                            disabled="true"/>
+
+                                        <p:menuitem
+                                            value="#{sesionModels.nombreRol}"
+                                            icon="pi pi-id-badge"
+                                            disabled="true"/>
+
+                                    </p:submenu>
 
                                 </p:menubar>
 
@@ -201,6 +233,11 @@
 
                                     <!-- Consultas y Resultados -->
                                     <p:submenu label="Consultas y Resultados">
+
+                                        <p:menuitem
+                                            value="Cambio de Rol"
+                                            icon="pi pi-users"
+                                            outcome="/paginas/CambioRol.xhtml" />
 
                                         <p:menuitem
                                             value="Documentos"

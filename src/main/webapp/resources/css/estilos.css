@@ -61,3 +61,29 @@ body .ui-dialog .ui-dialog-titlebar {
 .botones-crud .ui-button {
     margin-right: 5px;
 }
+/* --- Editor de procedimiento: listado de pasos --- */
+.titulo-seccion {
+    font-weight: 600;
+    font-size: 1.05em;
+}
+
+/* --- Dialogo de examenes: los ya asociados --- */
+.lista-examenes {
+    margin-bottom: 5px;
+}
+
+/* --- Pestana Pasos: arbol de pasos del procedimiento --- */
+.tabla-pasos tbody > tr {
+    background-color: #f7fafc;
+}
+
+.tabla-pasos tbody > tr > td {
+    padding: 6px 10px;
+}
+
+/* --- Resaltado al pasar el cursor, como en las demas tablas --- */
+.tabla-procedimientos tbody > tr:hover,
+.tabla-pasos tbody > tr:hover {
+    background-color: #e3f0fa;
+    cursor: pointer;
+}

@@ -6,11 +6,50 @@
                 xmlns:crud="jakarta.faces.composite/crud"
                 template="./general.xhtml">
 
-    <ui:define name="titulo">#{msg['consulta.titulo']}</ui:define>
+<ui:define name="titulo">#{msg['consulta.titulo']}</ui:define>
 
     <ui:define name="cuerpo">
 
         <h:form id="frmTabla">
+
+            <h:panelGroup layout="block" style="margin-bottom: 8px;">
+                <h:outputText value="#{msg['consulta.sesion_clinica']}: " style="font-weight: 600;"/>
+                <h:outputText
+                    value="#{empty sesionModels.idClinicaActual ? msg['consulta.filtro_todas'] : sesionModels.nombreClinica}"/>
+
+            </h:panelGroup>
+
+            <h:outputText value="#{msg['consulta.btn_filtrar']}" style="font-weight: 600;"/>
+
+            <h:panelGrid columns="5" styleClass="ui-fluid" cellpadding="5" style="margin-bottom: 15px;">
+
+                <p:outputLabel
+                        for="calDesde"
+                        value="#{msg['consulta.filtro_desde']}"/>
+
+                    <p:datePicker
+                        id="calDesde"
+                        value="#{consultaModels.fechaDesde}"
+                        pattern="dd/MM/yyyy"
+                        showIcon="true"/>
+
+                    <p:outputLabel
+                        for="calHasta"
+                        value="#{msg['consulta.filtro_hasta']}"/>
+
+                    <p:datePicker
+                        id="calHasta"
+                        value="#{consultaModels.fechaHasta}"
+                        pattern="dd/MM/yyyy"
+                        showIcon="true"/>
+
+                    <p:commandButton
+                        id="btnFiltrar"
+                        value="#{msg['consulta.btn_filtrar']}"
+                        icon="pi pi-filter"
+                        update=":frmTabla"/>
+
+                </h:panelGrid>
 
             <p:toolbar>
                 <p:toolbarGroup>

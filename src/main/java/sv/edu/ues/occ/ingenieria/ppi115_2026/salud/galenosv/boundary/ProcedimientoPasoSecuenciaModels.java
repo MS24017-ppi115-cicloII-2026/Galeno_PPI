@@ -44,26 +44,7 @@ public class ProcedimientoPasoSecuenciaModels
     protected UUID obtenerId(ProcedimientoPasoSecuencia registro) {
         return registro.getIdProcedimientoPasoSecuencia();
     }
-
-    /**
-     * Prepara una nueva secuencia para el paso actual.
-     */
-    public void prepararNuevoParaPaso(UUID idProcedimientoPaso) {
-
-        this.registro = crearRegistroNuevo();
-
-        if (idProcedimientoPaso != null) {
-            this.registro.setIdProcedimientoPaso(
-                    new ProcedimientoPaso(idProcedimientoPaso)
-            );
-        }
-
-        this.estado = Estado_CRUD.CREAR;
-    }
-
-    /**
-     * Devuelve únicamente las secuencias del paso actual.
-     */
+    
     public List<ProcedimientoPasoSecuencia> getRegistrosPorPaso(
             UUID idProcedimientoPaso) {
 
@@ -75,10 +56,7 @@ public class ProcedimientoPasoSecuenciaModels
                 .buscarPorProcedimientoPaso(idProcedimientoPaso);
     }
 
-    /**
-     * Devuelve los pasos pertenecientes al procedimiento actual.
-     * Se utiliza para seleccionar el paso de referencia.
-     */
+   
     public List<ProcedimientoPaso> getPasosPorProcedimiento(
             UUID idProcedimiento) {
 
@@ -89,10 +67,7 @@ public class ProcedimientoPasoSecuenciaModels
         return procedimientoPasoDAO.buscarPorProcedimiento(idProcedimiento);
     }
 
-    /**
-     * Recorre las dependencias desde ref; hay ciclo si alcanza a paso.
-     * Se ignora el propio registro para no contar su valor anterior al modificar.
-     */
+    
     private boolean hayCiclo(UUID paso, UUID ref) {
         Set<UUID> visitados = new HashSet<>();
         Deque<UUID> pendientes = new ArrayDeque<>();

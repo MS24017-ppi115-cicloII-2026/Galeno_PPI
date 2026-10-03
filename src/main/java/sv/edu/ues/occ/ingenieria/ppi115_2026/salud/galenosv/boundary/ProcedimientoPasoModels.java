@@ -7,13 +7,20 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ExamenDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ProcedimientoDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ProcedimientoPasoDAO;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ProcedimientoPasoExamenDAO;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ProcedimientoPasoSecuenciaDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.RolDAO;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Examen;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Procedimiento;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ProcedimientoPaso;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ProcedimientoPasoExamen;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ProcedimientoPasoSecuencia;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Rol;
 
 @Named
@@ -28,6 +35,22 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
 
     @Inject
     RolDAO rolDAO;
+
+    @Inject
+    ProcedimientoPasoSecuenciaDAO procedimientoPasoSecuenciaDAO;
+
+    @Inject
+    ProcedimientoPasoExamenDAO procedimientoPasoExamenDAO;
+
+    @Inject
+    ExamenDAO examenDAO;
+
+    @Inject
+    ProcedimientoPasoExamenModels procedimientoPasoExamenModels;
+
+    private UUID idPasoPadre;
+
+    private UUID idExamenNuevo;
 
     @Override
     protected DAOInterface<ProcedimientoPaso> getDAO() {
@@ -46,9 +69,23 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
         return registro.getIdProcedimientoPaso();
     }
 
-    /**
-     * Prepara un nuevo paso para el procedimiento seleccionado.
-     */
+    public UUID getIdPasoPadre() {
+        return idPasoPadre;
+    }
+
+    public void setIdPasoPadre(UUID idPasoPadre) {
+        this.idPasoPadre = idPasoPadre;
+    }
+
+    public UUID getIdExamenNuevo() {
+        return idExamenNuevo;
+    }
+
+    public void setIdExamenNuevo(UUID idExamenNuevo) {
+        this.idExamenNuevo = idExamenNuevo;
+    }
+
+    
     public void prepararNuevoParaProcedimiento(UUID idProcedimiento) {
 
         this.registro = crearRegistroNuevo();
@@ -59,13 +96,58 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
             );
         }
 
+        this.idPasoPadre = null;
+        this.idExamenNuevo = null;
+        this.procedimientoPasoExamenModels.setIdAsociacionSeleccionada(null);
         this.estado = Estado_CRUD.CREAR;
     }
 
-    /**
-     * Devuelve únicamente los pasos pertenecientes
-     * al procedimiento actual.
-     */
+   
+    public void prepararNuevoDependiente(UUID idProcedimiento) {
+        prepararNuevoParaProcedimiento(idProcedimiento);
+        this.idPasoPadre = null;
+        if (idProcedimiento != null) {
+            List<ProcedimientoPaso> pasos = getRegistrosPorProcedimiento(idProcedimiento);
+            if (!pasos.isEmpty()) {
+                this.idPasoPadre = pasos.get(pasos.size() - 1).getIdProcedimientoPaso();
+            }
+        }
+    }
+
+    
+    public String getNombrePasoPadre() {
+        if (idPasoPadre == null) {
+            return "";
+        }
+        ProcedimientoPaso padre = procedimientoPasoDAO.buscar(idPasoPadre);
+        return (padre != null && padre.getNombre() != null) ? padre.getNombre() : "";
+    }
+
+    
+    public boolean hayPasoFinal(UUID idProcedimiento) {
+        if (idProcedimiento == null) {
+            return false;
+        }
+        return getRegistrosPorProcedimiento(idProcedimiento).stream()
+                .anyMatch(x -> Boolean.TRUE.equals(x.getIndicaFin()));
+    }
+
+    @Override
+    public void btnSeleccionarRegistro(UUID id) {
+        super.btnSeleccionarRegistro(id);
+        this.idPasoPadre = null;
+        this.idExamenNuevo = null;
+        this.procedimientoPasoExamenModels.setIdAsociacionSeleccionada(null);
+        if (this.registro != null) {
+            List<ProcedimientoPasoSecuencia> dependencias = procedimientoPasoSecuenciaDAO
+                    .buscarPorProcedimientoPaso(this.registro.getIdProcedimientoPaso());
+            if (!dependencias.isEmpty()) {
+                this.idPasoPadre = dependencias.get(0).getIdProcedimientoPasoReferencia();
+            }
+        }
+    }
+
+   
     public List<ProcedimientoPaso> getRegistrosPorProcedimiento(UUID idProcedimiento) {
 
         if (idProcedimiento == null) {
@@ -75,9 +157,7 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
         return procedimientoPasoDAO.buscarPorProcedimiento(idProcedimiento);
     }
 
-    /**
-     * Devuelve procedimientos activos más el actual del registro.
-     */
+    
     public List<Procedimiento> getProcedimientos() {
         List<Procedimiento> lista = new ArrayList<>(procedimientoDAO.findRange(0, 1000).stream()
                 .filter(p -> Boolean.TRUE.equals(p.getActivo()))
@@ -93,8 +173,9 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
         return lista;
     }
 
+   
     public List<Rol> getRoles() {
-        return rolDAO.findRange(0, 1000);
+        return rolDAO.buscarRolesActivos();
     }
 
     private boolean vinculoValido() {
@@ -110,6 +191,18 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
 
         if (estado == Estado_CRUD.CREAR && pr != null && !Boolean.TRUE.equals(pr.getActivo())) {
             rechazar("El procedimiento \"" + pr.getNombre() + "\" está inactivo.");
+            return false;
+        }
+
+        Rol rl = (registro.getIdRol() != null)
+                ? rolDAO.buscar(registro.getIdRol().getIdRol()) : null;
+
+        if (estado == Estado_CRUD.CREAR && rl != null && !Boolean.TRUE.equals(rl.getActivo())) {
+            rechazar("El rol \"" + rl.getNombre() + "\" está inactivo.");
+            return false;
+        }
+        if (idPasoPadre != null && idPasoPadre.equals(registro.getIdProcedimientoPaso())) {
+            rechazar("Un paso no puede depender de sí mismo.");
             return false;
         }
         if (pr != null) {
@@ -136,7 +229,21 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
         if (registro != null && !vinculoValido()) {
             return;
         }
+        UUID idNuevo = (registro != null) ? registro.getIdProcedimientoPaso() : null;
+        UUID referencia = this.idPasoPadre;
+        UUID examen = this.idExamenNuevo;
         super.btnCrearhandler(ae);
+        boolean guardado = (this.registro == null);
+        if (guardado && idNuevo != null) {
+            if (referencia != null && !referencia.equals(idNuevo)) {
+                crearSecuencia(idNuevo, referencia);
+            }
+            if (examen != null) {
+                asociarExamen(idNuevo, examen);
+            }
+        }
+        this.idPasoPadre = null;
+        this.idExamenNuevo = null;
     }
 
     @Override
@@ -144,6 +251,65 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
         if (registro != null && !vinculoValido()) {
             return;
         }
+        UUID idPaso = (registro != null) ? registro.getIdProcedimientoPaso() : null;
+        UUID referencia = this.idPasoPadre;
         super.btnModificarHandler();
+        boolean guardado = (this.registro == null);
+        if (guardado && idPaso != null) {
+            sincronizarSecuencia(idPaso, referencia);
+        }
+    }
+
+    private void crearSecuencia(UUID idPaso, UUID idReferencia) {
+        try {
+            ProcedimientoPasoSecuencia secuencia =
+                    new ProcedimientoPasoSecuencia(UUID.randomUUID());
+            secuencia.setIdProcedimientoPaso(new ProcedimientoPaso(idPaso));
+            secuencia.setIdProcedimientoPasoReferencia(idReferencia);
+            secuencia.setTipoSecuencia("AFTER");
+            procedimientoPasoSecuenciaDAO.crear(secuencia);
+        } catch (Exception ex) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Paso guardado, pero no se pudo crear la dependencia", ex.getMessage()));
+        }
+    }
+
+    private void sincronizarSecuencia(UUID idPaso, UUID idReferencia) {
+        try {
+            List<ProcedimientoPasoSecuencia> actuales = procedimientoPasoSecuenciaDAO
+                    .buscarPorProcedimientoPaso(idPaso);
+            UUID referenciaActual = actuales.isEmpty() ? null
+                    : actuales.get(0).getIdProcedimientoPasoReferencia();
+            if (Objects.equals(referenciaActual, idReferencia)) {
+                return;
+            }
+            for (ProcedimientoPasoSecuencia s : actuales) {
+                procedimientoPasoSecuenciaDAO.eliminar(s.getIdProcedimientoPasoSecuencia());
+            }
+            if (idReferencia != null && !idReferencia.equals(idPaso)) {
+                crearSecuencia(idPaso, idReferencia);
+            }
+        } catch (Exception ex) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Paso guardado, pero no se pudo actualizar la dependencia", ex.getMessage()));
+        }
+    }
+
+    private void asociarExamen(UUID idPaso, UUID idExamen) {
+        try {
+            Examen examen = examenDAO.buscar(idExamen);
+            if (examen == null || !Boolean.TRUE.equals(examen.getActivo())) {
+                return;
+            }
+            ProcedimientoPasoExamen asociacion =
+                    new ProcedimientoPasoExamen(UUID.randomUUID());
+            asociacion.setIdProcedimientoPaso(new ProcedimientoPaso(idPaso));
+            asociacion.setIdExamen(new Examen(idExamen));
+            asociacion.setActivo(Boolean.TRUE);
+            procedimientoPasoExamenDAO.crear(asociacion);
+        } catch (Exception ex) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Paso guardado, pero no se pudo asociar el examen", ex.getMessage()));
+        }
     }
 }

@@ -89,6 +89,9 @@ class PersonaRolDAOTest {
 
         when(em.createQuery(
                 "SELECT p FROM PersonaRol p "
+                + "JOIN FETCH p.idPersona "
+                + "JOIN FETCH p.idRol "
+                + "LEFT JOIN FETCH p.idClinica "
                 + "WHERE p.idRol = :rol",
                 PersonaRol.class
         )).thenReturn(query);
@@ -107,6 +110,9 @@ class PersonaRolDAOTest {
 
         verify(em).createQuery(
                 "SELECT p FROM PersonaRol p "
+                + "JOIN FETCH p.idPersona "
+                + "JOIN FETCH p.idRol "
+                + "LEFT JOIN FETCH p.idClinica "
                 + "WHERE p.idRol = :rol",
                 PersonaRol.class
         );

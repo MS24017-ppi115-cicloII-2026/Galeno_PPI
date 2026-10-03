@@ -50,6 +50,33 @@ public class ProcedimientoPasoExamenModels extends AbstractModel<ProcedimientoPa
     }
 
     /**
+     * Asociación elegida en la lista para eliminarla.
+     */
+    private UUID idAsociacionSeleccionada;
+
+    public UUID getIdAsociacionSeleccionada() {
+        return idAsociacionSeleccionada;
+    }
+
+    public void setIdAsociacionSeleccionada(UUID idAsociacionSeleccionada) {
+        this.idAsociacionSeleccionada = idAsociacionSeleccionada;
+    }
+
+    /**
+     * Elimina la asociación elegida en la lista.
+     */
+    public void eliminarSeleccionado() {
+        if (idAsociacionSeleccionada == null) {
+            fc.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                    "Seleccione un examen", "Seleccione un examen de la lista para eliminarlo."));
+            fc.validationFailed();
+            return;
+        }
+        btnEliminarHandler(idAsociacionSeleccionada);
+        idAsociacionSeleccionada = null;
+    }
+
+    /**
      * Prepara un nuevo examen para el paso actual.
      */
     public void prepararNuevoParaPaso(UUID idProcedimientoPaso) {

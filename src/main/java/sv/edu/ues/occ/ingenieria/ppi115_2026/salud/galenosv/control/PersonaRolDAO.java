@@ -7,6 +7,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Clinica;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Persona;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
@@ -182,6 +183,9 @@ public List<PersonaRol> buscarPorRol(Rol rol) {
 
     TypedQuery<PersonaRol> q = getEntityManger().createQuery(
             "SELECT p FROM PersonaRol p "
+            + "JOIN FETCH p.idPersona "
+            + "JOIN FETCH p.idRol "
+            + "LEFT JOIN FETCH p.idClinica "
             + "WHERE p.idRol = :rol",
             PersonaRol.class
     );
@@ -209,5 +213,29 @@ public List<PersonaRol> buscarPorClinica(Clinica clinica) {
 
     return q.getResultList();
 }
+
+    
+    public PersonaRol buscarConRelaciones(UUID idPersonaRol) {
+
+        if (idPersonaRol == null) {
+            return null;
+        }
+
+        TypedQuery<PersonaRol> q = getEntityManger().createQuery(
+                "SELECT pr FROM PersonaRol pr "
+                + "JOIN FETCH pr.idPersona "
+                + "JOIN FETCH pr.idRol "
+                + "LEFT JOIN FETCH pr.idClinica "
+                + "WHERE pr.idPersonaRol = :id",
+                PersonaRol.class
+        );
+
+        q.setParameter("id", idPersonaRol);
+        q.setMaxResults(1);
+
+        List<PersonaRol> resultado = q.getResultList();
+
+        return resultado.isEmpty() ? null : resultado.getFirst();
+    }
 
 }

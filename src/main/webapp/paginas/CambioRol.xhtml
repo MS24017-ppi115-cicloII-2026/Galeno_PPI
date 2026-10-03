@@ -1,0 +1,92 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="jakarta.faces.core"
+                template="./general.xhtml">
+
+    <ui:define name="titulo">#{msg['cambio.titulo']}</ui:define>
+
+    <ui:define name="cuerpo">
+
+        <h:form id="frmCambioRol">
+
+            <p:panel
+                header="#{msg['cambio.titulo']}"
+                style="margin-bottom: 15px;">
+
+                <h:panelGroup layout="block" style="margin-bottom: 12px;">
+                    <i class="pi pi-users"
+                       style="margin-right: 6px; color: var(--primary-color);"/>
+                    <h:outputText value="#{msg['cambio.ayuda']}"/>
+                </h:panelGroup>
+
+                <h:panelGrid columns="2" styleClass="ui-fluid" cellpadding="5">
+
+                    <p:outputLabel
+                        for="cmbClinica"
+                        value="#{msg['cambio.lbl_clinica']}"/>
+
+                    <p:selectOneMenu
+                        id="cmbClinica"
+                        value="#{sesionModels.clinicaSeleccionada}"
+                        converter="clinicaConverter"
+                        filter="true"
+                        filterMatchMode="contains">
+
+                        <f:selectItem
+                            itemLabel="#{msg['cambio.sel_clinica']}"
+                            itemValue="#{null}"
+                            noSelectionOption="true"/>
+
+                        <f:selectItems
+                            value="#{sesionModels.clinicas}"
+                            var="c"
+                            itemLabel="#{c.nombre}"
+                            itemValue="#{c}"/>
+
+                        <p:ajax update="cmbPersonaRol"/>
+
+                    </p:selectOneMenu>
+
+                    <p:outputLabel
+                        for="cmbPersonaRol"
+                        value="#{msg['consulta.sesion_lbl_persona']}"/>
+
+                    <p:selectOneMenu
+                        id="cmbPersonaRol"
+                        value="#{sesionModels.personaRolSeleccionado}"
+                        converter="personaRolConverter"
+                        filter="true"
+                        filterMatchMode="contains">
+
+                        <f:selectItem
+                            itemLabel="#{msg['consulta.sesion_sel_persona']}"
+                            itemValue="#{null}"
+                            noSelectionOption="true"/>
+
+                        <f:selectItems
+                            value="#{sesionModels.personasRolesPorClinica}"
+                            var="pr"
+                            itemLabel="#{pr.idPersona.nombres} #{pr.idPersona.apellidos} - #{pr.idRol.nombre}"
+                            itemValue="#{pr}"/>
+
+                    </p:selectOneMenu>
+
+                </h:panelGrid>
+
+                <p:commandButton
+                    id="btnAplicarRol"
+                    value="#{msg['cambio.btn_aplicar']}"
+                    icon="pi pi-check"
+                    actionListener="#{sesionModels.aplicarRol}"
+                    update=":frmMenuUsuario :frmCambioRol :mensajesGlobales:growl-sticky"
+                    style="margin-top: 12px;"/>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

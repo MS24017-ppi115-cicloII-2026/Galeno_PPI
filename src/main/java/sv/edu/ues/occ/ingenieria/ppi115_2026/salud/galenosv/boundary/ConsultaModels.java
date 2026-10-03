@@ -5,6 +5,8 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
@@ -19,6 +21,28 @@ public class ConsultaModels extends AbstractModel<Consulta> {
     @Inject
     ConsultaDAO consultaDAO;
 
+    @Inject
+    SesionModels sesionModels;
+
+    private Date fechaDesde;
+    private Date fechaHasta;
+
+    public Date getFechaDesde() {
+        return fechaDesde;
+    }
+
+    public void setFechaDesde(Date fechaDesde) {
+        this.fechaDesde = fechaDesde;
+    }
+
+    public Date getFechaHasta() {
+        return fechaHasta;
+    }
+
+    public void setFechaHasta(Date fechaHasta) {
+        this.fechaHasta = fechaHasta;
+    }
+
     @Override
     protected DAOInterface<Consulta> getDAO() {
         return consultaDAO;
@@ -31,7 +55,48 @@ public class ConsultaModels extends AbstractModel<Consulta> {
         if (pacientes == null) {
             pacientes = consultaDAO.buscarPersonasPorNombreRol(ROL_PACIENTE);
         }
-        return pacientes;
+        UUID idClinica = (sesionModels != null) ? sesionModels.getIdClinicaActual() : null;
+        if (idClinica == null) {
+            return pacientes;
+        }
+        return pacientes.stream()
+                .filter(p -> p.getIdClinica() != null
+                        && idClinica.equals(p.getIdClinica().getIdClinica()))
+                .toList();
+    }
+
+    
+    @Override
+    public List<Consulta> getregistros() {
+
+        List<Consulta> base = super.getregistros();
+        if (base == null) {
+            return List.of();
+        }
+
+        UUID idClinica = (sesionModels != null) ? sesionModels.getIdClinicaActual() : null;
+        Date hasta = (fechaHasta != null) ? finDelDia(fechaHasta) : null;
+
+        return base.stream()
+                .filter(c -> idClinica == null
+                        || (c.getIdPersonaRol() != null
+                        && c.getIdPersonaRol().getIdClinica() != null
+                        && idClinica.equals(c.getIdPersonaRol().getIdClinica().getIdClinica())))
+                .filter(c -> fechaDesde == null
+                        || (c.getFechaInicio() != null && !c.getFechaInicio().before(fechaDesde)))
+                .filter(c -> hasta == null
+                        || (c.getFechaInicio() != null && !c.getFechaInicio().after(hasta)))
+                .toList();
+    }
+
+    private static Date finDelDia(Date fecha) {
+        Calendar calendario = Calendar.getInstance();
+        calendario.setTime(fecha);
+        calendario.set(Calendar.HOUR_OF_DAY, 23);
+        calendario.set(Calendar.MINUTE, 59);
+        calendario.set(Calendar.SECOND, 59);
+        calendario.set(Calendar.MILLISECOND, 999);
+        return calendario.getTime();
     }
 
     @Override
