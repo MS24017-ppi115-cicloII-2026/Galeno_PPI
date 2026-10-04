@@ -5,6 +5,8 @@ import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.PatternSyntaxException;
@@ -12,6 +14,7 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DocumentoDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.TipoDocumentoDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Documento;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Persona;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.TipoDocumento;
 
 @Named
@@ -22,7 +25,13 @@ public class DocumentoModels extends AbstractModel<Documento> {
     DocumentoDAO documentoDAO;
     @Inject
     TipoDocumentoDAO tipoDocumentoDAO;
+    @Inject
+    PersonaModels personaModel;
+
     private static final Set<String> TIPOS_UNICOS = Set.of("dui");
+
+    private UUID personaCargada;
+    private boolean cargado;
 
     @Override
     protected DAOInterface<Documento> getDAO() {
@@ -31,12 +40,45 @@ public class DocumentoModels extends AbstractModel<Documento> {
 
     @Override
     protected Documento crearRegistroNuevo() {
-        return new Documento(UUID.randomUUID());
+        Documento documento = new Documento(UUID.randomUUID());
+        documento.setIdPersona(personaModel.getPersonaSeleccionada());
+        return documento;
     }
 
     @Override
     protected UUID obtenerId(Documento registro) {
         return registro.getIdDocumento();
+    }
+
+    // ---- Lista filtrada por la persona seleccionada ----
+    private List<Documento> cargarFiltrado() {
+        Persona persona = personaModel.getPersonaSeleccionada();
+        if (persona == null) {
+            // Sin persona seleccionada (pantalla Documento.xhtml): lista completa
+            return documentoDAO.findRange(0, 100);
+        }
+        return documentoDAO.buscarPorPersona(persona.getIdPersona());
+    }
+
+    /**
+     * Valor de la tabla de la pestaña: recarga sola cuando cambia la persona.
+     */
+    public List<Documento> getRegistrosDePersona() {
+        Persona persona = personaModel.getPersonaSeleccionada();
+        UUID idActual = (persona == null) ? null : persona.getIdPersona();
+
+        if (!cargado || !Objects.equals(idActual, personaCargada)) {
+            personaCargada = idActual;
+            cargado = true;
+            setRegistros(cargarFiltrado());
+            this.registro = null;
+            this.estado = Estado_CRUD.NINGUNO;
+        }
+        return getregistros();
+    }
+
+    public List<TipoDocumento> getTiposActivos() {
+        return tipoDocumentoDAO.buscarPorActivo(true);
     }
 
     private boolean validarRegistro() {
@@ -81,6 +123,13 @@ public class DocumentoModels extends AbstractModel<Documento> {
             );
         }
 
+        if (!Boolean.TRUE.equals(tipo.getActivo())) {
+            return mostrarError(
+                    "Tipo de documento inactivo",
+                    "No se puede asignar un tipo de documento inactivo."
+            );
+        }
+
         String regex = tipo.getExpresionRegular();
 
         if (regex != null && !regex.isBlank()) {
@@ -100,6 +149,7 @@ public class DocumentoModels extends AbstractModel<Documento> {
                 );
             }
         }
+
         boolean duplicado = documentoDAO.existeDuplicado(
                 registro.getIdPersona().getIdPersona(),
                 registro.getIdTipoDocumento().getIdTipoDocumento(),
@@ -113,7 +163,7 @@ public class DocumentoModels extends AbstractModel<Documento> {
                     "Esta persona ya tiene registrado un documento de este tipo con ese mismo valor."
             );
         }
-        
+
         String nombreTipo = tipo.getNombre() == null
                 ? "" : tipo.getNombre().trim().toLowerCase();
 
@@ -145,10 +195,12 @@ public class DocumentoModels extends AbstractModel<Documento> {
         return false;
     }
 
+    // ---- Tras cada operación, la tabla vuelve a filtrarse por la persona ----
     @Override
     public void btnCrearhandler(ActionEvent ae) {
         if (validarRegistro()) {
             super.btnCrearhandler(ae);
+            setRegistros(cargarFiltrado());
         }
     }
 
@@ -156,6 +208,13 @@ public class DocumentoModels extends AbstractModel<Documento> {
     public void btnModificarHandler() {
         if (validarRegistro()) {
             super.btnModificarHandler();
+            setRegistros(cargarFiltrado());
         }
+    }
+
+    @Override
+    public void btnEliminarHandler(UUID id) {
+        super.btnEliminarHandler(id);
+        setRegistros(cargarFiltrado());
     }
 }
