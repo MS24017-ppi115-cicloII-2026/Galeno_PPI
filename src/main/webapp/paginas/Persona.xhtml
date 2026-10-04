@@ -1,206 +1,232 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:f="jakarta.faces.core"
-                xmlns:crud="jakarta.faces.composite/crud"
-                template="./general.xhtml">
-
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html" xmlns:p="http://primefaces.org/ui" xmlns:f="jakarta.faces.core" xmlns:crud="jakarta.faces.composite/crud" template="./general.xhtml">
     <ui:define name="titulo">#{msg['persona.titulo']}</ui:define>
-
     <ui:define name="cuerpo">
-
         <h:form id="frmTabla">
-
             <p:toolbar>
                 <p:toolbarGroup>
-                    <p:commandButton
-                        value="#{msg['persona.btn_nuevo']}"
-                        icon="pi pi-plus"
-                        actionListener="#{personaModel.btnNuevoHandler}"
-                        update=":frmFormulario @form"/>
+                    <p:commandButton value="#{msg['persona.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaModel.btnNuevoHandler}" update=":tabsPersona:frmDetalle :tabsPersona:frmDocumentos :tabsPersona:frmMedios :tabsPersona:frmRoles @form"/>
                 </p:toolbarGroup>
             </p:toolbar>
-
-            <p:dataTable
-                id="tablaRegistros"
-                value="#{personaModel.registros}"
-                var="r"
-                emptyMessage="#{msg['persona.msg_vacio']}"
-                paginator="true"
-                rows="10"
-                style="margin-top: 10px;"
-                selectionMode="single"
-                selection="#{personaModel.registro}"
-                rowKey="#{r.idPersona}">
-
-                <p:ajax event="rowSelect" update="@form"/>
-                <p:ajax event="rowUnselect" update="@form"/>
-
-                <p:ajax
-                    event="rowDblselect"
-                    listener="#{personaModel.btnSeleccionarRegistro(personaModel.registro.idPersona)}"
-                    update=":frmFormulario"/>
-
+            <p:dataTable id="tablaRegistros" value="#{personaModel.registros}" var="r" emptyMessage="#{msg['persona.msg_vacio']}" paginator="true" rows="10" style="margin-top: 10px;" selectionMode="single" selection="#{personaModel.registro}" rowKey="#{r.idPersona}">
+                <p:ajax event="rowSelect" listener="#{personaModel.btnSeleccionarRegistro(personaModel.registro.idPersona)}" update="@form :tabsPersona:frmDetalle :tabsPersona:frmDocumentos :tabsPersona:frmMedios :tabsPersona:frmRoles"/>
+                <p:ajax event="rowUnselect" listener="#{personaModel.btnCancelar}" update="@form :tabsPersona:frmDetalle :tabsPersona:frmDocumentos :tabsPersona:frmMedios :tabsPersona:frmRoles"/>
                 <p:column headerText="#{msg['global.id']}">
                     <h:outputText value="#{r.idPersona}"/>
                 </p:column>
-
                 <p:column headerText="#{msg['persona.col_nombres']}">
                     <h:outputText value="#{r.nombres}"/>
                 </p:column>
-
                 <p:column headerText="#{msg['persona.col_apellidos']}">
                     <h:outputText value="#{r.apellidos}"/>
                 </p:column>
-
                 <p:column headerText="#{msg['persona.col_fecha_nacimiento']}">
                     <h:outputText value="#{r.fechaNacimiento}">
-                        <f:convertDateTime
-                            pattern="dd/MM/yyyy"
-                            timeZone="America/El_Salvador"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/El_Salvador"/>
                     </h:outputText>
                 </p:column>
-
                 <p:column headerText="#{msg['persona.col_fecha_creacion']}">
                     <h:outputText value="#{r.fechaCreacion}">
-                        <f:convertDateTime
-                            pattern="dd/MM/yyyy HH:mm"
-                            timeZone="America/El_Salvador"/>
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
                     </h:outputText>
                 </p:column>
-
                 <f:facet name="footer">
-
-                    <p:commandButton
-                        id="btnModificar"
-                        value="#{msg['persona.btn_modificar']}"
-                        icon="pi pi-pencil"
-                        actionListener="#{personaModel.btnSeleccionarRegistro(personaModel.registro.idPersona)}"
-                        update=":frmFormulario"
-                        disabled="#{empty personaModel.registro.idPersona}"
-                        styleClass="ui-button-warning"
-                        style="margin-right: 5px;"/>
-
-                    <p:commandButton
-                        id="btnEliminar"
-                        value="#{msg['global.eliminar']}"
-                        icon="pi pi-trash"
-                        actionListener="#{personaModel.btnEliminarHandler(personaModel.registro.idPersona)}"
-                        update=":mensajesGlobales:growl-sticky @form"
-                        disabled="#{empty personaModel.registro.idPersona}"
-                        styleClass="ui-button-danger">
-
-                        <p:confirm
-                            header="#{msg['global.confirmacion']}"
-                            message="#{msg['persona.msg_eliminar']}"
-                            icon="pi pi-info-circle"/>
-
+                    <p:commandButton id="btnModificar" value="#{msg['persona.btn_modificar']}" icon="pi pi-pencil" actionListener="#{personaModel.btnSeleccionarRegistro(personaModel.registro.idPersona)}" update=":tabsPersona:frmDetalle :tabsPersona:frmDocumentos :tabsPersona:frmMedios :tabsPersona:frmRoles" disabled="#{empty personaModel.registro.idPersona}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
+                    <p:commandButton id="btnEliminar" value="#{msg['global.eliminar']}" icon="pi pi-trash" actionListener="#{personaModel.btnEliminarHandler(personaModel.registro.idPersona)}" update=":mensajesGlobales:growl-sticky :tabsPersona:frmDetalle :tabsPersona:frmDocumentos :tabsPersona:frmMedios :tabsPersona:frmRoles @form" disabled="#{empty personaModel.registro.idPersona}" styleClass="ui-button-danger">
+                        <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['persona.msg_eliminar']}" icon="pi pi-info-circle"/>
                     </p:commandButton>
-
                 </f:facet>
-
             </p:dataTable>
-
-            <p:confirmDialog
-                global="true"
-                showEffect="fade"
-                hideEffect="fade"
-                responsive="true"
-                width="350">
-
-                <p:commandButton
-                    value="#{msg['global.no']}"
-                    type="button"
-                    styleClass="ui-confirmdialog-no ui-button-flat"/>
-
-                <p:commandButton
-                    value="#{msg['global.si']}"
-                    type="button"
-                    styleClass="ui-confirmdialog-yes"/>
-
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350">
+                <p:commandButton value="#{msg['global.no']}" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
+                <p:commandButton value="#{msg['global.si']}" type="button" styleClass="ui-confirmdialog-yes"/>
             </p:confirmDialog>
-
         </h:form>
-
-
-        <h:form id="frmFormulario">
-
-            <p:panel
-                header="#{personaModel.estado == 'CREAR' ? msg['persona.modal_crear'] : msg['persona.modal_config']}"
-                rendered="#{personaModel.estado != 'NINGUNO'}"
-                style="margin-top: 20px;">
-
-                <h:panelGrid columns="2" cellpadding="5">
-
-                    <p:outputLabel
-                        value="#{msg['global.codigo_id']}"
-                        rendered="#{personaModel.estado == 'CREAR'}"/>
-
-                    <h:outputText
-                        value="#{personaModel.registro.idPersona}"
-                        rendered="#{personaModel.estado == 'CREAR'}"/>
-
-
-                    <p:outputLabel
-                        for="txtNombres"
-                        value="#{msg['persona.lbl_nombres']}"/>
-
-                    <p:inputText
-                        id="txtNombres"
-                        value="#{personaModel.registro.nombres}"
-                        required="true"
-                        requiredMessage="#{msg['persona.msg_req_nombres']}"
-                        maxlength="155"/>
-
-
-                    <p:outputLabel
-                        for="txtApellidos"
-                        value="#{msg['persona.lbl_apellidos']}"/>
-
-                    <p:inputText
-                        id="txtApellidos"
-                        value="#{personaModel.registro.apellidos}"
-                        required="true"
-                        requiredMessage="#{msg['persona.msg_req_apellidos']}"
-                        maxlength="155"/>
-
-
-                    <p:outputLabel
-                        for="calFechaNacimiento"
-                        value="#{msg['persona.lbl_fecha_nacimiento']}"/>
-
-                    <p:datePicker
-                        id="calFechaNacimiento"
-                        value="#{personaModel.registro.fechaNacimiento}"
-                        pattern="dd/MM/yyyy"
-                        showIcon="true"/>
-
-
-                    <p:outputLabel
-                        value="#{msg['persona.lbl_fecha_creacion']}"/>
-
-                    <h:outputText
-                        value="#{personaModel.registro.fechaCreacion}">
-                        <f:convertDateTime
-                            pattern="dd/MM/yyyy HH:mm"
-                            timeZone="America/El_Salvador"/>
-                    </h:outputText>
-
-                </h:panelGrid>
-
-                <f:facet name="footer">
-
-                    <crud:botonesCrud
-                        modelo="#{personaModel}"
-                        update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
-
-                </f:facet>
-
-            </p:panel>
-
-        </h:form>
-
+        <p:tabView id="tabsPersona" dynamic="false" style="margin-top: 20px;">
+            <!--  ====================== DETALLE ======================  -->
+            <p:tab title="#{msg['persona.titulo']}">
+                <h:form id="frmDetalle">
+                    <p:panel header="#{personaModel.estado == 'CREAR' ? msg['persona.modal_crear'] : msg['persona.modal_config']}" rendered="#{personaModel.estado != 'NINGUNO'}">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <p:outputLabel value="#{msg['global.codigo_id']}" rendered="#{personaModel.estado == 'CREAR'}"/>
+                            <h:outputText value="#{personaModel.registro.idPersona}" rendered="#{personaModel.estado == 'CREAR'}"/>
+                            <p:outputLabel for="txtNombres" value="#{msg['persona.lbl_nombres']}"/>
+                            <p:inputText id="txtNombres" value="#{personaModel.registro.nombres}" required="true" requiredMessage="#{msg['persona.msg_req_nombres']}" maxlength="155"/>
+                            <p:outputLabel for="txtApellidos" value="#{msg['persona.lbl_apellidos']}"/>
+                            <p:inputText id="txtApellidos" value="#{personaModel.registro.apellidos}" required="true" requiredMessage="#{msg['persona.msg_req_apellidos']}" maxlength="155"/>
+                            <p:outputLabel for="calFechaNacimiento" value="#{msg['persona.lbl_fecha_nacimiento']}"/>
+                            <p:datePicker id="calFechaNacimiento" value="#{personaModel.registro.fechaNacimiento}" pattern="dd/MM/yyyy" showIcon="true"/>
+                            <p:outputLabel value="#{msg['persona.lbl_fecha_creacion']}"/>
+                            <h:outputText value="#{personaModel.registro.fechaCreacion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
+                            </h:outputText>
+                        </h:panelGrid>
+                        <f:facet name="footer">
+                            <crud:botonesCrud modelo="#{personaModel}" update=":frmTabla :tabsPersona:frmDetalle :tabsPersona:frmDocumentos :tabsPersona:frmMedios :tabsPersona:frmRoles :mensajesGlobales:growl-sticky"/>
+                        </f:facet>
+                    </p:panel>
+                </h:form>
+            </p:tab>
+            <!--  ====================== DOCUMENTOS ======================  -->
+            <p:tab title="#{msg['doc.titulo']}">
+                <h:form id="frmDocumentos">
+                    <h:outputText value="Seleccione una persona de la tabla para gestionar sus documentos." rendered="#{not personaModel.hayPersonaSeleccionada}"/>
+                    <p:outputPanel rendered="#{personaModel.hayPersonaSeleccionada}">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <p:commandButton value="#{msg['doc.btn_nuevo']}" icon="pi pi-plus" actionListener="#{documentoModels.btnNuevoHandler}" update="@form"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:dataTable id="tablaDocumentos" value="#{documentoModels.registrosDePersona}" var="d" emptyMessage="#{msg['doc.msg_vacio']}" paginator="true" rows="5" style="margin-top: 10px;" selectionMode="single" selection="#{documentoModels.registro}" rowKey="#{d.idDocumento}">
+                            <p:ajax event="rowSelect" update="@form"/>
+                            <p:ajax event="rowUnselect" update="@form"/>
+                            <p:column headerText="#{msg['doc.col_tipo_documento']}">
+                                <h:outputText value="#{d.idTipoDocumento.nombre}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['doc.col_valor']}">
+                                <h:outputText value="#{d.valor}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['doc.col_ruta_fisica']}">
+                                <h:outputText value="#{d.rutaFisica}"/>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton value="#{msg['doc.btn_modificar']}" icon="pi pi-pencil" actionListener="#{documentoModels.btnSeleccionarRegistro(documentoModels.registro.idDocumento)}" update="@form" disabled="#{empty documentoModels.registro.idDocumento}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
+                                <p:commandButton value="#{msg['global.eliminar']}" icon="pi pi-trash" actionListener="#{documentoModels.btnEliminarHandler(documentoModels.registro.idDocumento)}" update="@form :mensajesGlobales:growl-sticky" disabled="#{empty documentoModels.registro.idDocumento}" styleClass="ui-button-danger">
+                                    <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['doc.msg_eliminar']}" icon="pi pi-info-circle"/>
+                                </p:commandButton>
+                            </f:facet>
+                        </p:dataTable>
+                        <p:panel header="#{documentoModels.estado == 'CREAR' ? msg['doc.modal_crear'] : msg['doc.modal_config']}" rendered="#{documentoModels.estado != 'NINGUNO'}" style="margin-top: 15px;">
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <p:outputLabel value="#{msg['global.codigo_id']}" rendered="#{documentoModels.estado == 'CREAR'}"/>
+                                <h:outputText value="#{documentoModels.registro.idDocumento}" rendered="#{documentoModels.estado == 'CREAR'}"/>
+                                <p:outputLabel for="cmbTipoDocumento" value="#{msg['doc.lbl_tipo_documento']}"/>
+                                <p:selectOneMenu id="cmbTipoDocumento" value="#{documentoModels.registro.idTipoDocumento}" converter="tipoDocumentoConverter" required="true" requiredMessage="#{msg['doc.msg_req_tipo_documento']}" disabled="#{documentoModels.estado == 'MODIFICAR'}">
+                                    <f:selectItem itemLabel="#{msg['doc.sel_tipo_documento']}" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{documentoModels.tiposActivos}" var="td" itemLabel="#{td.nombre}" itemValue="#{td}"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel for="txtValorDoc" value="#{msg['doc.lbl_valor']}"/>
+                                <p:inputText id="txtValorDoc" value="#{documentoModels.registro.valor}" required="true" requiredMessage="#{msg['doc.msg_req_valor']}" maxlength="100"/>
+                                <p:outputLabel for="txtRutaFisica" value="#{msg['doc.lbl_ruta_fisica']}"/>
+                                <p:inputText id="txtRutaFisica" value="#{documentoModels.registro.rutaFisica}" maxlength="255"/>
+                            </h:panelGrid>
+                            <f:facet name="footer">
+                                <crud:botonesCrud modelo="#{documentoModels}" update="@form :mensajesGlobales:growl-sticky"/>
+                            </f:facet>
+                        </p:panel>
+                    </p:outputPanel>
+                </h:form>
+            </p:tab>
+            <!--  ================== MEDIOS DE CONTACTO ==================  -->
+            <p:tab title="#{msg['medioContacto.titulo']}">
+                <h:form id="frmMedios">
+                    <h:outputText value="Seleccione una persona de la tabla para gestionar sus medios de contacto." rendered="#{not personaModel.hayPersonaSeleccionada}"/>
+                    <p:outputPanel rendered="#{personaModel.hayPersonaSeleccionada}">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <p:commandButton value="#{msg['medioContacto.btn_nuevo']}" icon="pi pi-plus" actionListener="#{medioContactoModel.btnNuevoHandler}" update="@form"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:dataTable id="tablaMedios" value="#{medioContactoModel.registrosDePersona}" var="mc" emptyMessage="#{msg['medioContacto.msg_vacio']}" paginator="true" rows="5" style="margin-top: 10px;" selectionMode="single" selection="#{medioContactoModel.registro}" rowKey="#{mc.idMedioContacto}">
+                            <p:ajax event="rowSelect" update="@form"/>
+                            <p:ajax event="rowUnselect" update="@form"/>
+                            <p:column headerText="#{msg['medioContacto.col_tipo']}">
+                                <h:outputText value="#{mc.idTipoMedioContacto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['medioContacto.col_valor']}">
+                                <h:outputText value="#{mc.valor}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['medioContacto.col_fecha_creacion']}">
+                                <h:outputText value="#{mc.fechaCreacion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
+                                </h:outputText>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton value="#{msg['medioContacto.btn_modificar']}" icon="pi pi-pencil" actionListener="#{medioContactoModel.btnSeleccionarRegistro(medioContactoModel.registro.idMedioContacto)}" update="@form" disabled="#{empty medioContactoModel.registro.idMedioContacto}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
+                                <p:commandButton value="#{msg['global.eliminar']}" icon="pi pi-trash" actionListener="#{medioContactoModel.btnEliminarHandler(medioContactoModel.registro.idMedioContacto)}" update="@form :mensajesGlobales:growl-sticky" disabled="#{empty medioContactoModel.registro.idMedioContacto}" styleClass="ui-button-danger">
+                                    <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['medioContacto.msg_eliminar']}" icon="pi pi-info-circle"/>
+                                </p:commandButton>
+                            </f:facet>
+                        </p:dataTable>
+                        <p:panel header="#{medioContactoModel.estado == 'CREAR' ? msg['medioContacto.modal_crear'] : msg['medioContacto.modal_config']}" rendered="#{medioContactoModel.estado != 'NINGUNO'}" style="margin-top: 15px;">
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <p:outputLabel value="#{msg['global.codigo_id']}" rendered="#{medioContactoModel.estado == 'CREAR'}"/>
+                                <h:outputText value="#{medioContactoModel.registro.idMedioContacto}" rendered="#{medioContactoModel.estado == 'CREAR'}"/>
+                                <p:outputLabel for="cmbTipoMedio" value="#{msg['medioContacto.lbl_tipo']}"/>
+                                <p:selectOneMenu id="cmbTipoMedio" value="#{medioContactoModel.registro.idTipoMedioContacto}" converter="tipoMedioContactoConverter" required="true" requiredMessage="#{msg['medioContacto.msg_req_tipo']}" disabled="#{medioContactoModel.estado == 'MODIFICAR'}">
+                                    <f:selectItem itemLabel="#{msg['medioContacto.sel_tipo']}" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{medioContactoModel.tiposActivos}" var="tmc" itemLabel="#{tmc.nombre}" itemValue="#{tmc}"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel for="txtValorMedio" value="#{msg['medioContacto.lbl_valor']}"/>
+                                <p:inputText id="txtValorMedio" value="#{medioContactoModel.registro.valor}" required="true" requiredMessage="#{msg['medioContacto.msg_req_valor']}" maxlength="100"/>
+                                <p:outputLabel value="#{msg['medioContacto.lbl_fecha_creacion']}"/>
+                                <h:outputText value="#{medioContactoModel.registro.fechaCreacion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
+                                </h:outputText>
+                            </h:panelGrid>
+                            <f:facet name="footer">
+                                <crud:botonesCrud modelo="#{medioContactoModel}" update="@form :mensajesGlobales:growl-sticky"/>
+                            </f:facet>
+                        </p:panel>
+                    </p:outputPanel>
+                </h:form>
+            </p:tab>
+            <!--  ====================== ROLES ======================  -->
+            <p:tab title="#{msg['personaRol.titulo']}">
+                <h:form id="frmRoles">
+                    <h:outputText value="Seleccione una persona de la tabla para gestionar sus roles." rendered="#{not personaModel.hayPersonaSeleccionada}"/>
+                    <p:outputPanel rendered="#{personaModel.hayPersonaSeleccionada}">
+                        <p:toolbar>
+                            <p:toolbarGroup>
+                                <p:commandButton value="#{msg['personaRol.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaRolModel.btnNuevoHandler}" update="@form"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        <p:dataTable id="tablaRoles" value="#{personaRolModel.registrosDePersona}" var="pr" emptyMessage="#{msg['personaRol.msg_vacio']}" paginator="true" rows="5" style="margin-top: 10px;" selectionMode="single" selection="#{personaRolModel.registro}" rowKey="#{pr.idPersonaRol}">
+                            <p:ajax event="rowSelect" update="@form"/>
+                            <p:ajax event="rowUnselect" update="@form"/>
+                            <p:column headerText="#{msg['personaRol.col_rol']}">
+                                <h:outputText value="#{pr.idRol.nombre}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['personaRol.col_clinica']}">
+                                <h:outputText value="#{pr.idClinica.nombre}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['personaRol.col_fecha_creacion']}">
+                                <h:outputText value="#{pr.fechaCreacion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
+                                </h:outputText>
+                            </p:column>
+                            <f:facet name="footer">
+                                <p:commandButton value="#{msg['personaRol.btn_modificar']}" icon="pi pi-pencil" actionListener="#{personaRolModel.btnSeleccionarRegistro(personaRolModel.registro.idPersonaRol)}" update="@form" disabled="#{empty personaRolModel.registro.idPersonaRol}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
+                                <p:commandButton value="#{msg['global.eliminar']}" icon="pi pi-trash" actionListener="#{personaRolModel.btnEliminarHandler(personaRolModel.registro.idPersonaRol)}" update="@form :mensajesGlobales:growl-sticky" disabled="#{empty personaRolModel.registro.idPersonaRol}" styleClass="ui-button-danger">
+                                    <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['personaRol.msg_eliminar']}" icon="pi pi-info-circle"/>
+                                </p:commandButton>
+                            </f:facet>
+                        </p:dataTable>
+                        <p:panel header="#{personaRolModel.estado == 'CREAR' ? msg['personaRol.modal_crear'] : msg['personaRol.modal_config']}" rendered="#{personaRolModel.estado != 'NINGUNO'}" style="margin-top: 15px;">
+                            <h:panelGrid columns="2" cellpadding="5">
+                                <p:outputLabel value="#{msg['global.codigo_id']}" rendered="#{personaRolModel.estado == 'CREAR'}"/>
+                                <h:outputText value="#{personaRolModel.registro.idPersonaRol}" rendered="#{personaRolModel.estado == 'CREAR'}"/>
+                                <p:outputLabel for="cmbRol" value="#{msg['personaRol.lbl_rol']}"/>
+                                <p:selectOneMenu id="cmbRol" value="#{personaRolModel.registro.idRol}" converter="rolConverter" required="true" requiredMessage="#{msg['personaRol.msg_req_rol']}" disabled="#{personaRolModel.estado == 'MODIFICAR'}">
+                                    <f:selectItem itemLabel="#{msg['personaRol.sel_rol']}" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{personaRolModel.rolesActivos}" var="rol" itemLabel="#{rol.nombre}" itemValue="#{rol}"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel for="cmbClinica" value="#{msg['personaRol.lbl_clinica']}"/>
+                                <p:selectOneMenu id="cmbClinica" value="#{personaRolModel.registro.idClinica}" converter="clinicaConverter" required="true" requiredMessage="#{msg['personaRol.msg_req_clinica']}" disabled="#{personaRolModel.estado == 'MODIFICAR'}">
+                                    <f:selectItem itemLabel="#{msg['personaRol.sel_clinica']}" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItems value="#{personaRolModel.clinicasActivas}" var="cli" itemLabel="#{cli.nombre}" itemValue="#{cli}"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel value="#{msg['personaRol.lbl_fecha_creacion']}"/>
+                                <h:outputText value="#{personaRolModel.registro.fechaCreacion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
+                                </h:outputText>
+                            </h:panelGrid>
+                            <f:facet name="footer">
+                                <crud:botonesCrud modelo="#{personaRolModel}" update="@form :mensajesGlobales:growl-sticky"/>
+                            </f:facet>
+                        </p:panel>
+                    </p:outputPanel>
+                </h:form>
+            </p:tab>
+        </p:tabView>
     </ui:define>
-
 </ui:composition>
