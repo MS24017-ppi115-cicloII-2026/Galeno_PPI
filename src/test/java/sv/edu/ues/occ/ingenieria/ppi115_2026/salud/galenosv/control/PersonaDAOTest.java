@@ -127,4 +127,54 @@ public class PersonaDAOTest {
 
         verify(query).getResultList();
     }
+
+    @Test
+    void buscarPersonasSinRolDevuelveLasQueNoTienenRol() {
+
+        Persona persona = new Persona();
+
+        persona.setNombres("Ana");
+
+        when(em.createQuery(
+                anyString(),
+                eq(Persona.class)
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of(persona));
+
+        List<Persona> resultado =
+                dao.buscarPersonasSinRol();
+
+        assertEquals(1, resultado.size());
+        assertEquals("Ana", resultado.get(0).getNombres());
+
+        verify(em).createQuery(
+                "SELECT p "
+                + "FROM Persona p "
+                + "WHERE NOT EXISTS ("
+                + "    SELECT pr "
+                + "    FROM PersonaRol pr "
+                + "    WHERE pr.idPersona = p"
+                + ") "
+                + "ORDER BY p.nombres, p.apellidos",
+                Persona.class
+        );
+
+        verify(query).getResultList();
+    }
+
+    @Test
+    void buscarPersonasSinRolSinResultados() {
+
+        when(em.createQuery(
+                anyString(),
+                eq(Persona.class)
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        assertTrue(dao.buscarPersonasSinRol().isEmpty());
+    }
 }

@@ -120,4 +120,52 @@ public class RolDAOTest {
 
         verify(query).getResultList();
     }
+
+    @Test
+    void buscarRolesActivos() {
+
+        Rol activo = new Rol();
+
+        activo.setNombre("Administrador");
+        activo.setActivo(true);
+
+        when(em.createQuery(
+                "SELECT r FROM Rol r "
+                + "WHERE r.activo = TRUE "
+                + "ORDER BY r.nombre",
+                Rol.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of(activo));
+
+        List<Rol> resultado =
+                dao.buscarRolesActivos();
+
+        assertEquals(1, resultado.size());
+        assertTrue(resultado.get(0).getActivo());
+
+        verify(em).createQuery(
+                "SELECT r FROM Rol r "
+                + "WHERE r.activo = TRUE "
+                + "ORDER BY r.nombre",
+                Rol.class
+        );
+
+        verify(query).getResultList();
+    }
+
+    @Test
+    void buscarRolesActivosSinResultados() {
+
+        when(em.createQuery(
+                anyString(),
+                eq(Rol.class)
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        assertTrue(dao.buscarRolesActivos().isEmpty());
+    }
 }

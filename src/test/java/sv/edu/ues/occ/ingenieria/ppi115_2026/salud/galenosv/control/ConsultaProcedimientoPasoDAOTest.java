@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimientoPaso;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -123,5 +124,102 @@ public class ConsultaProcedimientoPasoDAOTest {
                         "id",
                         idPersonaRol
                 );
+    }
+
+    @Test
+    public void testBuscarPorConsultaProcedimientoNulo() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> cut.buscarPorConsultaProcedimiento(null)
+        );
+
+        assertEquals(
+                "El idConsultaProcedimiento no puede ser nulo",
+                excepcion.getMessage()
+        );
+    }
+
+    @Test
+    public void testBuscarPorPersonaRolNulo() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> cut.buscarPorPersonaRol(null)
+        );
+
+        assertEquals(
+                "El idPersonaRol no puede ser nulo",
+                excepcion.getMessage()
+        );
+    }
+
+    @Test
+    public void testBuscarPersonasExcluyendoRolExito() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        TypedQuery<PersonaRol> mockQuery =
+                Mockito.mock(TypedQuery.class);
+
+        cut.em = mockEM;
+
+        List<PersonaRol> esperados =
+                Collections.singletonList(new PersonaRol());
+
+        Mockito.when(mockEM.createQuery(
+                any(String.class),
+                eq(PersonaRol.class)
+        )).thenReturn(mockQuery);
+
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(esperados);
+
+        List<PersonaRol> resultado =
+                cut.buscarPersonasExcluyendoRol("Doctor");
+
+        assertEquals(esperados, resultado);
+
+        Mockito.verify(mockQuery)
+                .setParameter("nombre", "doctor");
+
+        Mockito.verify(mockQuery).getResultList();
+    }
+
+    @Test
+    public void testBuscarPersonasExcluyendoRolNulo() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> cut.buscarPersonasExcluyendoRol(null)
+        );
+
+        assertEquals(
+                "El nombre del rol no puede estar vacío",
+                excepcion.getMessage()
+        );
+    }
+
+    @Test
+    public void testBuscarPersonasExcluyendoRolVacio() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> cut.buscarPersonasExcluyendoRol("  ")
+        );
     }
 }
