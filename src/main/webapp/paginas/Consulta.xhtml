@@ -57,7 +57,7 @@
                         value="#{msg['consulta.btn_nuevo']}"
                         icon="pi pi-plus"
                         actionListener="#{consultaModels.btnNuevoHandler}"
-                        update=":frmFormulario @form"/>
+                        update=":tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos @form"/>
                 </p:toolbarGroup>
             </p:toolbar>
 
@@ -73,12 +73,16 @@
                 selection="#{consultaModels.registro}"
                 rowKey="#{r.idConsulta}">
 
-                <p:ajax event="rowSelect" update="@form"/>
-                <p:ajax event="rowUnselect" update="@form"/>
+                <p:ajax event="rowSelect"
+                        listener="#{consultaModels.btnSeleccionarRegistro(consultaModels.registro.idConsulta)}"
+                        update="@form :tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos"/>
+                <p:ajax event="rowUnselect"
+                        listener="#{consultaModels.btnCancelar}"
+                        update="@form :tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos"/>
                 <p:ajax
                     event="rowDblselect"
                     listener="#{consultaModels.btnSeleccionarRegistro(consultaModels.registro.idConsulta)}"
-                    update=":frmFormulario"/>
+                    update="@form :tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos"/>
 
                 <p:column headerText="#{msg['global.id']}">
                     <h:outputText value="#{r.idConsulta}"/>
@@ -120,7 +124,8 @@
                         value="#{msg['consulta.btn_modificar']}"
                         icon="pi pi-pencil"
                         actionListener="#{consultaModels.btnSeleccionarRegistro(consultaModels.registro.idConsulta)}"
-                        update=":frmFormulario"
+                        update=":tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos"
+                        oncomplete="PF('wTabsConsulta').select(0);document.getElementById('tabsConsulta').scrollIntoView({behavior:'smooth'});"
                         disabled="#{empty consultaModels.registro.idConsulta}"
                         styleClass="ui-button-warning"
                         style="margin-right: 5px;"/>
@@ -130,7 +135,7 @@
                         value="#{msg['global.eliminar']}"
                         icon="pi pi-trash"
                         actionListener="#{consultaModels.btnEliminarHandler(consultaModels.registro.idConsulta)}"
-                        update=":mensajesGlobales:growl-sticky @form"
+                        update=":mensajesGlobales:growl-sticky :tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos @form"
                         disabled="#{empty consultaModels.registro.idConsulta}"
                         styleClass="ui-button-danger">
 
@@ -166,100 +171,354 @@
 
         </h:form>
 
+        <p:tabView id="tabsConsulta" widgetVar="wTabsConsulta" dynamic="false" style="margin-top: 20px;">
 
-        <h:form id="frmFormulario">
+            <!--   ====================== DETALLE ======================   -->
+            <p:tab title="#{msg['consulta.tab_detalle']}">
 
-            <p:panel
-                header="#{consultaModels.estado == 'CREAR' ? msg['consulta.modal_crear'] : msg['consulta.modal_config']}"
-                rendered="#{consultaModels.estado != 'NINGUNO'}"
-                style="margin-top: 20px;">
+                <h:form id="frmDetalle">
 
-                <h:panelGrid columns="2" cellpadding="5">
+                    <p:panel
+                        header="#{consultaModels.estado == 'CREAR' ? msg['consulta.modal_crear'] : msg['consulta.modal_config']}"
+                        rendered="#{consultaModels.estado != 'NINGUNO'}">
 
-                    <p:outputLabel
-                        value="#{msg['global.codigo_id']}"
-                        rendered="#{consultaModels.estado == 'CREAR'}"/>
+                        <h:panelGrid columns="2" cellpadding="5">
+
+                            <p:outputLabel
+                                value="#{msg['global.codigo_id']}"
+                                rendered="#{consultaModels.estado == 'CREAR'}"/>
+
+                            <h:outputText
+                                value="#{consultaModels.registro.idConsulta}"
+                                rendered="#{consultaModels.estado == 'CREAR'}"/>
+
+                            <p:outputLabel
+                                for="cmbPersonaRol"
+                                value="#{msg['consulta.lbl_persona']}"/>
+
+                            <p:selectOneMenu
+                                id="cmbPersonaRol"
+                                value="#{consultaModels.registro.idPersonaRol}"
+                                converter="personaRolConverter"
+                                required="true"
+                                requiredMessage="#{msg['consulta.msg_req_persona']}"
+                                filter="true"
+                                filterMatchMode="contains">
+
+                                <f:selectItem
+                                    itemLabel="#{msg['consulta.sel_persona']}"
+                                    itemValue="#{null}"
+                                    noSelectionOption="true"/>
+
+                                <f:selectItems
+                                    value="#{consultaModels.pacientes}"
+                                    var="pr"
+                                    itemLabel="#{pr.idPersona.nombres} #{pr.idPersona.apellidos} - #{pr.idRol.nombre}"
+                                    itemValue="#{pr}"/>
+
+                            </p:selectOneMenu>
+
+                            <p:outputLabel
+                                for="calFechaInicio"
+                                value="#{msg['consulta.lbl_fecha_inicio_auto']}"/>
+
+                            <p:datePicker
+                                id="calFechaInicio"
+                                value="#{consultaModels.registro.fechaInicio}"
+                                showTime="true"
+                                pattern="dd/MM/yyyy HH:mm"
+                                showIcon="true"/>
+
+                            <p:outputLabel
+                                for="calFechaFin"
+                                value="#{msg['consulta.lbl_fecha_fin']}"/>
+
+                            <p:datePicker
+                                id="calFechaFin"
+                                value="#{consultaModels.registro.fechaFin}"
+                                showTime="true"
+                                pattern="dd/MM/yyyy HH:mm"
+                                showIcon="true"/>
+
+                            <p:outputLabel
+                                for="txtReferencia"
+                                value="#{msg['consulta.lbl_referencia_externa']}"/>
+
+                            <p:inputText
+                                id="txtReferencia"
+                                value="#{consultaModels.registro.referenciaExterna}"/>
+
+                            <p:outputLabel
+                                for="txtObservaciones"
+                                value="#{msg['consulta.lbl_observaciones']}"/>
+
+                            <p:inputTextarea
+                                id="txtObservaciones"
+                                value="#{consultaModels.registro.observaciones}"
+                                rows="3"/>
+
+                        </h:panelGrid>
+
+                        <f:facet name="footer">
+                            <crud:botonesCrud
+                                modelo="#{consultaModels}"
+                                update=":frmTabla :tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos :mensajesGlobales:growl-sticky"/>
+                        </f:facet>
+
+                    </p:panel>
+
+                </h:form>
+
+            </p:tab>
+
+            <!--   ================== DOCUMENTOS DEL PACIENTE ==================   -->
+            <p:tab title="#{msg['consulta.tab_documentos']}">
+
+                <p:outputPanel id="pnlDocumentos">
 
                     <h:outputText
-                        value="#{consultaModels.registro.idConsulta}"
-                        rendered="#{consultaModels.estado == 'CREAR'}"/>
+                        value="#{msg['consulta.sel_seleccionar']}"
+                        rendered="#{not consultaModels.hayConsultaSeleccionada}"/>
 
-                    <p:outputLabel
-                        for="cmbPersonaRol"
-                        value="#{msg['consulta.lbl_persona']}"/>
+                    <p:outputPanel rendered="#{consultaModels.hayConsultaSeleccionada}">
 
-                    <p:selectOneMenu
-                        id="cmbPersonaRol"
-                        value="#{consultaModels.registro.idPersonaRol}"
-                        converter="personaRolConverter"
-                        required="true"
-                        requiredMessage="#{msg['consulta.msg_req_persona']}"
-                        filter="true"
-                        filterMatchMode="contains">
+                        <h:outputText
+                            value="#{msg['consulta.doc_paciente']}"
+                            style="font-weight: 600; display: block; margin-bottom: 8px;"/>
 
-                        <f:selectItem
-                            itemLabel="#{msg['consulta.sel_persona']}"
-                            itemValue="#{null}"
-                            noSelectionOption="true"/>
+                        <p:dataTable
+                            id="tablaDocumentos"
+                            value="#{consultaModels.documentosDelPaciente}"
+                            var="d"
+                            emptyMessage="#{msg['doc.msg_vacio']}"
+                            paginator="true"
+                            rows="5"
+                            style="margin-top: 5px;">
 
-                        <f:selectItems
-                            value="#{consultaModels.pacientes}"
-                            var="pr"
-                            itemLabel="#{pr.idPersona.nombres} #{pr.idPersona.apellidos} - #{pr.idRol.nombre}"
-                            itemValue="#{pr}"/>
+                            <p:column headerText="#{msg['global.id']}">
+                                <h:outputText value="#{d.idDocumento}"/>
+                            </p:column>
 
-                    </p:selectOneMenu>
+                            <p:column headerText="#{msg['doc.col_tipo_documento']}">
+                                <h:outputText value="#{d.idTipoDocumento.nombre}"/>
+                            </p:column>
 
-                    <p:outputLabel
-                        for="calFechaInicio"
-                        value="#{msg['consulta.lbl_fecha_inicio']}"/>
+                            <p:column headerText="#{msg['doc.col_valor']}">
+                                <h:outputText value="#{d.valor}"/>
+                            </p:column>
 
-                    <p:datePicker
-                        id="calFechaInicio"
-                        value="#{consultaModels.registro.fechaInicio}"
-                        showTime="true"
-                        pattern="dd/MM/yyyy HH:mm"
-                        showIcon="true"/>
+                            <p:column headerText="#{msg['doc.col_ruta_fisica']}">
+                                <h:outputText value="#{d.rutaFisica}"/>
+                            </p:column>
 
-                    <p:outputLabel
-                        for="calFechaFin"
-                        value="#{msg['consulta.lbl_fecha_fin']}"/>
+                        </p:dataTable>
 
-                    <p:datePicker
-                        id="calFechaFin"
-                        value="#{consultaModels.registro.fechaFin}"
-                        showTime="true"
-                        pattern="dd/MM/yyyy HH:mm"
-                        showIcon="true"/>
+                    </p:outputPanel>
 
-                    <p:outputLabel
-                        for="txtReferencia"
-                        value="#{msg['consulta.lbl_referencia_externa']}"/>
+                </p:outputPanel>
 
-                    <p:inputText
-                        id="txtReferencia"
-                        value="#{consultaModels.registro.referenciaExterna}"/>
+            </p:tab>
 
-                    <p:outputLabel
-                        for="txtObservaciones"
-                        value="#{msg['consulta.lbl_observaciones']}"/>
+            <!--   ====================== PROCEDIMIENTOS ======================   -->
+            <p:tab title="#{msg['consulta.tab_procedimientos']}">
 
-                    <p:inputTextarea
-                        id="txtObservaciones"
-                        value="#{consultaModels.registro.observaciones}"
-                        rows="3"/>
+                <p:outputPanel id="pnlProcedimientos">
 
-                </h:panelGrid>
+                    <h:outputText
+                        value="#{msg['consulta.sel_seleccionar']}"
+                        rendered="#{not consultaModels.hayConsultaSeleccionada}"/>
 
-                <f:facet name="footer">
-                    <crud:botonesCrud
-                        modelo="#{consultaModels}"
-                        update=":frmTabla :frmFormulario :mensajesGlobales:growl-sticky"/>
-                </f:facet>
+                    <p:outputPanel rendered="#{consultaModels.hayConsultaSeleccionada}">
 
-            </p:panel>
+                        <h:form id="frmProcedimientosTabla">
 
-        </h:form>
+                            <p:toolbar>
+                                <p:toolbarGroup>
+                                    <p:commandButton
+                                        value="#{msg['cp.btn_nuevo']}"
+                                        icon="pi pi-plus"
+                                        actionListener="#{consultaProcedimientoModels.btnNuevoHandler}"
+                                        update=":tabsConsulta:pnlProcedimientos"/>
+                                </p:toolbarGroup>
+                            </p:toolbar>
+
+                            <p:dataTable
+                                id="tablaProcedimientos"
+                                value="#{consultaProcedimientoModels.registrosDeConsulta}"
+                                var="cp"
+                                emptyMessage="#{msg['cp.msg_vacio']}"
+                                paginator="true"
+                                rows="5"
+                                style="margin-top: 5px;"
+                                selectionMode="single"
+                                selection="#{consultaProcedimientoModels.registro}"
+                                rowKey="#{cp.idConsultaProcedimiento}">
+
+                                <p:ajax event="rowSelect"
+                                        listener="#{consultaProcedimientoModels.btnSeleccionarRegistro(consultaProcedimientoModels.registro.idConsultaProcedimiento)}"
+                                        update=":tabsConsulta:pnlProcedimientos"/>
+                                <p:ajax event="rowUnselect"
+                                        listener="#{consultaProcedimientoModels.btnCancelar}"
+                                        update=":tabsConsulta:pnlProcedimientos"/>
+
+                                <p:column headerText="#{msg['global.id']}">
+                                    <h:outputText value="#{cp.idConsultaProcedimiento}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg['cp.col_procedimiento']}">
+                                    <h:outputText
+                                        value="#{consultaProcedimientoModels.getNombreProcedimiento(cp.idProcedimiento)}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg['cp.col_fecha_inicio']}">
+                                    <h:outputText value="#{cp.fechaInicio}">
+                                        <f:convertDateTime
+                                            pattern="dd/MM/yyyy HH:mm"
+                                            timeZone="America/El_Salvador"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="#{msg['cp.col_fecha_fin']}">
+                                    <h:outputText value="#{cp.fechaFin}">
+                                        <f:convertDateTime
+                                            pattern="dd/MM/yyyy HH:mm"
+                                            timeZone="America/El_Salvador"/>
+                                    </h:outputText>
+                                </p:column>
+
+                                <p:column headerText="#{msg['cp.col_observaciones']}">
+                                    <h:outputText value="#{cp.observaciones}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg['cp.col_primer_paso']}">
+                                    <h:outputText
+                                        value="#{consultaProcedimientoModels.getPrimerPaso(cp.idProcedimiento).nombre}"/>
+                                </p:column>
+
+                                <p:column headerText="#{msg['cp.col_encargado']}">
+                                    <h:outputText
+                                        value="#{consultaProcedimientoModels.getEncargadoDePrimerPaso(cp.idProcedimiento)}"/>
+                                </p:column>
+
+                                <f:facet name="footer">
+                                    <p:commandButton
+                                        value="#{msg['cp.btn_modificar']}"
+                                        icon="pi pi-pencil"
+                                        actionListener="#{consultaProcedimientoModels.btnSeleccionarRegistro(consultaProcedimientoModels.registro.idConsultaProcedimiento)}"
+                                        update=":tabsConsulta:pnlProcedimientos"
+                                        disabled="#{empty consultaProcedimientoModels.registro.idConsultaProcedimiento}"
+                                        styleClass="ui-button-warning"
+                                        style="margin-right: 5px;"/>
+                                    <p:commandButton
+                                        value="#{msg['global.eliminar']}"
+                                        icon="pi pi-trash"
+                                        actionListener="#{consultaProcedimientoModels.btnEliminarHandler(consultaProcedimientoModels.registro.idConsultaProcedimiento)}"
+                                        update=":tabsConsulta:pnlProcedimientos :mensajesGlobales:growl-sticky"
+                                        disabled="#{empty consultaProcedimientoModels.registro.idConsultaProcedimiento}"
+                                        styleClass="ui-button-danger">
+                                        <p:confirm
+                                            header="#{msg['global.confirmacion']}"
+                                            message="#{msg['cp.msg_eliminar']}"
+                                            icon="pi pi-info-circle"/>
+                                    </p:commandButton>
+                                </f:facet>
+
+                            </p:dataTable>
+
+                        </h:form>
+
+                        <h:form id="frmProcedimientos">
+
+                            <p:panel
+                                header="#{consultaProcedimientoModels.estado == 'CREAR' ? msg['cp.modal_crear'] : msg['cp.modal_config']}"
+                                rendered="#{consultaProcedimientoModels.estado != 'NINGUNO'}"
+                                style="margin-top: 15px;">
+
+                                <h:panelGrid columns="2" cellpadding="5">
+
+                                    <p:outputLabel
+                                        value="#{msg['global.codigo_id']}"
+                                        rendered="#{consultaProcedimientoModels.estado == 'CREAR'}"/>
+
+                                    <h:outputText
+                                        value="#{consultaProcedimientoModels.registro.idConsultaProcedimiento}"
+                                        rendered="#{consultaProcedimientoModels.estado == 'CREAR'}"/>
+
+                                    <p:outputLabel
+                                        for="cmbProcedimiento"
+                                        value="#{msg['cp.lbl_procedimiento']}"/>
+
+                                    <p:selectOneMenu
+                                        id="cmbProcedimiento"
+                                        value="#{consultaProcedimientoModels.registro.idProcedimiento}"
+                                        required="true"
+                                        requiredMessage="#{msg['cp.msg_req_procedimiento']}"
+                                        filter="true"
+                                        filterMatchMode="contains">
+
+                                        <f:selectItem
+                                            itemLabel="#{msg['cp.sel_procedimiento']}"
+                                            itemValue="#{null}"
+                                            noSelectionOption="true"/>
+
+                                        <f:selectItems
+                                            value="#{consultaProcedimientoModels.procedimientosActivos}"
+                                            var="proc"
+                                            itemLabel="#{proc.nombre}"
+                                            itemValue="#{proc.idProcedimiento}"/>
+
+                                    </p:selectOneMenu>
+
+                                    <p:outputLabel
+                                        for="calCpFechaInicio"
+                                        value="#{msg['cp.lbl_fecha_inicio_auto']}"/>
+
+                                    <p:datePicker
+                                        id="calCpFechaInicio"
+                                        value="#{consultaProcedimientoModels.registro.fechaInicio}"
+                                        showTime="true"
+                                        pattern="dd/MM/yyyy HH:mm"
+                                        showIcon="true"/>
+
+                                    <p:outputLabel
+                                        for="calCpFechaFin"
+                                        value="#{msg['cp.lbl_fecha_fin']}"/>
+
+                                    <p:datePicker
+                                        id="calCpFechaFin"
+                                        value="#{consultaProcedimientoModels.registro.fechaFin}"
+                                        showTime="true"
+                                        pattern="dd/MM/yyyy HH:mm"
+                                        showIcon="true"/>
+
+                                    <p:outputLabel
+                                        for="txtCpObservaciones"
+                                        value="#{msg['cp.lbl_observaciones']}"/>
+
+                                    <p:inputTextarea
+                                        id="txtCpObservaciones"
+                                        value="#{consultaProcedimientoModels.registro.observaciones}"
+                                        rows="3"/>
+
+                                </h:panelGrid>
+
+                                <f:facet name="footer">
+                                    <crud:botonesCrud
+                                        modelo="#{consultaProcedimientoModels}"
+                                        update=":frmTabla :tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos :mensajesGlobales:growl-sticky"/>
+                                </f:facet>
+
+                            </p:panel>
+
+                        </h:form>
+
+                    </p:outputPanel>
+
+                </p:outputPanel>
+
+            </p:tab>
+
+        </p:tabView>
 
     </ui:define>
 

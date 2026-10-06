@@ -12,8 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ConsultaDAO;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DocumentoDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Clinica;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Consulta;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Documento;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Persona;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +32,9 @@ public class ConsultaModelsTest {
 
     @Mock
     private FacesContext fc;
+
+    @Mock
+    private DocumentoDAO documentoDAO;
 
     @InjectMocks
     private ConsultaModels model;
@@ -317,5 +323,70 @@ public class ConsultaModelsTest {
 
         verify(consultaDAO, never()).actualizar(any());
         verify(fc).validationFailed();
+    }
+
+    // ===================== Información extra =====================
+
+    private Consulta consultaSeleccionada() {
+        PersonaRol paciente = crearPaciente(UUID.randomUUID(), null);
+        Consulta consulta = crearConsulta(paciente.getIdPersonaRol(), null,
+                fecha(2026, Calendar.JANUARY, 10, 9));
+        model.setRegistros(List.of(consulta));
+        model.btnSeleccionarRegistro(consulta.getIdConsulta());
+        return consulta;
+    }
+
+    @Test
+    void crearConsultaAsignaFechaInicioAutomatica() {
+
+        model.btnNuevoHandler(null);
+
+        assertNotNull(model.getRegistro());
+        assertNotNull(model.getRegistro().getFechaInicio());
+        assertEquals(Estado_CRUD.CREAR, model.getEstado());
+    }
+
+    @Test
+    void getConsultaSeleccionadaSoloDevuelveEnEstadoModificar() {
+
+        Consulta consulta = consultaSeleccionada();
+
+        assertSame(consulta, model.getConsultaSeleccionada());
+        assertTrue(model.isHayConsultaSeleccionada());
+
+        model.btnCancelar();
+
+        assertNull(model.getConsultaSeleccionada());
+        assertFalse(model.isHayConsultaSeleccionada());
+    }
+
+    @Test
+    void getDocumentosDelPacienteConsultaElDaoConElPacienteDeLaConsulta() {
+
+        UUID idPersona = UUID.randomUUID();
+
+        Consulta consulta = crearConsulta(UUID.randomUUID(), null,
+                fecha(2026, Calendar.JANUARY, 10, 9));
+        Persona persona = new Persona(idPersona);
+        persona.setNombres("Ana");
+        persona.setApellidos("López");
+        consulta.getIdPersonaRol().setIdPersona(persona);
+
+        Documento documento = new Documento(UUID.randomUUID());
+        documento.setValor("Certificado de nacimiento");
+        when(documentoDAO.buscarPorPersona(idPersona)).thenReturn(List.of(documento));
+
+        model.setRegistros(List.of(consulta));
+        model.btnSeleccionarRegistro(consulta.getIdConsulta());
+
+        assertEquals(List.of(documento), model.getDocumentosDelPaciente());
+        verify(documentoDAO).buscarPorPersona(idPersona);
+    }
+
+    @Test
+    void getDocumentosDelPacienteSinSeleccionDevuelveVacia() {
+
+        assertTrue(model.getDocumentosDelPaciente().isEmpty());
+        verify(documentoDAO, never()).buscarPorPersona(any());
     }
 }

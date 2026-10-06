@@ -192,7 +192,7 @@
                             noSelectionOption="true"/>
 
                         <f:selectItems
-                            value="#{procedimientoModels.registros}"
+                            value="#{consultaProcedimientoModels.procedimientosActivos}"
                             var="pro"
                             itemLabel="#{pro.nombre}"
                             itemValue="#{pro.idProcedimiento}"/>
@@ -201,7 +201,7 @@
 
                     <p:outputLabel
                         for="calFechaInicio"
-                        value="#{msg['cp.lbl_fecha_inicio']}"/>
+                        value="#{msg['cp.lbl_fecha_inicio_auto']}"/>
 
                     <p:datePicker
                         id="calFechaInicio"

@@ -30,4 +30,18 @@ public class ProcedimientoDAO extends DefaultDAO<Procedimiento>{
         q.setParameter("nombre", "%" + nombre + "%");
         return q.getResultList();
     }
+
+    public List<Procedimiento> buscarPorActivo(Boolean activo) {
+        if (activo == null) {
+            throw new IllegalArgumentException(
+                    "El estado activo no puede ser nulo"
+            );
+        }
+
+        TypedQuery<Procedimiento> q = getEntityManger().createQuery(
+                "SELECT p FROM Procedimiento p WHERE p.activo = :activo ORDER BY p.nombre",
+                Procedimiento.class);
+        q.setParameter("activo", activo);
+        return q.getResultList();
+    }
 }
