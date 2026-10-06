@@ -203,7 +203,8 @@
                                 required="true"
                                 requiredMessage="#{msg['consulta.msg_req_persona']}"
                                 filter="true"
-                                filterMatchMode="contains">
+                                filterMatchMode="contains"
+                                disabled="#{consultaModels.estado == 'MODIFICAR'}">
 
                                 <f:selectItem
                                     itemLabel="#{msg['consulta.sel_persona']}"
@@ -454,7 +455,8 @@
                                         required="true"
                                         requiredMessage="#{msg['cp.msg_req_procedimiento']}"
                                         filter="true"
-                                        filterMatchMode="contains">
+                                        filterMatchMode="contains"
+                                        disabled="#{consultaProcedimientoModels.estado == 'MODIFICAR'}">
 
                                         <f:selectItem
                                             itemLabel="#{msg['cp.sel_procedimiento']}"

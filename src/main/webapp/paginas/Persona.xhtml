@@ -217,12 +217,12 @@
                                     <p:outputLabel value="#{msg['global.codigo_id']}" rendered="#{personaRolModel.estado == 'CREAR'}"/>
                                     <h:outputText value="#{personaRolModel.registro.idPersonaRol}" rendered="#{personaRolModel.estado == 'CREAR'}"/>
                                     <p:outputLabel for="cmbRol" value="#{msg['personaRol.lbl_rol']}"/>
-                                    <p:selectOneMenu id="cmbRol" value="#{personaRolModel.registro.idRol}" converter="rolConverter" required="true" requiredMessage="#{msg['personaRol.msg_req_rol']}">
+                                    <p:selectOneMenu id="cmbRol" value="#{personaRolModel.registro.idRol}" converter="rolConverter" required="true" requiredMessage="#{msg['personaRol.msg_req_rol']}" disabled="#{personaRolModel.estado == 'MODIFICAR'}">
                                         <f:selectItem itemLabel="#{msg['personaRol.sel_rol']}" itemValue="#{null}" noSelectionOption="true"/>
                                         <f:selectItems value="#{personaRolModel.rolesActivos}" var="rol" itemLabel="#{rol.nombre}" itemValue="#{rol}"/>
                                     </p:selectOneMenu>
                                     <p:outputLabel for="cmbClinica" value="#{msg['personaRol.lbl_clinica']}"/>
-                                    <p:selectOneMenu id="cmbClinica" value="#{personaRolModel.registro.idClinica}" converter="clinicaConverter" required="true" requiredMessage="#{msg['personaRol.msg_req_clinica']}">
+                                    <p:selectOneMenu id="cmbClinica" value="#{personaRolModel.registro.idClinica}" converter="clinicaConverter" required="true" requiredMessage="#{msg['personaRol.msg_req_clinica']}" disabled="#{personaRolModel.estado == 'MODIFICAR'}">
                                         <f:selectItem itemLabel="#{msg['personaRol.sel_clinica']}" itemValue="#{null}" noSelectionOption="true"/>
                                         <f:selectItems value="#{personaRolModel.clinicasActivas}" var="cli" itemLabel="#{cli.nombre}" itemValue="#{cli}"/>
                                     </p:selectOneMenu>

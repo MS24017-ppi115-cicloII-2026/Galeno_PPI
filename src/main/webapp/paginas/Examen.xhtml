@@ -178,7 +178,7 @@ template="./general.xhtml">
                 <div class="ui-fluid campo-formulario">
                     <p:outputLabel for="cmbTipoExamen" value="#{msg['exam.lbl_sel_tipo']}" />
                     <p:selectOneMenu id="cmbTipoExamen" value="#{examenTipoExamenModels.registro.idTipoExamen}"
-                                     converter="tipoExamenConverter" required="true" requiredMessage="#{msg['exam.msg_req_tipo']}">
+                                     converter="tipoExamenConverter" required="true" requiredMessage="#{msg['exam.msg_req_tipo']}" disabled="#{examenTipoExamenModels.estado == 'MODIFICAR'}">
                         <f:selectItem itemLabel="#{msg['exam.sel_tipo']}" itemValue="#{null}" noSelectionOption="true" />
                         <f:selectItems value="#{examenTipoExamenModels.tiposExamen}" var="te" itemValue="#{te}" itemLabel="#{te.nombre}" />
                     </p:selectOneMenu>
