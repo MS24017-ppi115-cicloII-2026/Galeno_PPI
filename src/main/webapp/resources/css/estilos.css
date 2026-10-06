@@ -66,3 +66,102 @@ body .ui-dialog .ui-dialog-titlebar {
     background-color: #e3f0fa;
     cursor: pointer;
 }
+
+/* ============================================================
+   Superficie: fondo gris suave, tarjetas y acento teal fino
+   ============================================================ */
+
+/* Fondo de página */
+html body { background: #f4f7f9; }
+
+/* Paneles -> tarjetas */
+html body .ui-panel {
+    background: #fff;
+    border: 1px solid #e6ecf1;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(16, 42, 67, .06);
+    overflow: hidden;
+}
+html body .ui-panel .ui-panel-titlebar {
+    background: #2c3e50;
+    border-bottom: 3px solid #0f6461;
+    border-radius: 7px 7px 0 0;
+}
+
+/* Toolbar -> tarjeta */
+html body .ui-toolbar {
+    background: #fff;
+    border: 1px solid #e6ecf1;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(16, 42, 67, .06);
+}
+
+/* Tabla: encabezado claro con línea teal (sin banda oscura) */
+html body .ui-datatable .ui-datatable-data > tr > td:first-child { white-space: nowrap; }
+html body .ui-datatable thead th {
+    background: #fff;
+    color: #0f6461;
+    font-weight: 600;
+    border-bottom: 2px solid #0f6461;
+    padding: .7rem .9rem;
+}
+html body .ui-datatable .ui-datatable-data > tr > td {
+    border-bottom: 1px solid #eef1f4;
+    padding: .7rem .9rem;
+}
+html body .ui-datatable .ui-datatable-data tr:nth-child(even) {
+    background: #fbfcfe;
+}
+html body .ui-datatable .ui-datatable-data tr.ui-state-hover {
+    background: #eef6f6;
+}
+
+/* Pagiador */
+html body .ui-paginator {
+    background: #fff;
+    border-top: 1px solid #eef1f4;
+    padding: .6rem 1rem;
+}
+
+/* Menú lateral -> tarjeta (sin tocar el menubar del encabezado) */
+html body .ui-g-12 > .ui-menu:not(.ui-menubar) {
+    background: #fff;
+    border: 1px solid #e6ecf1;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(16, 42, 67, .06);
+    overflow: hidden;
+}
+html body .ui-menu .ui-menu-list .ui-widget-header h3 {
+    background: #fff;
+    color: #8a94a6;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    padding: .7rem .9rem .5rem;
+    border-bottom: 1px solid #eef1f4;
+}
+html body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link {
+    color: #3d4b5c;
+    padding: .55rem .9rem;
+}
+html body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link.ui-state-hover {
+    background: #eef6f6;
+    color: #0f6461;
+}
+
+/* Pestañas */
+html body .ui-tabs .ui-tabs-nav {
+    background: transparent;
+    border: none;
+}
+html body .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+    background: #fff;
+    border-top: 2px solid #0f6461;
+}
+html body .ui-tabs .ui-tabs-panel {
+    background: transparent;
+    padding: 1em 0 0;
+}
+
+/* Botones: esquinas suaves */
+html body .ui-button { border-radius: 6px; }

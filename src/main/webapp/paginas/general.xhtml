@@ -28,20 +28,42 @@
                 <!-- ÁREA 1: ENCABEZADO -->
                 <div class="ui-g-12" style="padding:0; margin-bottom: 10px;">
 
-                    <!-- Columna Izquierda -->
-                    <div class="ui-g-12 ui-md-4">
+                    <!-- Columna Izquierda: emblema de la institución -->
+                    <div class="ui-g-12 ui-md-4"
+                         style="display: flex; align-items: center; min-height: 72px;">
                         <ui:insert name="encabezado_institucion">
+                            <div style="
+                                width: 62px;
+                                height: 72px;
+                                overflow: hidden;
+                                position: relative;
+                                margin-left: 8px;">
+                                <h:graphicImage
+                                    library="imagenes"
+                                    name="Icono.png"
+                                    alt="Emblema GalenoSV"
+                                    style="position: absolute; width: 176px; left: -57px; top: -13px;" />
+                            </div>
                         </ui:insert>
                     </div>
 
-                    <!-- Columna Central -->
+                    <!-- Columna Central: título en degradado -->
                     <div class="ui-g-12 ui-md-4" style="text-align: center;">
                         <ui:insert name="encabezado">
-                            <h:graphicImage
-                                library="imagenes"
-                                name="logogaleno.jpeg"
-                                alt="Logo GalenoSV"
-                                style="width: 280px;" />
+                            <div style="
+                                display: inline-block;
+                                width: 280px;
+                                height: 64px;
+                                line-height: 64px;
+                                background: linear-gradient(135deg, #12264a 0%, #1b3a6b 45%, #0f6461 100%);
+                                border-radius: 8px;
+                                color: #ffffff;
+                                font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                                font-weight: 700;
+                                font-size: 1.35rem;
+                                letter-spacing: .5px;">
+                                GALENO SV
+                            </div>
                         </ui:insert>
                     </div>
 

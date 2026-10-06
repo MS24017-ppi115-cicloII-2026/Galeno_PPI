@@ -4,7 +4,7 @@
         <h:form id="frmTabla">
             <p:toolbar>
                 <p:toolbarGroup>
-                    <p:commandButton value="#{msg['persona.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaModel.btnNuevoHandler}" update=":tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles @form"/>
+                    <p:commandButton value="#{msg['persona.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaModel.btnNuevoHandler}" update=":tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles @form" styleClass="ui-button-success"/>
                 </p:toolbarGroup>
             </p:toolbar>
             <p:dataTable id="tablaRegistros" value="#{personaModel.registros}" var="r" emptyMessage="#{msg['persona.msg_vacio']}" paginator="true" rows="10" style="margin-top: 10px;" selectionMode="single" selection="#{personaModel.registro}" rowKey="#{r.idPersona}">
@@ -74,7 +74,7 @@
                         <h:form id="frmDocumentosTabla">
                             <p:toolbar>
                                 <p:toolbarGroup>
-                                    <p:commandButton value="#{msg['doc.btn_nuevo']}" icon="pi pi-plus" actionListener="#{documentoModels.btnNuevoHandler}" update=":tabsPersona:pnlDocumentos"/>
+                                    <p:commandButton value="#{msg['doc.btn_nuevo']}" icon="pi pi-plus" actionListener="#{documentoModels.btnNuevoHandler}" update=":tabsPersona:pnlDocumentos" styleClass="ui-button-success"/>
                                 </p:toolbarGroup>
                             </p:toolbar>
                             <p:dataTable id="tablaDocumentos" value="#{documentoModels.registrosDePersona}" var="d" emptyMessage="#{msg['doc.msg_vacio']}" paginator="true" rows="5" style="margin-top: 10px;" selectionMode="single" selection="#{documentoModels.registro}" rowKey="#{d.idDocumento}">
@@ -128,7 +128,7 @@
                         <h:form id="frmMediosTabla">
                             <p:toolbar>
                                 <p:toolbarGroup>
-                                    <p:commandButton value="#{msg['medioContacto.btn_nuevo']}" icon="pi pi-plus" actionListener="#{medioContactoModel.btnNuevoHandler}" update=":tabsPersona:pnlMedios"/>
+                                    <p:commandButton value="#{msg['medioContacto.btn_nuevo']}" icon="pi pi-plus" actionListener="#{medioContactoModel.btnNuevoHandler}" update=":tabsPersona:pnlMedios" styleClass="ui-button-success"/>
                                 </p:toolbarGroup>
                             </p:toolbar>
                             <p:dataTable id="tablaMedios" value="#{medioContactoModel.registrosDePersona}" var="mc" emptyMessage="#{msg['medioContacto.msg_vacio']}" paginator="true" rows="5" style="margin-top: 10px;" selectionMode="single" selection="#{medioContactoModel.registro}" rowKey="#{mc.idMedioContacto}">
@@ -186,7 +186,7 @@
                         <h:form id="frmRolesTabla">
                             <p:toolbar rendered="#{empty personaRolModel.registrosDePersona}">
                                 <p:toolbarGroup>
-                                    <p:commandButton value="#{msg['personaRol.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaRolModel.btnNuevoHandler}" update=":tabsPersona:pnlRoles"/>
+                                    <p:commandButton value="#{msg['personaRol.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaRolModel.btnNuevoHandler}" update=":tabsPersona:pnlRoles" styleClass="ui-button-success"/>
                                 </p:toolbarGroup>
                             </p:toolbar>
                             <p:dataTable id="tablaRoles" value="#{personaRolModel.registrosDePersona}" var="pr" emptyMessage="#{msg['personaRol.msg_vacio']}" paginator="true" rows="5" style="margin-top: 10px;" selectionMode="single" selection="#{personaRolModel.registro}" rowKey="#{pr.idPersonaRol}">
