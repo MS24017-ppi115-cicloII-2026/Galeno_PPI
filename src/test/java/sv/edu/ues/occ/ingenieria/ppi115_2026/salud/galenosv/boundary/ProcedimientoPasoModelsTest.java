@@ -200,6 +200,21 @@ public class ProcedimientoPasoModelsTest {
     }
 
     @Test
+    void getRolesExcluyePaciente() {
+
+        Rol doctor = new Rol();
+        doctor.setNombre("DOCTOR");
+        Rol paciente = new Rol();
+        paciente.setNombre("Paciente");
+        when(rolDAO.buscarRolesActivos()).thenReturn(List.of(doctor, paciente));
+
+        List<Rol> resultado = model.getRoles();
+
+        assertEquals(1, resultado.size());
+        assertSame(doctor, resultado.get(0));
+    }
+
+    @Test
     void seleccionarRegistroCargaLaDependenciaExistente() {
 
         UUID idReferencia = UUID.randomUUID();
@@ -268,6 +283,24 @@ public class ProcedimientoPasoModelsTest {
         Rol rol = new Rol();
         rol.setNombre("ENFERMERIA");
         rol.setActivo(Boolean.FALSE);
+        when(rolDAO.buscar(rol.getIdRol())).thenReturn(rol);
+
+        model.prepararNuevoParaProcedimiento(idProcedimiento);
+        model.getRegistro().setNombre("Nuevo");
+        model.getRegistro().setIdRol(rol);
+
+        model.btnCrearhandler(null);
+
+        verify(procedimientoPasoDAO, never()).crear(any());
+        verify(fc).validationFailed();
+    }
+
+    @Test
+    void crearConRolPacienteMuestraError() {
+
+        Rol rol = new Rol();
+        rol.setNombre("Paciente");
+        rol.setActivo(Boolean.TRUE);
         when(rolDAO.buscar(rol.getIdRol())).thenReturn(rol);
 
         model.prepararNuevoParaProcedimiento(idProcedimiento);

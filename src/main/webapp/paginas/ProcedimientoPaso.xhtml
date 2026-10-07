@@ -110,7 +110,7 @@
                         <div class="ui-g-12 ui-md-8 campo-formulario">
                             <p:outputLabel for="cmbRol" value="#{msg['paso.lbl_rol']}" />
                             <p:selectOneMenu id="cmbRol" value="#{procedimientoPasoModels.registro.idRol}"
-                                             converter="rolConverter" required="true" requiredMessage="#{msg['paso.msg_req_rol']}">
+                                             converter="rolConverter" required="true" requiredMessage="#{msg['paso.msg_req_rol']}" disabled="#{procedimientoPasoModels.estado == 'MODIFICAR'}">
                                 <f:selectItem itemLabel="#{msg['paso.sel_rol']}" itemValue="#{null}" noSelectionOption="true" />
                                 <f:selectItems value="#{procedimientoPasoModels.roles}" var="rl" itemValue="#{rl}" itemLabel="#{rl.nombre}" />
                             </p:selectOneMenu>

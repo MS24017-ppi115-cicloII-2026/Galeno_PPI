@@ -27,6 +27,8 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Rol;
 @ViewScoped
 public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
 
+    private static final String ROL_PACIENTE = "paciente";
+
     @Inject
     ProcedimientoPasoDAO procedimientoPasoDAO;
 
@@ -175,7 +177,10 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
 
    
     public List<Rol> getRoles() {
-        return rolDAO.buscarRolesActivos();
+        return rolDAO.buscarRolesActivos().stream()
+                .filter(r -> r.getNombre() == null
+                        || !r.getNombre().trim().equalsIgnoreCase(ROL_PACIENTE))
+                .toList();
     }
 
     private boolean vinculoValido() {
@@ -199,6 +204,14 @@ public class ProcedimientoPasoModels extends AbstractModel<ProcedimientoPaso> {
 
         if (estado == Estado_CRUD.CREAR && rl != null && !Boolean.TRUE.equals(rl.getActivo())) {
             rechazar("El rol \"" + rl.getNombre() + "\" está inactivo.");
+            return false;
+        }
+
+        String nombreRol = (rl == null || rl.getNombre() == null)
+                ? "" : rl.getNombre().trim();
+
+        if (ROL_PACIENTE.equalsIgnoreCase(nombreRol)) {
+            rechazar("El rol \"paciente\" no puede ser responsable de un paso.");
             return false;
         }
         if (idPasoPadre != null && idPasoPadre.equals(registro.getIdProcedimientoPaso())) {

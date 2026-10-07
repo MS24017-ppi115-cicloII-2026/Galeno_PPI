@@ -221,7 +221,7 @@
 
                         <div class="ui-g-12 ui-md-6 campo-formulario">
                             <p:outputLabel for="cmbRol" value="#{msg['proc.lbl_rol']}" />
-                            <p:selectOneMenu id="cmbRol" value="#{procedimientoPasoModels.registro.idRol}" converter="rolConverter" required="true">
+                            <p:selectOneMenu id="cmbRol" value="#{procedimientoPasoModels.registro.idRol}" converter="rolConverter" required="true" disabled="#{procedimientoPasoModels.estado == 'MODIFICAR'}">
                                 <f:selectItem itemLabel="#{msg['proc.sel_rol']}" itemValue="#{null}" noSelectionOption="true" />
                                 <f:selectItems value="#{procedimientoPasoModels.roles}" var="rl" itemValue="#{rl}" itemLabel="#{rl.nombre}" />
                             </p:selectOneMenu>
@@ -309,7 +309,7 @@
 
                         <div class="ui-g-12 ui-md-6 campo-formulario">
                             <p:outputLabel for="cmbRolDep" value="#{msg['proc.lbl_rol']}" />
-                            <p:selectOneMenu id="cmbRolDep" value="#{procedimientoPasoModels.registro.idRol}" converter="rolConverter" required="true">
+                            <p:selectOneMenu id="cmbRolDep" value="#{procedimientoPasoModels.registro.idRol}" converter="rolConverter" required="true" disabled="#{procedimientoPasoModels.estado == 'MODIFICAR'}">
                                 <f:selectItem itemLabel="#{msg['proc.sel_rol']}" itemValue="#{null}" noSelectionOption="true" />
                                 <f:selectItems value="#{procedimientoPasoModels.roles}" var="rl" itemValue="#{rl}" itemLabel="#{rl.nombre}" />
                             </p:selectOneMenu>
