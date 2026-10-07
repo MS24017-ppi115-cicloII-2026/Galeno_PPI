@@ -1,20 +1,25 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
 
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import org.primefaces.event.SelectEvent;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.ConsultaDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DAOInterface;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.DocumentoDAO;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Consulta;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Documento;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.MedioContacto;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 
 @Named
@@ -186,6 +191,176 @@ public class ConsultaModels extends AbstractModel<Consulta> {
         if (validarRegistro()) {
             super.btnModificarHandler();
         }
+    }
+
+    // ===================== Sesión requerida y buscador =====================
+
+    private String criterioBusqueda;
+    private List<PersonaRol> resultadosBusqueda = List.of();
+    private PersonaRol personaBusqueda;
+    private boolean pacienteBloqueado;
+
+    public String getCriterioBusqueda() {
+        return criterioBusqueda;
+    }
+
+    public void setCriterioBusqueda(String criterioBusqueda) {
+        this.criterioBusqueda = criterioBusqueda;
+    }
+
+    public List<PersonaRol> getResultadosBusqueda() {
+        return resultadosBusqueda;
+    }
+
+    public PersonaRol getPersonaBusqueda() {
+        return personaBusqueda;
+    }
+
+    public void setPersonaBusqueda(PersonaRol personaBusqueda) {
+        this.personaBusqueda = personaBusqueda;
+    }
+
+    public boolean isPacienteBloqueado() {
+        return pacienteBloqueado;
+    }
+
+    private String texto(String clave) {
+        return (String) fc.getApplication()
+                .evaluateExpressionGet(fc, "#{msg['" + clave + "']}", String.class);
+    }
+
+    private boolean exigirSesion() {
+        if (sesionModels != null && sesionModels.isSesionIniciada()) {
+            return true;
+        }
+        fc.addMessage(null, new FacesMessage(
+                FacesMessage.SEVERITY_WARN,
+                texto("consulta.sesion_titulo"),
+                texto("consulta.msg_sesion_no_iniciada")
+        ));
+        fc.validationFailed();
+        return false;
+    }
+
+    public void nuevaConsulta(ActionEvent ae) {
+        if (!exigirSesion()) {
+            return;
+        }
+        this.pacienteBloqueado = false;
+        super.btnNuevoHandler(ae);
+    }
+
+    @Override
+    public void btnCancelar() {
+        super.btnCancelar();
+        this.pacienteBloqueado = false;
+    }
+
+    public void abrirBuscador(ActionEvent ae) {
+        if (!exigirSesion()) {
+            return;
+        }
+        this.criterioBusqueda = null;
+        this.resultadosBusqueda = List.of();
+        this.personaBusqueda = null;
+    }
+
+    public void buscarPaciente() {
+        if (!exigirSesion()) {
+            return;
+        }
+        UUID idClinica = (sesionModels != null) ? sesionModels.getIdClinicaActual() : null;
+
+        this.personaBusqueda = null;
+        this.resultadosBusqueda = consultaDAO.buscarPacientePorCriterio(
+                criterioBusqueda,
+                idClinica
+        );
+
+        if (resultadosBusqueda.isEmpty()) {
+            fc.addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_INFO,
+                    texto("consulta.buscador_titulo"),
+                    texto("consulta.buscador_vacio")
+            ));
+        }
+    }
+
+    public void seleccionarPaciente(PersonaRol pr) {
+        if (!exigirSesion()) {
+            return;
+        }
+        if (pr == null) {
+            return;
+        }
+        super.btnNuevoHandler(null);
+        if (this.registro != null) {
+            this.registro.setIdPersonaRol(pr);
+        }
+        this.personaBusqueda = pr;
+        this.pacienteBloqueado = true;
+    }
+
+    public void seleccionarDesdeBusqueda(AjaxBehaviorEvent event) {
+        if (!(event instanceof SelectEvent)) {
+            return;
+        }
+        Object fila = ((SelectEvent<?>) event).getObject();
+        if (fila instanceof PersonaRol) {
+            seleccionarPaciente((PersonaRol) fila);
+        }
+    }
+
+    public String getDocumentoDe(PersonaRol pr) {
+        if (pr == null || pr.getIdPersona() == null) {
+            return "";
+        }
+        Collection<Documento> documentos = pr.getIdPersona().getDocumentoCollection();
+        if (documentos == null || documentos.isEmpty()) {
+            return "";
+        }
+        return documentos.stream()
+                .map(Documento::getValor)
+                .filter(v -> v != null && !v.isBlank())
+                .collect(Collectors.joining(", "));
+    }
+
+    public String getTelefonoDe(PersonaRol pr) {
+        if (pr == null || pr.getIdPersona() == null) {
+            return "";
+        }
+        Collection<MedioContacto> medios = pr.getIdPersona().getMedioContactoCollection();
+        if (medios == null || medios.isEmpty()) {
+            return "";
+        }
+        List<String> telefonos = medios.stream()
+                .filter(this::esTelefono)
+                .map(MedioContacto::getValor)
+                .filter(v -> v != null && !v.isBlank())
+                .toList();
+
+        List<String> aMostrar = telefonos.isEmpty()
+                ? medios.stream()
+                        .map(MedioContacto::getValor)
+                        .filter(v -> v != null && !v.isBlank())
+                        .toList()
+                : telefonos;
+
+        return String.join(", ", aMostrar);
+    }
+
+    private boolean esTelefono(MedioContacto medio) {
+        if (medio == null || medio.getIdTipoMedioContacto() == null
+                || medio.getIdTipoMedioContacto().getNombre() == null) {
+            return false;
+        }
+        String tipo = medio.getIdTipoMedioContacto().getNombre().toLowerCase();
+        return tipo.contains("tel")
+                || tipo.contains("cel")
+                || tipo.contains("fono")
+                || tipo.contains("phone")
+                || tipo.contains("vil")
+                || tipo.contains("fij");
     }
 
     // ===================== Información extra =====================

@@ -126,6 +126,8 @@ private void validarPersonaRol(PersonaRol registro, boolean esActualizacion) {
     TypedQuery<Long> q = em.createQuery(
             "SELECT COUNT(pr) FROM PersonaRol pr "
             + "WHERE pr.idPersona = :persona "
+            + "AND pr.idRol = :rol "
+            + "AND pr.idClinica = :clinica "
             + (esActualizacion
                     ? "AND pr.idPersonaRol <> :idPersonaRol "
                     : ""),
@@ -133,6 +135,8 @@ private void validarPersonaRol(PersonaRol registro, boolean esActualizacion) {
     );
 
     q.setParameter("persona", persona);
+    q.setParameter("rol", rol);
+    q.setParameter("clinica", clinica);
 
     if (esActualizacion) {
         q.setParameter(
@@ -145,7 +149,7 @@ private void validarPersonaRol(PersonaRol registro, boolean esActualizacion) {
 
     if (cantidad > 0) {
         throw new IllegalArgumentException(
-                "La persona seleccionada ya tiene un rol asignado"
+                "La persona seleccionada ya tiene ese rol asignado en esa clínica"
         );
     }
 

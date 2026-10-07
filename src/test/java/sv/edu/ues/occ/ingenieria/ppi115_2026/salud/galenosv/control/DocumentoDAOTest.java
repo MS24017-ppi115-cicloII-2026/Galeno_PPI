@@ -207,6 +207,56 @@ public class DocumentoDAOTest {
     }
 
     @Test
+    public void testExisteValorEnOtraPersonaVerdadero() {
+        DocumentoDAO cut = new DocumentoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        TypedQuery<Long> mockQuery = Mockito.mock(TypedQuery.class);
+
+        Mockito.when(mockEM.createQuery(any(String.class), eq(Long.class)))
+                .thenReturn(mockQuery);
+        Mockito.when(mockQuery.getSingleResult()).thenReturn(1L);
+
+        DocumentoDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+
+        boolean resultado = espia.existeValorEnOtraPersona(
+                UUID.randomUUID(), UUID.randomUUID(),
+                "01234567-8", UUID.randomUUID());
+
+        assertTrue(resultado);
+        Mockito.verify(mockQuery).setParameter("valor", "01234567-8");
+    }
+
+    @Test
+    public void testExisteValorEnOtraPersonaFalso() {
+        DocumentoDAO cut = new DocumentoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        TypedQuery<Long> mockQuery = Mockito.mock(TypedQuery.class);
+
+        Mockito.when(mockEM.createQuery(any(String.class), eq(Long.class)))
+                .thenReturn(mockQuery);
+        Mockito.when(mockQuery.getSingleResult()).thenReturn(0L);
+
+        DocumentoDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+
+        assertFalse(espia.existeValorEnOtraPersona(
+                UUID.randomUUID(), UUID.randomUUID(), "01234567-8", null));
+    }
+
+    @Test
+    public void testExisteValorEnOtraPersonaParametrosInvalidos() {
+        DocumentoDAO cut = new DocumentoDAO();
+
+        assertThrows(IllegalArgumentException.class,
+                () -> cut.existeValorEnOtraPersona(null, UUID.randomUUID(), "x", null));
+        assertThrows(IllegalArgumentException.class,
+                () -> cut.existeValorEnOtraPersona(UUID.randomUUID(), null, "x", null));
+        assertThrows(IllegalArgumentException.class,
+                () -> cut.existeValorEnOtraPersona(UUID.randomUUID(), UUID.randomUUID(), "   ", null));
+    }
+
+    @Test
     public void testExisteOtroDocumentoDelTipoVerdadero() {
         DocumentoDAO cut = new DocumentoDAO();
         EntityManager mockEM = Mockito.mock(EntityManager.class);

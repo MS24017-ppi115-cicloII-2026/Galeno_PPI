@@ -1,5 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
 
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -55,5 +57,49 @@ public class PersonaModels extends AbstractModel<Persona> {
 
     public boolean isHayPersonaSeleccionada() {
         return getPersonaSeleccionada() != null;
+    }
+
+    private boolean validarRegistro() {
+        if (registro == null) {
+            return mostrarError(
+                    "Registro inválido",
+                    "La persona no puede ser nula."
+            );
+        }
+        if (registro.getFechaNacimiento() == null) {
+            return mostrarError(
+                    "Fecha de nacimiento requerida",
+                    "La persona debe tener una fecha de nacimiento registrada."
+            );
+        }
+        return true;
+    }
+
+    private boolean mostrarError(String resumen, String detalle) {
+        fc.addMessage(
+                null,
+                new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        resumen,
+                        detalle
+                )
+        );
+
+        fc.validationFailed();
+        return false;
+    }
+
+    @Override
+    public void btnCrearhandler(ActionEvent ae) {
+        if (validarRegistro()) {
+            super.btnCrearhandler(ae);
+        }
+    }
+
+    @Override
+    public void btnModificarHandler() {
+        if (validarRegistro()) {
+            super.btnModificarHandler();
+        }
     }
 }

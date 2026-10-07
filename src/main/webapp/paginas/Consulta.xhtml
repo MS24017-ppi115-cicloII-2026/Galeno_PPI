@@ -31,6 +31,9 @@
                         id="calDesde"
                         value="#{consultaModels.fechaDesde}"
                         pattern="dd/MM/yyyy"
+                        monthNavigator="true"
+                        yearNavigator="select"
+                        yearRange="1920:2100"
                         showIcon="true"/>
 
                     <p:outputLabel
@@ -41,6 +44,9 @@
                         id="calHasta"
                         value="#{consultaModels.fechaHasta}"
                         pattern="dd/MM/yyyy"
+                        monthNavigator="true"
+                        yearNavigator="select"
+                        yearRange="1920:2100"
                         showIcon="true"/>
 
                     <p:commandButton
@@ -56,8 +62,14 @@
                     <p:commandButton
                         value="#{msg['consulta.btn_nuevo']}"
                         icon="pi pi-plus"
-                        actionListener="#{consultaModels.btnNuevoHandler}"
-                        update=":tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos @form" styleClass="ui-button-success"/>
+                        actionListener="#{consultaModels.nuevaConsulta}"
+                        update=":mensajesGlobales:growl-sticky :tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos @form" styleClass="ui-button-success"/>
+                    <p:commandButton
+                        value="#{msg['consulta.btn_buscar_paciente']}"
+                        icon="pi pi-search"
+                        actionListener="#{consultaModels.abrirBuscador}"
+                        oncomplete="if(!args.validationFailed) PF('dlgBuscarPaciente').show()"
+                        update=":mensajesGlobales:growl-sticky" style="margin-left: 5px;"/>
                 </p:toolbarGroup>
             </p:toolbar>
 
@@ -204,7 +216,7 @@
                                 requiredMessage="#{msg['consulta.msg_req_persona']}"
                                 filter="true"
                                 filterMatchMode="contains"
-                                disabled="#{consultaModels.estado == 'MODIFICAR'}">
+                                disabled="#{consultaModels.estado == 'MODIFICAR' or consultaModels.pacienteBloqueado}">
 
                                 <f:selectItem
                                     itemLabel="#{msg['consulta.sel_persona']}"
@@ -228,6 +240,9 @@
                                 value="#{consultaModels.registro.fechaInicio}"
                                 showTime="true"
                                 pattern="dd/MM/yyyy HH:mm"
+                                monthNavigator="true"
+                                yearNavigator="select"
+                                yearRange="1920:2100"
                                 showIcon="true"/>
 
                             <p:outputLabel
@@ -239,6 +254,9 @@
                                 value="#{consultaModels.registro.fechaFin}"
                                 showTime="true"
                                 pattern="dd/MM/yyyy HH:mm"
+                                monthNavigator="true"
+                                yearNavigator="select"
+                                yearRange="1920:2100"
                                 showIcon="true"/>
 
                             <p:outputLabel
@@ -480,6 +498,9 @@
                                         value="#{consultaProcedimientoModels.registro.fechaInicio}"
                                         showTime="true"
                                         pattern="dd/MM/yyyy HH:mm"
+                                        monthNavigator="true"
+                                        yearNavigator="select"
+                                        yearRange="1920:2100"
                                         showIcon="true"/>
 
                                     <p:outputLabel
@@ -491,6 +512,9 @@
                                         value="#{consultaProcedimientoModels.registro.fechaFin}"
                                         showTime="true"
                                         pattern="dd/MM/yyyy HH:mm"
+                                        monthNavigator="true"
+                                        yearNavigator="select"
+                                        yearRange="1920:2100"
                                         showIcon="true"/>
 
                                     <p:outputLabel
@@ -521,6 +545,76 @@
             </p:tab>
 
         </p:tabView>
+
+        <p:dialog header="#{msg['consulta.buscador_titulo']}"
+                  widgetVar="dlgBuscarPaciente"
+                  modal="true"
+                  resizable="false"
+                  width="860"
+                  dynamic="true"
+                  showEffect="fade"
+                  hideEffect="fade"
+                  appendTo="@(body)">
+
+            <h:form id="frmBuscadorPaciente">
+
+                <div style="display: flex; gap: 8px; align-items: center;">
+
+                    <p:inputText id="txtCriterioBusqueda"
+                                 value="#{consultaModels.criterioBusqueda}"
+                                 placeholder="#{msg['consulta.buscador_placeholder']}"
+                                 style="flex: 1;"
+                                 onkeyup="if(event.key==='Enter'){event.preventDefault();this.form.querySelector('button[id$=btnBuscarPaciente]').click();}"/>
+
+                    <p:commandButton id="btnBuscarPaciente"
+                                     value="#{msg['consulta.buscador_btn']}"
+                                     icon="pi pi-search"
+                                     actionListener="#{consultaModels.buscarPaciente}"
+                                     update=":frmBuscadorPaciente:dtResultadosBusqueda :mensajesGlobales:growl-sticky"/>
+
+                </div>
+
+                <p:dataTable id="dtResultadosBusqueda"
+                             value="#{consultaModels.resultadosBusqueda}"
+                             var="pr"
+                             emptyMessage="#{msg['consulta.buscador_vacio']}"
+                             paginator="true"
+                             rows="5"
+                             selectionMode="single"
+                             selection="#{consultaModels.personaBusqueda}"
+                             rowKey="#{pr.idPersonaRol}"
+                             style="margin-top: 12px;">
+
+                    <p:ajax event="rowDblselect"
+                            listener="#{consultaModels.seleccionarDesdeBusqueda}"
+                            oncomplete="if(!args.validationFailed) PF('dlgBuscarPaciente').hide()"
+                            update=":mensajesGlobales:growl-sticky :frmTabla :tabsConsulta:frmDetalle :tabsConsulta:pnlDocumentos :tabsConsulta:pnlProcedimientos"/>
+
+                    <p:column headerText="#{msg['consulta.buscador_col_nombres']}">
+                        <h:outputText value="#{pr.idPersona.nombres}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg['consulta.buscador_col_apellidos']}">
+                        <h:outputText value="#{pr.idPersona.apellidos}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg['consulta.buscador_col_documento']}">
+                        <h:outputText value="#{consultaModels.getDocumentoDe(pr)}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg['consulta.buscador_col_telefono']}">
+                        <h:outputText value="#{consultaModels.getTelefonoDe(pr)}"/>
+                    </p:column>
+
+                    <p:column headerText="#{msg['consulta.sesion_clinica']}">
+                        <h:outputText value="#{pr.idClinica.nombre}"/>
+                    </p:column>
+
+                </p:dataTable>
+
+            </h:form>
+
+        </p:dialog>
 
     </ui:define>
 

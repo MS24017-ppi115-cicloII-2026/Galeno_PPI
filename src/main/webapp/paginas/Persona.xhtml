@@ -54,7 +54,7 @@
                             <p:outputLabel for="txtApellidos" value="#{msg['persona.lbl_apellidos']}"/>
                             <p:inputText id="txtApellidos" value="#{personaModel.registro.apellidos}" required="true" requiredMessage="#{msg['persona.msg_req_apellidos']}" maxlength="155"/>
                             <p:outputLabel for="calFechaNacimiento" value="#{msg['persona.lbl_fecha_nacimiento']}"/>
-                            <p:datePicker id="calFechaNacimiento" value="#{personaModel.registro.fechaNacimiento}" pattern="dd/MM/yyyy" showIcon="true"/>
+                            <p:datePicker id="calFechaNacimiento" value="#{personaModel.registro.fechaNacimiento}" pattern="dd/MM/yyyy" showIcon="true" monthNavigator="true" yearNavigator="select" yearRange="1920:2100" required="true" requiredMessage="#{msg['persona.msg_req_fecha_nacimiento']}"/>
                             <p:outputLabel value="#{msg['persona.lbl_fecha_creacion']}"/>
                             <h:outputText value="#{personaModel.registro.fechaCreacion}">
                                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
@@ -184,7 +184,7 @@
                     <h:outputText value="Seleccione una persona de la tabla para gestionar sus roles." rendered="#{not personaModel.hayPersonaSeleccionada}"/>
                     <p:outputPanel rendered="#{personaModel.hayPersonaSeleccionada}">
                         <h:form id="frmRolesTabla">
-                            <p:toolbar rendered="#{empty personaRolModel.registrosDePersona}">
+                            <p:toolbar>
                                 <p:toolbarGroup>
                                     <p:commandButton value="#{msg['personaRol.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaRolModel.btnNuevoHandler}" update=":tabsPersona:pnlRoles" styleClass="ui-button-success"/>
                                 </p:toolbarGroup>

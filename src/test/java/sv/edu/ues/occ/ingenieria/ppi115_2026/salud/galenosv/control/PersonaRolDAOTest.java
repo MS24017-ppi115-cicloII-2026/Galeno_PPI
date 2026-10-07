@@ -259,7 +259,9 @@ class PersonaRolDAOTest {
 
         verify(em).createQuery(
                 "SELECT COUNT(pr) FROM PersonaRol pr "
-                + "WHERE pr.idPersona = :persona ",
+                + "WHERE pr.idPersona = :persona "
+                + "AND pr.idRol = :rol "
+                + "AND pr.idClinica = :clinica ",
                 Long.class
         );
         verify(em).persist(registro);
@@ -505,7 +507,7 @@ class PersonaRolDAOTest {
         );
 
         assertEquals(
-                "La persona seleccionada ya tiene un rol asignado",
+                "La persona seleccionada ya tiene ese rol asignado en esa clínica",
                 e.getMessage()
         );
 
@@ -571,6 +573,10 @@ class PersonaRolDAOTest {
                 eq("idPersonaRol"),
                 eq(registro.getIdPersonaRol())
         )).thenReturn(countQuery);
+        when(countQuery.setParameter(eq("rol"), any(Rol.class)))
+                .thenReturn(countQuery);
+        when(countQuery.setParameter(eq("clinica"), any(Clinica.class)))
+                .thenReturn(countQuery);
         when(countQuery.getSingleResult()).thenReturn(0L);
 
         dao.actualizar(registro);
@@ -578,6 +584,8 @@ class PersonaRolDAOTest {
         verify(em).createQuery(
                 "SELECT COUNT(pr) FROM PersonaRol pr "
                 + "WHERE pr.idPersona = :persona "
+                + "AND pr.idRol = :rol "
+                + "AND pr.idClinica = :clinica "
                 + "AND pr.idPersonaRol <> :idPersonaRol ",
                 Long.class
         );
@@ -611,6 +619,10 @@ class PersonaRolDAOTest {
                 eq("idPersonaRol"),
                 eq(registro.getIdPersonaRol())
         )).thenReturn(countQuery);
+        when(countQuery.setParameter(eq("rol"), any(Rol.class)))
+                .thenReturn(countQuery);
+        when(countQuery.setParameter(eq("clinica"), any(Clinica.class)))
+                .thenReturn(countQuery);
         when(countQuery.getSingleResult()).thenReturn(1L);
 
         assertThrows(

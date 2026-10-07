@@ -262,6 +262,34 @@ public class DocumentoModelsTest {
     }
 
     @Test
+    void crearConDuiRegistradoEnOtraPersonaMuestraError() {
+
+        tipo.setNombre("DUI");
+        when(tipoDocumentoDAO.buscar(tipo.getIdTipoDocumento()))
+                .thenReturn(tipo);
+        when(documentoDAO.existeDuplicado(
+                any(), any(), any(), any()
+        )).thenReturn(false);
+        when(documentoDAO.existeOtroDocumentoDelTipo(
+                persona.getIdPersona(),
+                tipo.getIdTipoDocumento(),
+                documento.getIdDocumento()
+        )).thenReturn(false);
+        when(documentoDAO.existeValorEnOtraPersona(
+                persona.getIdPersona(),
+                tipo.getIdTipoDocumento(),
+                documento.getValor(),
+                documento.getIdDocumento()
+        )).thenReturn(true);
+        model.setRegistro(documento);
+
+        model.btnCrearhandler(null);
+
+        verify(documentoDAO, never()).crear(any());
+        verify(fc).validationFailed();
+    }
+
+    @Test
     void crearConTodosLosDatosValidosGuarda() {
 
         when(tipoDocumentoDAO.buscar(tipo.getIdTipoDocumento()))

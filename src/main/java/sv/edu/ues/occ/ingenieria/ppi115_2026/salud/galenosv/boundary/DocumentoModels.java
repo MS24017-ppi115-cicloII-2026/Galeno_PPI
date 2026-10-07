@@ -29,6 +29,7 @@ public class DocumentoModels extends AbstractModel<Documento> {
     PersonaModels personaModel;
 
     private static final Set<String> TIPOS_UNICOS = Set.of("dui");
+    private static final Set<String> TIPOS_GLOBALES_UNICOS = Set.of("dui");
 
     private UUID personaCargada;
     private boolean cargado;
@@ -176,6 +177,19 @@ public class DocumentoModels extends AbstractModel<Documento> {
                     "Documento ya registrado",
                     "Esta persona ya tiene un documento de tipo "
                     + tipo.getNombre() + " registrado."
+            );
+        }
+
+        if (TIPOS_GLOBALES_UNICOS.contains(nombreTipo)
+                && documentoDAO.existeValorEnOtraPersona(
+                        registro.getIdPersona().getIdPersona(),
+                        registro.getIdTipoDocumento().getIdTipoDocumento(),
+                        registro.getValor(),
+                        registro.getIdDocumento())) {
+            return mostrarError(
+                    "Documento duplicado",
+                    "Otra persona ya tiene registrado un documento de tipo "
+                    + tipo.getNombre() + " con este valor."
             );
         }
         return true;
