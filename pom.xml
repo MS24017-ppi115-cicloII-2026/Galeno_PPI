@@ -119,7 +119,7 @@
                 <artifactId>liberty-maven-plugin</artifactId>
                <version>3.12.1</version>
                <configuration>
-                    <installDirectory>RUTADELSERVIDOR</installDirectory>
+                    <installDirectory>/opt/wlp_26.0.0.6/</installDirectory>
                     <serverName>PPI_CLinica</serverName>
                 </configuration>
             </plugin>
