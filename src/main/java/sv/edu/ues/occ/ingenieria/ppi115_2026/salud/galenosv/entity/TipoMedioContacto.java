@@ -4,6 +4,7 @@
  */
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -99,7 +100,7 @@ public class TipoMedioContacto implements Serializable {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
-
+@JsonbTransient
     public Collection<MedioContacto> getMedioContactoCollection() {
         return medioContactoCollection;
     }

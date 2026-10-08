@@ -1,5 +1,6 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -125,7 +126,7 @@ public class Persona implements Serializable {
     public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
-
+@JsonbTransient
     public Collection<MedioContacto> getMedioContactoCollection() {
         return medioContactoCollection;
     }
@@ -133,7 +134,7 @@ public class Persona implements Serializable {
     public void setMedioContactoCollection(Collection<MedioContacto> medioContactoCollection) {
         this.medioContactoCollection = medioContactoCollection;
     }
-
+@JsonbTransient
     public Collection<Documento> getDocumentoCollection() {
         return documentoCollection;
     }
@@ -141,7 +142,7 @@ public class Persona implements Serializable {
     public void setDocumentoCollection(Collection<Documento> documentoCollection) {
         this.documentoCollection = documentoCollection;
     }
-
+@JsonbTransient
     public Collection<PersonaRol> getPersonaRolCollection() {
         return personaRolCollection;
     }

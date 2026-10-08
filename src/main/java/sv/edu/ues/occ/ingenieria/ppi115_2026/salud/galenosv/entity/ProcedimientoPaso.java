@@ -4,6 +4,7 @@
  */
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -85,7 +86,7 @@ public class ProcedimientoPaso implements Serializable {
     public void setIndicaFin(Boolean indicaFin) {
         this.indicaFin = indicaFin;
     }
-
+@JsonbTransient
     public Collection<ProcedimientoPasoSecuencia> getProcedimientoPasoSecuenciaCollection() {
         return procedimientoPasoSecuenciaCollection;
     }
@@ -93,7 +94,7 @@ public class ProcedimientoPaso implements Serializable {
     public void setProcedimientoPasoSecuenciaCollection(Collection<ProcedimientoPasoSecuencia> procedimientoPasoSecuenciaCollection) {
         this.procedimientoPasoSecuenciaCollection = procedimientoPasoSecuenciaCollection;
     }
-
+@JsonbTransient
     public Collection<ProcedimientoPasoExamen> getProcedimientoPasoExamenCollection() {
         return procedimientoPasoExamenCollection;
     }

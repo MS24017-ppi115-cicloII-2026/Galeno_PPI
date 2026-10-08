@@ -4,6 +4,7 @@
  */
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -106,7 +107,7 @@ public class Clinica implements Serializable {
     public void setComentarios(String comentarios) {
         this.comentarios = comentarios;
     }
-
+@JsonbTransient
     public Collection<PersonaRol> getPersonaRolCollection() {
         return personaRolCollection;
     }
