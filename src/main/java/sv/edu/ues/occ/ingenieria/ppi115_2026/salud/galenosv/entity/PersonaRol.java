@@ -4,6 +4,7 @@
  */
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -80,7 +81,7 @@ public class PersonaRol implements Serializable {
     public void setFechaCreacion(Date fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
-
+@JsonbTransient
     public Collection<ConsultaProcedimientoPaso> getConsultaProcedimientoPasoCollection() {
         return consultaProcedimientoPasoCollection;
     }
@@ -112,7 +113,7 @@ public class PersonaRol implements Serializable {
     public void setIdRol(Rol idRol) {
         this.idRol = idRol;
     }
-
+@JsonbTransient
     public Collection<Consulta> getConsultaCollection() {
         return consultaCollection;
     }

@@ -4,6 +4,7 @@
  */
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -87,7 +88,7 @@ public class TipoExamen implements Serializable {
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
-
+@JsonbTransient
     public Collection<ExamenTipoExamen> getExamenTipoExamenCollection() {
         return examenTipoExamenCollection;
     }
