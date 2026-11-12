@@ -15,5 +15,7 @@ public class CorsFilter implements ContainerResponseFilter {
         res.getHeaders().add("Access-Control-Allow-Origin", "*");
         res.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
         res.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        // para que el frontend pueda leer el nombre del archivo del ticket PDF
+        res.getHeaders().add("Access-Control-Expose-Headers", "Content-Disposition");
     }
 }
