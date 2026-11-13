@@ -1,6 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,20 +30,36 @@ public class TipoMedioContactoDAOTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    // ---------- buscarPorNombre ----------
+
     @Test
     void buscarPorNombreNulo() {
-        assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorNombre(null)
         );
+        assertEquals("El nombre no puede ser nulo o vacío", e.getMessage());
+        verifyNoInteractions(em);
     }
 
     @Test
     void buscarPorNombreVacio() {
-        assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorNombre("")
         );
+        assertEquals("El nombre no puede ser nulo o vacío", e.getMessage());
+        verifyNoInteractions(em);
+    }
+
+    @Test
+    void buscarPorNombreBlanco() {
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> dao.buscarPorNombre("   ")
+        );
+        assertEquals("El nombre no puede ser nulo o vacío", e.getMessage());
+        verifyNoInteractions(em);
     }
 
     @Test
@@ -53,9 +70,9 @@ public class TipoMedioContactoDAOTest {
 
         tipoMedioContacto.setNombre("Correo electrónico");
 
-        when(em.createQuery(
-                anyString(),
-                eq(TipoMedioContacto.class)
+        when(em.createNamedQuery(
+                "TipoMedioContacto.findByNombreLike",
+                TipoMedioContacto.class
         )).thenReturn(query);
 
         when(query.getResultList())
@@ -71,20 +88,84 @@ public class TipoMedioContactoDAOTest {
                 resultado.get(0).getNombre()
         );
 
+        verify(em).createNamedQuery(
+                "TipoMedioContacto.findByNombreLike",
+                TipoMedioContacto.class
+        );
         verify(query).setParameter(
                 "nombre",
                 "%Correo%"
         );
-
         verify(query).getResultList();
     }
 
     @Test
+    void buscarPorNombreSinResultados() {
+
+        when(em.createNamedQuery(
+                "TipoMedioContacto.findByNombreLike",
+                TipoMedioContacto.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        List<TipoMedioContacto> resultado =
+                dao.buscarPorNombre("Inexistente");
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        verify(query).setParameter(
+                "nombre",
+                "%Inexistente%"
+        );
+    }
+
+    @Test
+    void buscarPorNombreErrorEnConsulta() {
+
+        PersistenceException causa =
+                new PersistenceException("fallo de BD");
+
+        when(em.createNamedQuery(
+                "TipoMedioContacto.findByNombreLike",
+                TipoMedioContacto.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException e = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPorNombre("Correo")
+        );
+        assertSame(causa, e.getCause());
+    }
+
+    @Test
+    void buscarPorNombreSinEntityManager() {
+
+        TipoMedioContactoDAO daoSinEm = new TipoMedioContactoDAO();
+
+        IllegalStateException e = assertThrows(
+                IllegalStateException.class,
+                () -> daoSinEm.buscarPorNombre("Correo")
+        );
+        assertTrue(e.getMessage().contains(
+                "EntityManager no está disponible"));
+    }
+
+    // ---------- buscarPorActivo ----------
+
+    @Test
     void buscarPorActivoNulo() {
-        assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorActivo(null)
         );
+        assertEquals("El estado activo no puede ser nulo", e.getMessage());
+        verifyNoInteractions(em);
     }
 
     @Test
@@ -115,11 +196,71 @@ public class TipoMedioContactoDAOTest {
         );
         assertTrue(resultado.get(0).getActivo());
 
+        verify(em).createNamedQuery(
+                "TipoMedioContacto.findByActivo",
+                TipoMedioContacto.class
+        );
         verify(query).setParameter(
                 "activo",
                 true
         );
-
         verify(query).getResultList();
+    }
+
+    @Test
+    void buscarPorActivoSinResultados() {
+
+        when(em.createNamedQuery(
+                "TipoMedioContacto.findByActivo",
+                TipoMedioContacto.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        List<TipoMedioContacto> resultado =
+                dao.buscarPorActivo(false);
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        verify(query).setParameter(
+                "activo",
+                false
+        );
+    }
+
+    @Test
+    void buscarPorActivoErrorEnConsulta() {
+
+        PersistenceException causa =
+                new PersistenceException("fallo de BD");
+
+        when(em.createNamedQuery(
+                "TipoMedioContacto.findByActivo",
+                TipoMedioContacto.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException e = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPorActivo(true)
+        );
+        assertSame(causa, e.getCause());
+    }
+
+    @Test
+    void buscarPorActivoSinEntityManager() {
+
+        TipoMedioContactoDAO daoSinEm = new TipoMedioContactoDAO();
+
+        IllegalStateException e = assertThrows(
+                IllegalStateException.class,
+                () -> daoSinEm.buscarPorActivo(true)
+        );
+        assertTrue(e.getMessage().contains(
+                "EntityManager no está disponible"));
     }
 }

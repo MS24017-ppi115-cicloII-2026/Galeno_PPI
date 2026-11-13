@@ -1,6 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +14,6 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProce
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
 public class ConsultaProcedimientoPasoDAOTest {
@@ -32,6 +31,8 @@ public class ConsultaProcedimientoPasoDAOTest {
         assertEquals(mockEM, cut.getEntityManger());
     }
 
+    // ---------- buscarPorConsultaProcedimiento ----------
+
     @Test
     public void testBuscarPorConsultaProcedimiento() {
         UUID idConsultaProcedimiento =
@@ -43,12 +44,13 @@ public class ConsultaProcedimientoPasoDAOTest {
         EntityManager mockEM =
                 Mockito.mock(EntityManager.class);
 
+        @SuppressWarnings("unchecked")
         TypedQuery<ConsultaProcedimientoPaso> mockQuery =
                 Mockito.mock(TypedQuery.class);
 
-        Mockito.when(mockEM.createQuery(
-                any(String.class),
-                eq(ConsultaProcedimientoPaso.class)))
+        Mockito.when(mockEM.createNamedQuery(
+                "ConsultaProcedimientoPaso.findByConsultaProcedimientoId",
+                ConsultaProcedimientoPaso.class))
                 .thenReturn(mockQuery);
 
         Mockito.when(mockQuery.getResultList())
@@ -81,6 +83,109 @@ public class ConsultaProcedimientoPasoDAOTest {
     }
 
     @Test
+    public void testBuscarPorConsultaProcedimientoNulo() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+        EntityManager mockEM =
+                Mockito.mock(EntityManager.class);
+
+        cut.em = mockEM;
+
+        IllegalArgumentException excepcion = assertThrows(
+                IllegalArgumentException.class,
+                () -> cut.buscarPorConsultaProcedimiento(null)
+        );
+
+        assertEquals(
+                "El idConsultaProcedimiento no puede ser nulo",
+                excepcion.getMessage()
+        );
+
+        Mockito.verifyNoInteractions(mockEM);
+    }
+
+    @Test
+    public void testBuscarPorConsultaProcedimientoResultadoVacio() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+        EntityManager mockEM =
+                Mockito.mock(EntityManager.class);
+
+        @SuppressWarnings("unchecked")
+        TypedQuery<ConsultaProcedimientoPaso> mockQuery =
+                Mockito.mock(TypedQuery.class);
+
+        Mockito.when(mockEM.createNamedQuery(
+                "ConsultaProcedimientoPaso.findByConsultaProcedimientoId",
+                ConsultaProcedimientoPaso.class))
+                .thenReturn(mockQuery);
+
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(Collections.emptyList());
+
+        cut.em = mockEM;
+
+        List<ConsultaProcedimientoPaso> resultado =
+                cut.buscarPorConsultaProcedimiento(UUID.randomUUID());
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    public void testBuscarPorConsultaProcedimientoExcepcionPersistencia() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+        EntityManager mockEM =
+                Mockito.mock(EntityManager.class);
+
+        @SuppressWarnings("unchecked")
+        TypedQuery<ConsultaProcedimientoPaso> mockQuery =
+                Mockito.mock(TypedQuery.class);
+
+        PersistenceException causa =
+                new PersistenceException("fallo de base de datos");
+
+        Mockito.when(mockEM.createNamedQuery(
+                "ConsultaProcedimientoPaso.findByConsultaProcedimientoId",
+                ConsultaProcedimientoPaso.class))
+                .thenReturn(mockQuery);
+
+        Mockito.when(mockQuery.getResultList())
+                .thenThrow(causa);
+
+        cut.em = mockEM;
+
+        DAOException excepcion = assertThrows(
+                DAOException.class,
+                () -> cut.buscarPorConsultaProcedimiento(UUID.randomUUID())
+        );
+
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    public void testBuscarPorConsultaProcedimientoEntityManagerNulo() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        IllegalStateException excepcion = assertThrows(
+                IllegalStateException.class,
+                () -> cut.buscarPorConsultaProcedimiento(UUID.randomUUID())
+        );
+
+        assertTrue(
+                excepcion.getMessage().contains("EntityManager no está disponible")
+        );
+    }
+
+    // ---------- buscarPorPersonaRol ----------
+
+    @Test
     public void testBuscarPorPersonaRol() {
         UUID idPersonaRol =
                 UUID.randomUUID();
@@ -91,12 +196,13 @@ public class ConsultaProcedimientoPasoDAOTest {
         EntityManager mockEM =
                 Mockito.mock(EntityManager.class);
 
+        @SuppressWarnings("unchecked")
         TypedQuery<ConsultaProcedimientoPaso> mockQuery =
                 Mockito.mock(TypedQuery.class);
 
-        Mockito.when(mockEM.createQuery(
-                any(String.class),
-                eq(ConsultaProcedimientoPaso.class)))
+        Mockito.when(mockEM.createNamedQuery(
+                "ConsultaProcedimientoPaso.findByPersonaRolId",
+                ConsultaProcedimientoPaso.class))
                 .thenReturn(mockQuery);
 
         Mockito.when(mockQuery.getResultList())
@@ -127,27 +233,14 @@ public class ConsultaProcedimientoPasoDAOTest {
     }
 
     @Test
-    public void testBuscarPorConsultaProcedimientoNulo() {
-
-        ConsultaProcedimientoPasoDAO cut =
-                new ConsultaProcedimientoPasoDAO();
-
-        IllegalArgumentException excepcion = assertThrows(
-                IllegalArgumentException.class,
-                () -> cut.buscarPorConsultaProcedimiento(null)
-        );
-
-        assertEquals(
-                "El idConsultaProcedimiento no puede ser nulo",
-                excepcion.getMessage()
-        );
-    }
-
-    @Test
     public void testBuscarPorPersonaRolNulo() {
 
         ConsultaProcedimientoPasoDAO cut =
                 new ConsultaProcedimientoPasoDAO();
+        EntityManager mockEM =
+                Mockito.mock(EntityManager.class);
+
+        cut.em = mockEM;
 
         IllegalArgumentException excepcion = assertThrows(
                 IllegalArgumentException.class,
@@ -158,7 +251,89 @@ public class ConsultaProcedimientoPasoDAOTest {
                 "El idPersonaRol no puede ser nulo",
                 excepcion.getMessage()
         );
+
+        Mockito.verifyNoInteractions(mockEM);
     }
+
+    @Test
+    public void testBuscarPorPersonaRolResultadoVacio() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+        EntityManager mockEM =
+                Mockito.mock(EntityManager.class);
+
+        @SuppressWarnings("unchecked")
+        TypedQuery<ConsultaProcedimientoPaso> mockQuery =
+                Mockito.mock(TypedQuery.class);
+
+        Mockito.when(mockEM.createNamedQuery(
+                "ConsultaProcedimientoPaso.findByPersonaRolId",
+                ConsultaProcedimientoPaso.class))
+                .thenReturn(mockQuery);
+
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(Collections.emptyList());
+
+        cut.em = mockEM;
+
+        List<ConsultaProcedimientoPaso> resultado =
+                cut.buscarPorPersonaRol(UUID.randomUUID());
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    public void testBuscarPorPersonaRolExcepcionPersistencia() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+        EntityManager mockEM =
+                Mockito.mock(EntityManager.class);
+
+        @SuppressWarnings("unchecked")
+        TypedQuery<ConsultaProcedimientoPaso> mockQuery =
+                Mockito.mock(TypedQuery.class);
+
+        PersistenceException causa =
+                new PersistenceException("fallo de base de datos");
+
+        Mockito.when(mockEM.createNamedQuery(
+                "ConsultaProcedimientoPaso.findByPersonaRolId",
+                ConsultaProcedimientoPaso.class))
+                .thenReturn(mockQuery);
+
+        Mockito.when(mockQuery.getResultList())
+                .thenThrow(causa);
+
+        cut.em = mockEM;
+
+        DAOException excepcion = assertThrows(
+                DAOException.class,
+                () -> cut.buscarPorPersonaRol(UUID.randomUUID())
+        );
+
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    public void testBuscarPorPersonaRolEntityManagerNulo() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        IllegalStateException excepcion = assertThrows(
+                IllegalStateException.class,
+                () -> cut.buscarPorPersonaRol(UUID.randomUUID())
+        );
+
+        assertTrue(
+                excepcion.getMessage().contains("EntityManager no está disponible")
+        );
+    }
+
+    // ---------- buscarPersonasExcluyendoRol ----------
 
     @Test
     public void testBuscarPersonasExcluyendoRolExito() {
@@ -167,6 +342,7 @@ public class ConsultaProcedimientoPasoDAOTest {
                 new ConsultaProcedimientoPasoDAO();
 
         EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
         TypedQuery<PersonaRol> mockQuery =
                 Mockito.mock(TypedQuery.class);
 
@@ -175,9 +351,9 @@ public class ConsultaProcedimientoPasoDAOTest {
         List<PersonaRol> esperados =
                 Collections.singletonList(new PersonaRol());
 
-        Mockito.when(mockEM.createQuery(
-                any(String.class),
-                eq(PersonaRol.class)
+        Mockito.when(mockEM.createNamedQuery(
+                "PersonaRol.findByNombreRolSinEl",
+                PersonaRol.class
         )).thenReturn(mockQuery);
 
         Mockito.when(mockQuery.getResultList())
@@ -195,10 +371,40 @@ public class ConsultaProcedimientoPasoDAOTest {
     }
 
     @Test
+    public void testBuscarPersonasExcluyendoRolConvierteAMinusculas() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<PersonaRol> mockQuery =
+                Mockito.mock(TypedQuery.class);
+
+        cut.em = mockEM;
+
+        Mockito.when(mockEM.createNamedQuery(
+                "PersonaRol.findByNombreRolSinEl",
+                PersonaRol.class
+        )).thenReturn(mockQuery);
+
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(Collections.emptyList());
+
+        cut.buscarPersonasExcluyendoRol("ENFERMERA");
+
+        Mockito.verify(mockQuery)
+                .setParameter("nombre", "enfermera");
+    }
+
+    @Test
     public void testBuscarPersonasExcluyendoRolNulo() {
 
         ConsultaProcedimientoPasoDAO cut =
                 new ConsultaProcedimientoPasoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+
+        cut.em = mockEM;
 
         IllegalArgumentException excepcion = assertThrows(
                 IllegalArgumentException.class,
@@ -209,6 +415,8 @@ public class ConsultaProcedimientoPasoDAOTest {
                 "El nombre del rol no puede estar vacío",
                 excepcion.getMessage()
         );
+
+        Mockito.verifyNoInteractions(mockEM);
     }
 
     @Test
@@ -216,10 +424,96 @@ public class ConsultaProcedimientoPasoDAOTest {
 
         ConsultaProcedimientoPasoDAO cut =
                 new ConsultaProcedimientoPasoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
 
-        assertThrows(
+        cut.em = mockEM;
+
+        IllegalArgumentException excepcion = assertThrows(
                 IllegalArgumentException.class,
                 () -> cut.buscarPersonasExcluyendoRol("  ")
+        );
+
+        assertEquals(
+                "El nombre del rol no puede estar vacío",
+                excepcion.getMessage()
+        );
+
+        Mockito.verifyNoInteractions(mockEM);
+    }
+
+    @Test
+    public void testBuscarPersonasExcluyendoRolResultadoVacio() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<PersonaRol> mockQuery =
+                Mockito.mock(TypedQuery.class);
+
+        cut.em = mockEM;
+
+        Mockito.when(mockEM.createNamedQuery(
+                "PersonaRol.findByNombreRolSinEl",
+                PersonaRol.class
+        )).thenReturn(mockQuery);
+
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(Collections.emptyList());
+
+        List<PersonaRol> resultado =
+                cut.buscarPersonasExcluyendoRol("doctor");
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    public void testBuscarPersonasExcluyendoRolExcepcionPersistencia() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<PersonaRol> mockQuery =
+                Mockito.mock(TypedQuery.class);
+
+        PersistenceException causa =
+                new PersistenceException("fallo de base de datos");
+
+        cut.em = mockEM;
+
+        Mockito.when(mockEM.createNamedQuery(
+                "PersonaRol.findByNombreRolSinEl",
+                PersonaRol.class
+        )).thenReturn(mockQuery);
+
+        Mockito.when(mockQuery.getResultList())
+                .thenThrow(causa);
+
+        DAOException excepcion = assertThrows(
+                DAOException.class,
+                () -> cut.buscarPersonasExcluyendoRol("doctor")
+        );
+
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    public void testBuscarPersonasExcluyendoRolEntityManagerNulo() {
+
+        ConsultaProcedimientoPasoDAO cut =
+                new ConsultaProcedimientoPasoDAO();
+
+        IllegalStateException excepcion = assertThrows(
+                IllegalStateException.class,
+                () -> cut.buscarPersonasExcluyendoRol("doctor")
+        );
+
+        assertTrue(
+                excepcion.getMessage().contains("EntityManager no está disponible")
         );
     }
 }

@@ -4,8 +4,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Persona;
 
 @Stateless
@@ -21,55 +21,21 @@ public class PersonaDAO extends DefaultDAO<Persona> {
     }
 
     public List<Persona> buscarPorNombres(String nombres) {
-        if (nombres == null || nombres.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Los nombres no pueden ser nulos o vacíos"
-            );
-        }
+        validarTexto(nombres, "Los nombres no pueden ser nulos o vacíos");
 
-        TypedQuery<Persona> q = getEntityManger().createQuery(
-                "SELECT p FROM Persona p "
-                + "WHERE LOWER(p.nombres) LIKE LOWER(:nombres)",
-                Persona.class
-        );
-
-        q.setParameter("nombres", "%" + nombres + "%");
-
-        return q.getResultList();
+        return buscarConNamedQuery("Persona.findByNombresLike", Persona.class,
+                Map.of("nombres", "%" + nombres + "%"));
     }
 
     public List<Persona> buscarPersonasSinRol() {
-    TypedQuery<Persona> q = getEntityManger().createQuery(
-            "SELECT p "
-            + "FROM Persona p "
-            + "WHERE NOT EXISTS ("
-            + "    SELECT pr "
-            + "    FROM PersonaRol pr "
-            + "    WHERE pr.idPersona = p"
-            + ") "
-            + "ORDER BY p.nombres, p.apellidos",
-            Persona.class
-    );
+        return buscarConNamedQuery("Persona.findPersonasSinRol", Persona.class,
+                Map.of());
+    }
 
-    return q.getResultList();
-}
-    
-    
     public List<Persona> buscarPorApellidos(String apellidos) {
-        if (apellidos == null || apellidos.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Los apellidos no pueden ser nulos o vacíos"
-            );
-        }
+        validarTexto(apellidos, "Los apellidos no pueden ser nulos o vacíos");
 
-        TypedQuery<Persona> q = getEntityManger().createQuery(
-                "SELECT p FROM Persona p "
-                + "WHERE LOWER(p.apellidos) LIKE LOWER(:apellidos)",
-                Persona.class
-        );
-
-        q.setParameter("apellidos", "%" + apellidos + "%");
-
-        return q.getResultList();
+        return buscarConNamedQuery("Persona.findByApellidosLike", Persona.class,
+                Map.of("apellidos", "%" + apellidos + "%"));
     }
 }

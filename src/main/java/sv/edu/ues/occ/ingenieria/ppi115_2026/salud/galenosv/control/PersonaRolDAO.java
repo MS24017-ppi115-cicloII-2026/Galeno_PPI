@@ -4,9 +4,9 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.TypedQuery;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Clinica;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Persona;
@@ -75,7 +75,9 @@ private void validarPersonaRol(PersonaRol registro, boolean esActualizacion) {
         );
     }
 
-    Rol rol = em.find(Rol.class, registro.getIdRol().getIdRol());
+    EntityManager emLocal = requireEntityManager();
+
+    Rol rol = emLocal.find(Rol.class, registro.getIdRol().getIdRol());
 
     if (rol == null) {
         throw new IllegalArgumentException(
@@ -89,7 +91,7 @@ private void validarPersonaRol(PersonaRol registro, boolean esActualizacion) {
         );
     }
 
-    Clinica clinica = em.find(
+    Clinica clinica = emLocal.find(
             Clinica.class,
             registro.getIdClinica().getIdClinica()
     );
@@ -106,7 +108,7 @@ private void validarPersonaRol(PersonaRol registro, boolean esActualizacion) {
         );
     }
 
-    Persona persona = em.find(
+    Persona persona = emLocal.find(
             Persona.class,
             registro.getIdPersona().getIdPersona()
     );
@@ -123,31 +125,23 @@ private void validarPersonaRol(PersonaRol registro, boolean esActualizacion) {
         );
     }
 
-    TypedQuery<Long> q = em.createQuery(
-            "SELECT COUNT(pr) FROM PersonaRol pr "
-            + "WHERE pr.idPersona = :persona "
-            + "AND pr.idRol = :rol "
-            + "AND pr.idClinica = :clinica "
-            + (esActualizacion
-                    ? "AND pr.idPersonaRol <> :idPersonaRol "
-                    : ""),
-            Long.class
-    );
+    Map<String, Object> parametros = new HashMap<>();
+    parametros.put("persona", persona);
+    parametros.put("rol", rol);
+    parametros.put("clinica", clinica);
 
-    q.setParameter("persona", persona);
-    q.setParameter("rol", rol);
-    q.setParameter("clinica", clinica);
-
+    String nombreConsulta = "PersonaRol.countDuplicados";
     if (esActualizacion) {
-        q.setParameter(
+        nombreConsulta = "PersonaRol.countDuplicadosExcluyendoRegistro";
+        parametros.put(
                 "idPersonaRol",
                 registro.getIdPersonaRol()
         );
     }
 
-    Long cantidad = q.getSingleResult();
+    Long cantidad = buscarUnicoConNamedQuery(nombreConsulta, Long.class, parametros);
 
-    if (cantidad > 0) {
+    if (cantidad != null && cantidad > 0) {
         throw new IllegalArgumentException(
                 "La persona seleccionada ya tiene ese rol asignado en esa clínica"
         );
@@ -160,86 +154,38 @@ private void validarPersonaRol(PersonaRol registro, boolean esActualizacion) {
 
 public List<PersonaRol> buscarPorPersona(Persona persona) {
 
-    if (persona == null) {
-        throw new IllegalArgumentException(
-                "La persona no puede ser nula"
-        );
-    }
+    validarNoNulo(persona, "La persona no puede ser nula");
 
-    TypedQuery<PersonaRol> q = getEntityManger().createQuery(
-            "SELECT p FROM PersonaRol p "
-            + "WHERE p.idPersona = :persona",
-            PersonaRol.class
-    );
-
-    q.setParameter("persona", persona);
-
-    return q.getResultList();
+    return buscarConNamedQuery("PersonaRol.findByPersona", PersonaRol.class,
+            Map.of("persona", persona));
 }
 
 public List<PersonaRol> buscarPorRol(Rol rol) {
 
-    if (rol == null) {
-        throw new IllegalArgumentException(
-                "El rol no puede ser nulo"
-        );
-    }
+    validarNoNulo(rol, "El rol no puede ser nulo");
 
-    TypedQuery<PersonaRol> q = getEntityManger().createQuery(
-            "SELECT p FROM PersonaRol p "
-            + "JOIN FETCH p.idPersona "
-            + "JOIN FETCH p.idRol "
-            + "LEFT JOIN FETCH p.idClinica "
-            + "WHERE p.idRol = :rol",
-            PersonaRol.class
-    );
-
-    q.setParameter("rol", rol);
-
-    return q.getResultList();
+    return buscarConNamedQuery("PersonaRol.findByRolConRelaciones", PersonaRol.class,
+            Map.of("rol", rol));
 }
 
 public List<PersonaRol> buscarPorClinica(Clinica clinica) {
 
-    if (clinica == null) {
-        throw new IllegalArgumentException(
-                "La clínica no puede ser nula"
-        );
-    }
+    validarNoNulo(clinica, "La clínica no puede ser nula");
 
-    TypedQuery<PersonaRol> q = getEntityManger().createQuery(
-            "SELECT p FROM PersonaRol p "
-            + "WHERE p.idClinica = :clinica",
-            PersonaRol.class
-    );
-
-    q.setParameter("clinica", clinica);
-
-    return q.getResultList();
+    return buscarConNamedQuery("PersonaRol.findByClinica", PersonaRol.class,
+            Map.of("clinica", clinica));
 }
 
-    
+
     public PersonaRol buscarConRelaciones(UUID idPersonaRol) {
 
         if (idPersonaRol == null) {
             return null;
         }
 
-        TypedQuery<PersonaRol> q = getEntityManger().createQuery(
-                "SELECT pr FROM PersonaRol pr "
-                + "JOIN FETCH pr.idPersona "
-                + "JOIN FETCH pr.idRol "
-                + "LEFT JOIN FETCH pr.idClinica "
-                + "WHERE pr.idPersonaRol = :id",
-                PersonaRol.class
-        );
+        return buscarUnicoConNamedQuery("PersonaRol.findPorIdConRelaciones",
+                PersonaRol.class, Map.of("id", idPersonaRol));
 
-        q.setParameter("id", idPersonaRol);
-        q.setMaxResults(1);
-
-        List<PersonaRol> resultado = q.getResultList();
-
-        return resultado.isEmpty() ? null : resultado.getFirst();
     }
 
 }

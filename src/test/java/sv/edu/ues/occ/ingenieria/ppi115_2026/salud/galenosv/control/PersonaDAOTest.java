@@ -1,6 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,20 +30,36 @@ public class PersonaDAOTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    // ---------- buscarPorNombres ----------
+
     @Test
     void buscarPorNombresNulo() {
-        assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorNombres(null)
         );
+        assertEquals("Los nombres no pueden ser nulos o vacíos", e.getMessage());
+        verifyNoInteractions(em);
     }
 
     @Test
     void buscarPorNombresVacio() {
-        assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorNombres("")
         );
+        assertEquals("Los nombres no pueden ser nulos o vacíos", e.getMessage());
+        verifyNoInteractions(em);
+    }
+
+    @Test
+    void buscarPorNombresBlanco() {
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> dao.buscarPorNombres("   ")
+        );
+        assertEquals("Los nombres no pueden ser nulos o vacíos", e.getMessage());
+        verifyNoInteractions(em);
     }
 
     @Test
@@ -52,9 +69,9 @@ public class PersonaDAOTest {
 
         persona.setNombres("Juan Carlos");
 
-        when(em.createQuery(
-                anyString(),
-                eq(Persona.class)
+        when(em.createNamedQuery(
+                "Persona.findByNombresLike",
+                Persona.class
         )).thenReturn(query);
 
         when(query.getResultList())
@@ -70,28 +87,104 @@ public class PersonaDAOTest {
                 resultado.get(0).getNombres()
         );
 
+        verify(em).createNamedQuery(
+                "Persona.findByNombresLike",
+                Persona.class
+        );
         verify(query).setParameter(
                 "nombres",
                 "%Juan%"
         );
-
         verify(query).getResultList();
     }
 
     @Test
-    void buscarPorApellidosNulo() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> dao.buscarPorApellidos(null)
+    void buscarPorNombresSinResultados() {
+
+        when(em.createNamedQuery(
+                "Persona.findByNombresLike",
+                Persona.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        List<Persona> resultado =
+                dao.buscarPorNombres("Inexistente");
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        verify(query).setParameter(
+                "nombres",
+                "%Inexistente%"
         );
     }
 
     @Test
+    void buscarPorNombresErrorEnConsulta() {
+
+        PersistenceException causa =
+                new PersistenceException("fallo de BD");
+
+        when(em.createNamedQuery(
+                "Persona.findByNombresLike",
+                Persona.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException e = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPorNombres("Juan")
+        );
+        assertSame(causa, e.getCause());
+    }
+
+    @Test
+    void buscarPorNombresSinEntityManager() {
+
+        PersonaDAO daoSinEm = new PersonaDAO();
+
+        IllegalStateException e = assertThrows(
+                IllegalStateException.class,
+                () -> daoSinEm.buscarPorNombres("Juan")
+        );
+        assertTrue(e.getMessage().contains(
+                "EntityManager no está disponible"));
+    }
+
+    // ---------- buscarPorApellidos ----------
+
+    @Test
+    void buscarPorApellidosNulo() {
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> dao.buscarPorApellidos(null)
+        );
+        assertEquals("Los apellidos no pueden ser nulos o vacíos", e.getMessage());
+        verifyNoInteractions(em);
+    }
+
+    @Test
     void buscarPorApellidosVacio() {
-        assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorApellidos("")
         );
+        assertEquals("Los apellidos no pueden ser nulos o vacíos", e.getMessage());
+        verifyNoInteractions(em);
+    }
+
+    @Test
+    void buscarPorApellidosBlanco() {
+        IllegalArgumentException e = assertThrows(
+                IllegalArgumentException.class,
+                () -> dao.buscarPorApellidos("   ")
+        );
+        assertEquals("Los apellidos no pueden ser nulos o vacíos", e.getMessage());
+        verifyNoInteractions(em);
     }
 
     @Test
@@ -102,9 +195,9 @@ public class PersonaDAOTest {
         persona.setNombres("Juan Carlos");
         persona.setApellidos("García López");
 
-        when(em.createQuery(
-                anyString(),
-                eq(Persona.class)
+        when(em.createNamedQuery(
+                "Persona.findByApellidosLike",
+                Persona.class
         )).thenReturn(query);
 
         when(query.getResultList())
@@ -120,13 +213,75 @@ public class PersonaDAOTest {
                 resultado.get(0).getApellidos()
         );
 
+        verify(em).createNamedQuery(
+                "Persona.findByApellidosLike",
+                Persona.class
+        );
         verify(query).setParameter(
                 "apellidos",
                 "%García%"
         );
-
         verify(query).getResultList();
     }
+
+    @Test
+    void buscarPorApellidosSinResultados() {
+
+        when(em.createNamedQuery(
+                "Persona.findByApellidosLike",
+                Persona.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        List<Persona> resultado =
+                dao.buscarPorApellidos("Inexistente");
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+
+        verify(query).setParameter(
+                "apellidos",
+                "%Inexistente%"
+        );
+    }
+
+    @Test
+    void buscarPorApellidosErrorEnConsulta() {
+
+        PersistenceException causa =
+                new PersistenceException("fallo de BD");
+
+        when(em.createNamedQuery(
+                "Persona.findByApellidosLike",
+                Persona.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException e = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPorApellidos("García")
+        );
+        assertSame(causa, e.getCause());
+    }
+
+    @Test
+    void buscarPorApellidosSinEntityManager() {
+
+        PersonaDAO daoSinEm = new PersonaDAO();
+
+        IllegalStateException e = assertThrows(
+                IllegalStateException.class,
+                () -> daoSinEm.buscarPorApellidos("García")
+        );
+        assertTrue(e.getMessage().contains(
+                "EntityManager no está disponible"));
+    }
+
+    // ---------- buscarPersonasSinRol ----------
 
     @Test
     void buscarPersonasSinRolDevuelveLasQueNoTienenRol() {
@@ -135,9 +290,9 @@ public class PersonaDAOTest {
 
         persona.setNombres("Ana");
 
-        when(em.createQuery(
-                anyString(),
-                eq(Persona.class)
+        when(em.createNamedQuery(
+                "Persona.findPersonasSinRol",
+                Persona.class
         )).thenReturn(query);
 
         when(query.getResultList())
@@ -149,32 +304,61 @@ public class PersonaDAOTest {
         assertEquals(1, resultado.size());
         assertEquals("Ana", resultado.get(0).getNombres());
 
-        verify(em).createQuery(
-                "SELECT p "
-                + "FROM Persona p "
-                + "WHERE NOT EXISTS ("
-                + "    SELECT pr "
-                + "    FROM PersonaRol pr "
-                + "    WHERE pr.idPersona = p"
-                + ") "
-                + "ORDER BY p.nombres, p.apellidos",
+        verify(em).createNamedQuery(
+                "Persona.findPersonasSinRol",
                 Persona.class
         );
-
         verify(query).getResultList();
     }
 
     @Test
     void buscarPersonasSinRolSinResultados() {
 
-        when(em.createQuery(
-                anyString(),
-                eq(Persona.class)
+        when(em.createNamedQuery(
+                "Persona.findPersonasSinRol",
+                Persona.class
         )).thenReturn(query);
 
         when(query.getResultList())
                 .thenReturn(List.of());
 
-        assertTrue(dao.buscarPersonasSinRol().isEmpty());
+        List<Persona> resultado = dao.buscarPersonasSinRol();
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void buscarPersonasSinRolErrorEnConsulta() {
+
+        PersistenceException causa =
+                new PersistenceException("fallo de BD");
+
+        when(em.createNamedQuery(
+                "Persona.findPersonasSinRol",
+                Persona.class
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException e = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPersonasSinRol()
+        );
+        assertSame(causa, e.getCause());
+    }
+
+    @Test
+    void buscarPersonasSinRolSinEntityManager() {
+
+        PersonaDAO daoSinEm = new PersonaDAO();
+
+        IllegalStateException e = assertThrows(
+                IllegalStateException.class,
+                () -> daoSinEm.buscarPersonasSinRol()
+        );
+        assertTrue(e.getMessage().contains(
+                "EntityManager no está disponible"));
     }
 }

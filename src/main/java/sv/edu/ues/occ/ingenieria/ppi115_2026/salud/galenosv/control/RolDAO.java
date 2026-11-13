@@ -4,8 +4,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Rol;
 
 @Stateless
@@ -21,48 +21,22 @@ public class RolDAO extends DefaultDAO<Rol> {
     }
 
     public List<Rol> buscarPorNombre(String nombre) {
-        if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException(
-                    "El nombre no puede ser nulo o vacío"
-            );
-        }
+        validarTexto(nombre, "El nombre no puede ser nulo o vacío");
 
-        TypedQuery<Rol> q = getEntityManger().createQuery(
-                "SELECT r FROM Rol r "
-                + "WHERE LOWER(r.nombre) LIKE LOWER(:nombre)",
-                Rol.class
-        );
-
-        q.setParameter("nombre", "%" + nombre + "%");
-
-        return q.getResultList();
+        return buscarConNamedQuery("Rol.findByNombreLike", Rol.class,
+                Map.of("nombre", "%" + nombre + "%"));
     }
 
     public List<Rol> buscarPorActivo(Boolean activo) {
-        if (activo == null) {
-            throw new IllegalArgumentException(
-                    "El estado activo no puede ser nulo"
-            );
-        }
+        validarNoNulo(activo, "El estado activo no puede ser nulo");
 
-        TypedQuery<Rol> q = getEntityManger().createNamedQuery(
-                "Rol.findByActivo",
-                Rol.class
-        );
-
-        q.setParameter("activo", activo);
-
-        return q.getResultList();
+        return buscarConNamedQuery("Rol.findByActivo", Rol.class,
+                Map.of("activo", activo));
     }
 
     public List<Rol> buscarRolesActivos() {
-        TypedQuery<Rol> q = getEntityManger().createQuery(
-                "SELECT r FROM Rol r "
-                + "WHERE r.activo = TRUE "
-                + "ORDER BY r.nombre",
-                Rol.class
-        );
-        return q.getResultList();
+        return buscarConNamedQuery("Rol.findActivosOrdenadosPorNombre", Rol.class,
+                Map.of());
     }
 
 }

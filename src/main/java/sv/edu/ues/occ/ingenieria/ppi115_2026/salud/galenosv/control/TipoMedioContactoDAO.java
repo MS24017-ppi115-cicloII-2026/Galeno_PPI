@@ -4,8 +4,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.TipoMedioContacto;
 
 @Stateless
@@ -28,21 +28,10 @@ public class TipoMedioContactoDAO extends DefaultDAO<TipoMedioContacto> {
      * @return lista de tipos de medio de contacto encontrados
      */
     public List<TipoMedioContacto> buscarPorNombre(String nombre) {
-        if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException(
-                    "El nombre no puede ser nulo o vacío"
-            );
-        }
+        validarTexto(nombre, "El nombre no puede ser nulo o vacío");
 
-        TypedQuery<TipoMedioContacto> q = getEntityManger().createQuery(
-                "SELECT t FROM TipoMedioContacto t "
-                + "WHERE LOWER(t.nombre) LIKE LOWER(:nombre)",
-                TipoMedioContacto.class
-        );
-
-        q.setParameter("nombre", "%" + nombre + "%");
-
-        return q.getResultList();
+        return buscarConNamedQuery("TipoMedioContacto.findByNombreLike", TipoMedioContacto.class,
+                Map.of("nombre", "%" + nombre + "%"));
     }
 
     /**
@@ -52,19 +41,9 @@ public class TipoMedioContactoDAO extends DefaultDAO<TipoMedioContacto> {
      * @return lista de tipos de medio de contacto
      */
     public List<TipoMedioContacto> buscarPorActivo(Boolean activo) {
-        if (activo == null) {
-            throw new IllegalArgumentException(
-                    "El estado activo no puede ser nulo"
-            );
-        }
+        validarNoNulo(activo, "El estado activo no puede ser nulo");
 
-        TypedQuery<TipoMedioContacto> q = getEntityManger().createNamedQuery(
-                "TipoMedioContacto.findByActivo",
-                TipoMedioContacto.class
-        );
-
-        q.setParameter("activo", activo);
-
-        return q.getResultList();
+        return buscarConNamedQuery("TipoMedioContacto.findByActivo", TipoMedioContacto.class,
+                Map.of("activo", activo));
     }
 }

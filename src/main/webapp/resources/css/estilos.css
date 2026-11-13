@@ -1,18 +1,177 @@
-body .ui-widget {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+/* ============================================================
+   GalenoSV — Hoja de estilos global
+   Concepto visual: "clínica serena"
+   Fresco, limpio y cálido. Sin recursos externos:
+   solo fuente del sistema y PrimeIcons.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   0. TOKENS DE DISEÑO
+   ------------------------------------------------------------ */
+:root {
+    /* Paleta base */
+    --gsv-tinta: #1D3461;            /* títulos / acentos azul marino */
+    --gsv-teal: #2F6F73;             /* verde azulado principal */
+    --gsv-teal-profundo: #0F6461;
+    --gsv-salvia: #CFE3DD;
+    --gsv-fondo: #F5F8F8;            /* crema azulado de página */
+    --gsv-borde: #DDE8EC;
+    --gsv-borde-control: #C7D8DF;    /* borde visible de los controles */
+    --gsv-texto: #1F2D2E;
+    --gsv-texto-suave: #5B6B6C;
+    --gsv-terracota: #C9775B;        /* acento puntual */
+
+    /* Escala de celestes (menú y superficies suaves) */
+    --gsv-celeste-1: #F1F8FB;
+    --gsv-celeste-2: #E3F1F7;
+    --gsv-celeste-3: #CFE6F0;
+    --gsv-celeste-4: #B5D8E8;
+
+    /* Menú lateral */
+    --gsv-menu-a: #E8F4F9;
+    --gsv-menu-b: #D5EAF3;
+    --gsv-menu-borde: #C5DEE9;
+
+    /* Estados apagados */
+    --gsv-exito: #4F8A6B;
+    --gsv-aviso: #B98A3E;
+    --gsv-error: #B5524A;
+    --gsv-info: #3F78A8;
+
+    /* Forma */
+    --gsv-radio-tarjeta: 16px;
+    --gsv-radio-control: 10px;
+    --gsv-radio-item: 12px;
+
+    /* Sombras suaves en capas */
+    --gsv-sombra-1: 0 1px 2px rgba(16, 42, 67, .05), 0 2px 8px rgba(16, 42, 67, .05);
+    --gsv-sombra-2: 0 2px 4px rgba(16, 42, 67, .06), 0 8px 24px rgba(16, 42, 67, .08);
+    --gsv-sombra-3: 0 8px 24px rgba(16, 42, 67, .12), 0 24px 56px rgba(16, 42, 67, .10);
+
+    /* Tipografía del sistema (obligatoria, sin fuentes externas) */
+    --gsv-fuente: system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Ritmo */
+    --gsv-duraccion: 180ms;
 }
 
-body .ui-panel .ui-panel-titlebar, 
-body .ui-dialog .ui-dialog-titlebar {
-    background-color: #2c3e50;
-    color: #ffffff;
-    border-bottom: 3px solid #3498db;
-    padding: 1rem;
+/* ------------------------------------------------------------
+   1. BASE: tipografía, fondo, selección, scrollbars, foco
+   ------------------------------------------------------------ */
+html {
+    font-size: 16px;
+    scrollbar-color: var(--gsv-celeste-4) transparent;
+    scrollbar-width: thin;
 }
 
+html body {
+    margin: 0;
+    font-family: var(--gsv-fuente);
+    color: var(--gsv-texto);
+    background-color: var(--gsv-fondo);
+    /* Profundidad sutil: degradados radiales fijos (sin imágenes) */
+    background-image:
+        radial-gradient(900px 520px at 12% -8%, rgba(207, 230, 240, .55), transparent 60%),
+        radial-gradient(1100px 620px at 88% 2%, rgba(207, 227, 221, .45), transparent 65%),
+        radial-gradient(820px 480px at 50% 108%, rgba(227, 241, 247, .60), transparent 62%);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* PrimeFaces pinta fuentes por .ui-widget: cubrir todo */
+html body .ui-widget,
+html body button,
+html body input,
+html body select,
+html body textarea,
+html body .ui-button,
+html body .ui-inputfield {
+    font-family: var(--gsv-fuente);
+}
+
+/* Escala tipográfica: 12 / 14 / 16 / 20 / 28 */
+html body h1 { font-size: 1.75rem; }   /* 28 */
+html body h2 { font-size: 1.25rem; }   /* 20 */
+html body h3 { font-size: 1rem; }      /* 16 */
+html body h4 { font-size: .875rem; }   /* 14 */
+html body small,
+html body .ui-datatable thead th { font-size: .75rem; }  /* 12 */
+
+html body h1,
+html body h2,
+html body h3,
+html body h4 {
+    font-weight: 600;
+    color: var(--gsv-tinta);
+}
+
+/* Selección de texto con la paleta */
+::selection {
+    background: rgba(47, 111, 115, .22);
+    color: var(--gsv-texto);
+}
+
+/* Scrollbars delgados en celeste */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--gsv-celeste-4);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #9CC9DA;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+/* Foco visible y accesible en todo el documento */
+html body :focus-visible {
+    outline: 2px solid var(--gsv-teal);
+    outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------
+   2. ENTRADA SUAVE (respeta prefers-reduced-motion)
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+    @keyframes gsv-entrar {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+    html body .gsv-hero,
+    html body .gsv-contenido .ui-panel,
+    html body .gsv-contenido .ui-toolbar,
+    html body .gsv-contenido .ui-datatable,
+    html body .gsv-rejilla .gsv-tarjeta {
+        animation: gsv-entrar 200ms ease-out backwards;
+    }
+    html body .gsv-rejilla .gsv-tarjeta:nth-child(2) { animation-delay: 30ms; }
+    html body .gsv-rejilla .gsv-tarjeta:nth-child(3) { animation-delay: 60ms; }
+    html body .gsv-rejilla .gsv-tarjeta:nth-child(4) { animation-delay: 90ms; }
+    html body .gsv-rejilla .gsv-tarjeta:nth-child(5) { animation-delay: 120ms; }
+    html body .gsv-rejilla .gsv-tarjeta:nth-child(6) { animation-delay: 150ms; }
+}
+/* Con prefers-reduced-motion: reduce no se define ninguna animación */
+
+/* ------------------------------------------------------------
+   3. CLASES DE APOYO QUE YA USAN LAS PÁGINAS (armonizadas)
+   ------------------------------------------------------------ */
 .texto-ayuda {
-    color: #7f8c8d;
-    font-size: 0.9em;
+    color: var(--gsv-texto-suave);
+    font-size: .9em;
     margin-bottom: 15px;
     display: block;
 }
@@ -27,141 +186,1611 @@ body .ui-dialog .ui-dialog-titlebar {
 
 .campo-formulario label {
     font-weight: 600;
-    color: #34495e;
+    color: var(--gsv-tinta);
     margin-bottom: 5px;
     display: block;
 }
 
-/* Botones CRUD */
 .botones-crud {
     margin-top: 10px;
+    width: 100%;
 }
 
 .botones-crud .ui-button {
     margin-right: 5px;
 }
-/* --- Editor de procedimiento: listado de pasos --- */
+
 .titulo-seccion {
     font-weight: 600;
     font-size: 1.05em;
+    color: var(--gsv-tinta);
 }
 
-/* --- Dialogo de examenes: los ya asociados --- */
+/* Diálogo de exámenes: los ya asociados */
 .lista-examenes {
     margin-bottom: 5px;
 }
 
-/* --- Pestana Pasos: arbol de pasos del procedimiento --- */
+/* Pestaña Pasos: árbol de pasos del procedimiento */
 .tabla-pasos tbody > tr {
-    background-color: #f7fafc;
+    background-color: #F7FBFC;
 }
 
 .tabla-pasos tbody > tr > td {
     padding: 6px 10px;
 }
 
-/* --- Resaltado al pasar el cursor, como en las demas tablas --- */
 .tabla-procedimientos tbody > tr:hover,
 .tabla-pasos tbody > tr:hover {
-    background-color: #e3f0fa;
+    background-color: #E9F4F8;
     cursor: pointer;
 }
 
-/* ============================================================
-   Superficie: fondo gris suave, tarjetas y acento teal fino
-   ============================================================ */
+/* ------------------------------------------------------------
+   4. ESTRUCTURA DE LA APLICACIÓN (general.xhtml)
+   ------------------------------------------------------------ */
+.gsv-app {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
 
-/* Fondo de página */
-html body { background: #f4f7f9; }
+/* ---- 4a. Cabecera pegajosa con desenfoque ligero ---- */
+.gsv-cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(245, 248, 248, .86);
+    -webkit-backdrop-filter: blur(8px) saturate(1.05);
+    backdrop-filter: blur(8px) saturate(1.05);
+    border-bottom: 1px solid var(--gsv-borde);
+}
 
-/* Paneles -> tarjetas */
-html body .ui-panel {
-    background: #fff;
-    border: 1px solid #e6ecf1;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(16, 42, 67, .06);
+.gsv-cabecera-fila {
+    max-width: 1440px;
+    margin: 0 auto;
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: .55rem 32px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.gsv-marca {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+/* Recorte del emblema: mismos valores originales para no alterar la imagen */
+.gsv-marca-logo {
+    width: 62px;
+    height: 72px;
     overflow: hidden;
-}
-html body .ui-panel .ui-panel-titlebar {
-    background: #2c3e50;
-    border-bottom: 3px solid #0f6461;
-    border-radius: 7px 7px 0 0;
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
 }
 
-/* Toolbar -> tarjeta */
-html body .ui-toolbar {
-    background: #fff;
-    border: 1px solid #e6ecf1;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(16, 42, 67, .06);
-}
-
-/* Tabla: encabezado claro con línea teal (sin banda oscura) */
-html body .ui-datatable .ui-datatable-data > tr > td:first-child { white-space: nowrap; }
-html body .ui-datatable thead th {
-    background: #fff;
-    color: #0f6461;
-    font-weight: 600;
-    border-bottom: 2px solid #0f6461;
-    padding: .7rem .9rem;
-}
-html body .ui-datatable .ui-datatable-data > tr > td {
-    border-bottom: 1px solid #eef1f4;
-    padding: .7rem .9rem;
-}
-html body .ui-datatable .ui-datatable-data tr:nth-child(even) {
-    background: #fbfcfe;
-}
-html body .ui-datatable .ui-datatable-data tr.ui-state-hover {
-    background: #eef6f6;
-}
-
-/* Pagiador */
-html body .ui-paginator {
-    background: #fff;
-    border-top: 1px solid #eef1f4;
-    padding: .6rem 1rem;
-}
-
-/* Menú lateral -> tarjeta (sin tocar el menubar del encabezado) */
-html body .ui-g-12 > .ui-menu:not(.ui-menubar) {
-    background: #fff;
-    border: 1px solid #e6ecf1;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(16, 42, 67, .06);
-    overflow: hidden;
-}
-html body .ui-menu .ui-menu-list .ui-widget-header h3 {
-    background: #fff;
-    color: #8a94a6;
-    font-size: .72rem;
+.gsv-marca-chip {
+    display: inline-flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 1.25rem;
+    background: linear-gradient(135deg, #1D3461 0%, #24457A 45%, #0F6461 100%);
+    border-radius: 14px;
+    color: #ffffff;
     font-weight: 700;
-    letter-spacing: .05em;
-    padding: .7rem .9rem .5rem;
-    border-bottom: 1px solid #eef1f4;
-}
-html body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link {
-    color: #3d4b5c;
-    padding: .55rem .9rem;
-}
-html body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link.ui-state-hover {
-    background: #eef6f6;
-    color: #0f6461;
+    font-size: 1.05rem;
+    letter-spacing: .09em;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(29, 52, 97, .20);
 }
 
-/* Pestañas */
-html body .ui-tabs .ui-tabs-nav {
+.gsv-cabecera-derecha {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    min-width: 0;
+}
+
+/* Avatar de iniciales (solo CSS/HTML, con la letra del nombre) */
+.gsv-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gsv-tinta), var(--gsv-teal));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: .95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    flex: 0 0 auto;
+    box-shadow: var(--gsv-sombra-1);
+}
+
+/* Botón hamburguesa (solo < 992px) */
+.gsv-hamburguesa {
+    display: none;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--gsv-radio-item);
+    border: 1px solid var(--gsv-borde);
+    background: #ffffff;
+    color: var(--gsv-tinta);
+    font-size: 1.05rem;
+    cursor: pointer;
+    box-shadow: var(--gsv-sombra-1);
+    transition: background-color var(--gsv-duraccion) ease;
+}
+
+.gsv-hamburguesa:hover {
+    background: var(--gsv-celeste-2);
+}
+
+/* Capa oscura detrás del menú desplegable en móvil */
+.gsv-panel-fondo {
+    position: fixed;
+    inset: 0;
+    background: rgba(29, 52, 97, .35);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+    z-index: 9990;
+}
+
+/* ---- 4b. Zona principal: menú lateral + contenido ---- */
+.gsv-principal {
+    flex: 1;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 288px minmax(0, 1fr);
+    gap: 26px;
+    align-items: start;
+    padding: 26px 32px 10px;
+}
+
+.gsv-contenido {
+    min-width: 0;
+    padding-bottom: 24px;
+    /* tablas anchas: desplazamiento horizontal contenido */
+    overflow-x: auto;
+}
+
+/* Menú lateral pegajoso en escritorio, con scroll interno si es alto */
+.gsv-panel-menu {
+    position: sticky;
+    top: 5.5rem;
+    max-height: calc(100vh - 7rem);
+    overflow: auto;
+    scrollbar-width: thin;
+    border-radius: 20px; /* recorta el scroll interno con las esquinas */
+}
+
+/* ---- 4c. Pie de página ---- */
+.gsv-pie {
+    border-top: 1px solid var(--gsv-borde);
+    margin-top: 1.5rem;
+    padding: 1.4rem 32px 2rem;
+    text-align: center;
+    color: var(--gsv-texto-suave);
+    font-size: .85rem;
+    font-family: var(--gsv-fuente);
+}
+
+.gsv-pie p {
+    margin: 0;
+}
+
+/* ------------------------------------------------------------
+   5. MENÚBAR DEL ENCABEZADO (idioma + sesión) como píldora
+   ------------------------------------------------------------ */
+html body .ui-menubar {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: 999px;
+    padding: .2rem .35rem;
+    box-shadow: var(--gsv-sombra-1);
+    display: inline-flex;
+    align-items: center;
+}
+
+html body .ui-menubar > .ui-menu-list > .ui-menuitem > .ui-menuitem-link {
+    border-radius: 999px;
+    padding: .4rem .85rem;
+    color: var(--gsv-texto);
+    font-weight: 600;
+    font-size: .9rem;
     background: transparent;
     border: none;
 }
-html body .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
-    background: #fff;
-    border-top: 2px solid #0f6461;
-}
-html body .ui-tabs .ui-tabs-panel {
-    background: transparent;
-    padding: 1em 0 0;
+
+html body .ui-menubar > .ui-menu-list > .ui-menuitem > .ui-menuitem-link .ui-menuitem-icon {
+    color: var(--gsv-teal);
 }
 
-/* Botones: esquinas suaves */
-html body .ui-button { border-radius: 6px; }
+html body .ui-menubar > .ui-menu-list > .ui-menuitem > .ui-menuitem-link:hover,
+html body .ui-menubar > .ui-menu-list > .ui-menuitem > .ui-menuitem-link.ui-state-hover {
+    background: var(--gsv-celeste-2);
+    color: var(--gsv-tinta);
+}
+
+/* Ítems deshabilitados (p. ej. "Sin sesión iniciada") */
+html body .ui-menubar .ui-menuitem-link.ui-state-disabled {
+    opacity: .6;
+    color: var(--gsv-texto-suave);
+    background: transparent;
+    cursor: default;
+}
+
+/* Desplegables del menubar como tarjetas */
+html body .ui-menubar .ui-menu-child {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: 14px;
+    box-shadow: var(--gsv-sombra-2);
+    padding: .4rem;
+    min-width: 13rem;
+}
+
+html body .ui-menubar .ui-menu-child .ui-menuitem-link {
+    border-radius: var(--gsv-radio-control);
+    padding: .5rem .75rem;
+    color: var(--gsv-texto);
+}
+
+html body .ui-menubar .ui-menu-child .ui-menuitem-link:hover,
+html body .ui-menubar .ui-menu-child .ui-menuitem-link.ui-state-hover {
+    background: var(--gsv-celeste-2);
+    color: var(--gsv-tinta);
+}
+
+/* ------------------------------------------------------------
+   6. MENÚ LATERAL EN CELESTE
+   ------------------------------------------------------------ */
+html body .gsv-panel-menu .ui-menu {
+    background: linear-gradient(180deg, var(--gsv-menu-a) 0%, var(--gsv-menu-b) 100%);
+    border: 1px solid var(--gsv-menu-borde);
+    border-radius: 20px;
+    padding: .85rem .8rem 1rem;
+    box-shadow: var(--gsv-sombra-1);
+    width: auto;
+}
+
+/* Títulos de sección en versalitas verde azulado con punto decorativo */
+html body .gsv-panel-menu .ui-menu .ui-widget-header h3 {
+    background: transparent;
+    border: none;
+    color: var(--gsv-teal);
+    text-transform: uppercase;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .09em;
+    padding: 1rem .75rem .45rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    border-radius: 0;
+    text-shadow: none;
+}
+
+html body .gsv-panel-menu .ui-menu .ui-widget-header h3::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gsv-teal);
+    opacity: .55;
+    flex: 0 0 auto;
+}
+
+html body .gsv-panel-menu .ui-menu .ui-widget-header:first-child h3 {
+    padding-top: .4rem;
+}
+
+/* Ítems del menú */
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: .15rem .25rem;
+    padding: .55rem .75rem;
+    border-radius: var(--gsv-radio-item);
+    color: var(--gsv-tinta);
+    font-weight: 500;
+    font-size: .92rem;
+    background: transparent;
+    border: none;
+    transition: background-color var(--gsv-duraccion) ease,
+                color var(--gsv-duraccion) ease,
+                box-shadow var(--gsv-duraccion) ease,
+                transform var(--gsv-duraccion) ease;
+}
+
+html body .gsv-panel-menu .ui-menu .ui-menuitem-icon {
+    color: var(--gsv-teal);
+    font-size: .95rem;
+}
+
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link:hover,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.ui-state-hover {
+    background: rgba(255, 255, 255, .72);
+    color: var(--gsv-tinta);
+    transform: translateX(2px);
+}
+
+/* Ítem de la página actual: fondo verde azulado, texto e icono blancos.
+   El tema fija el color de los spans internos con reglas propias
+   (p. ej. body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link
+   .ui-menuitem-text { color:#495057 }, y con la clase JS .ui-state-hover
+   sube a 6 clases), así que aquí se repiten TODOS los estados y se
+   apunta también a los elementos hijos con especificidad superior.
+   Contraste blanco #FFFFFF sobre #2F6F73 = 5.8:1 (≥ 4.5:1). */
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo:hover,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-hover,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-focus,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-active {
+    background: var(--gsv-teal);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(47, 111, 115, .35);
+    transform: none;
+}
+
+/* Texto del ítem activo: blanco en reposo, hover, foco y activo */
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo .ui-menuitem-text,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo:hover .ui-menuitem-text,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-hover .ui-menuitem-text,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-focus .ui-menuitem-text,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-active .ui-menuitem-text {
+    color: #ffffff;
+}
+
+/* Icono del ítem activo: blanco en todos los estados */
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo .ui-menuitem-icon,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo:hover .ui-menuitem-icon,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-hover .ui-menuitem-icon,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-focus .ui-menuitem-icon,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo.ui-state-active .ui-menuitem-icon,
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo .ui-icon {
+    color: #ffffff;
+}
+
+/* Cualquier enlace interno adicional dentro del ítem activo */
+html body .gsv-panel-menu .ui-menu .ui-menuitem-link.gsv-item-activo a {
+    color: #ffffff;
+}
+
+/* ------------------------------------------------------------
+   7. PANELES Y TOOLBARS (tarjetas con acento verde azulado)
+   ------------------------------------------------------------ */
+html body .gsv-contenido .ui-panel {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: var(--gsv-radio-tarjeta);
+    box-shadow: var(--gsv-sombra-1);
+    overflow: hidden;
+}
+
+/* Encabezado claro con acento verde azulado (sustituye la banda oscura) */
+html body .gsv-contenido .ui-panel .ui-panel-titlebar,
+html body .ui-dialog .ui-dialog-titlebar {
+    background: var(--gsv-celeste-1);
+    color: var(--gsv-tinta);
+    border-bottom: 1px solid var(--gsv-borde);
+    padding: .9rem 1.25rem;
+}
+
+html body .gsv-contenido .ui-panel .ui-panel-titlebar {
+    border-left: 4px solid var(--gsv-teal);
+}
+
+html body .gsv-contenido .ui-panel .ui-panel-title,
+html body .ui-dialog .ui-dialog-title {
+    color: var(--gsv-tinta);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+html body .gsv-contenido .ui-panel .ui-panel-content,
+html body .gsv-contenido .ui-panel .ui-panel-footer {
+    padding: 1.25rem;
+    background: transparent;
+}
+
+/* Toolbar como tarjeta */
+html body .gsv-contenido .ui-toolbar {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: var(--gsv-radio-tarjeta);
+    box-shadow: var(--gsv-sombra-1);
+    padding: .5rem .75rem;
+}
+
+html body .gsv-contenido .ui-toolbar .ui-toolbar-group-left,
+html body .gsv-contenido .ui-toolbar .ui-toolbar-group-right {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* ------------------------------------------------------------
+   8. TABLAS DE DATOS
+   ------------------------------------------------------------ */
+html body .gsv-contenido .ui-datatable {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: var(--gsv-radio-tarjeta);
+    box-shadow: var(--gsv-sombra-1);
+    overflow: hidden;
+}
+
+/* Scroll horizontal contenido dentro de la tarjeta */
+html body .ui-datatable .ui-datatable-tablewrapper {
+    overflow-x: auto;
+}
+
+/* Cabecera: crema, texto verde azulado en mayúsculas pequeñas */
+html body .ui-datatable thead th,
+html body .ui-datatable thead th.ui-state-default {
+    background: var(--gsv-celeste-1);
+    color: var(--gsv-teal);
+    font-weight: 700;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    padding: .75rem .9rem;
+    border-bottom: 1px solid var(--gsv-borde);
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background-image: none;
+}
+
+html body .ui-datatable thead th.ui-state-active {
+    background: var(--gsv-celeste-2);
+}
+
+html body .ui-datatable .ui-sortable-column-icon {
+    color: var(--gsv-teal);
+}
+
+/* Filas cómodas, cebra casi imperceptible */
+html body .ui-datatable .ui-datatable-data > tr > td,
+html body .ui-datatable .ui-datatable-data > tr.ui-widget-content > td {
+    padding: .7rem .9rem;
+    border-bottom: 1px solid #EDF3F5;
+    border-left: none;
+    border-right: none;
+    background: transparent;
+    color: var(--gsv-texto);
+}
+
+html body .ui-datatable .ui-datatable-data > tr:nth-child(even) {
+    background: #FAFCFD;
+}
+
+html body .ui-datatable .ui-datatable-data > tr.ui-state-hover {
+    background: #E9F4F8;
+}
+
+/* Fila seleccionada: salvia con barra de acento a la izquierda */
+html body .ui-datatable .ui-datatable-data > tr.ui-state-highlight {
+    background: var(--gsv-salvia);
+    color: var(--gsv-texto);
+}
+
+html body .ui-datatable .ui-datatable-data > tr.ui-state-highlight > td:first-child {
+    box-shadow: inset 3px 0 0 var(--gsv-teal);
+}
+
+/* Columna de ID (todas las tablas principales la tienen de primera):
+   monoespaciada pequeña, suave y con ellipsis */
+html body .ui-datatable[id$="tablaRegistros"] .ui-datatable-data > tr > td:first-child {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .78rem;
+    color: var(--gsv-texto-suave);
+    max-width: 11rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Mensaje de tabla vacía: amable y centrado */
+html body .ui-datatable .ui-datatable-empty-message td {
+    text-align: center;
+    color: var(--gsv-texto-suave);
+    padding: 2.5rem 1rem;
+    font-size: .95rem;
+    background: transparent;
+}
+
+/* ------------------------------------------------------------
+   9. FORMULARIOS
+   ------------------------------------------------------------ */
+html body .ui-inputfield {
+    border: 1px solid var(--gsv-borde-control);
+    border-radius: var(--gsv-radio-control);
+    padding: .55rem .8rem;
+    font-size: .95rem;
+    color: var(--gsv-texto);
+    background: #ffffff;
+    box-shadow: none;
+    transition: border-color var(--gsv-duraccion) ease,
+                box-shadow var(--gsv-duraccion) ease;
+}
+
+html body .ui-inputfield::placeholder {
+    color: #8AA0A8;
+    opacity: 1;
+}
+
+html body .ui-inputfield:focus,
+html body .ui-inputfield.ui-state-focus {
+    border-color: var(--gsv-teal);
+    box-shadow: 0 0 0 3px rgba(47, 111, 115, .18);
+    outline: none;
+}
+
+html body .ui-inputfield.ui-state-disabled,
+html body .ui-inputfield:disabled {
+    opacity: .6;
+    background: #F3F7F8;
+    cursor: default;
+}
+
+/* Etiquetas */
+html body .ui-outputlabel {
+    font-weight: 600;
+    color: var(--gsv-tinta);
+    font-size: .9rem;
+}
+
+/* Asterisco de requerido en terracota */
+html body .ui-outputlabel .ui-outputlabel-rfi {
+    color: var(--gsv-terracota);
+}
+
+/* Casilla de verificación */
+html body .ui-chkbox .ui-chkbox-box {
+    border-radius: 6px;
+    border: 1px solid var(--gsv-borde-control);
+    background: #ffffff;
+    transition: background-color var(--gsv-duraccion) ease,
+                border-color var(--gsv-duraccion) ease;
+}
+
+html body .ui-chkbox .ui-chkbox-box.ui-state-focus {
+    box-shadow: 0 0 0 3px rgba(47, 111, 115, .18);
+    border-color: var(--gsv-teal);
+}
+
+html body .ui-chkbox .ui-chkbox-box.ui-state-active,
+html body .ui-chkbox .ui-chkbox-box.ui-state-active:hover {
+    background: var(--gsv-teal);
+    border-color: var(--gsv-teal);
+}
+
+html body .ui-chkbox .ui-chkbox-box.ui-state-active .ui-chkbox-icon {
+    color: #ffffff;
+}
+
+/* SelectOneMenu */
+html body .ui-selectonemenu {
+    border-radius: var(--gsv-radio-control);
+    border: 1px solid var(--gsv-borde-control);
+    background: #ffffff;
+}
+
+html body .ui-selectonemenu .ui-selectonemenu-trigger {
+    border-left: 1px solid var(--gsv-borde-control);
+    color: var(--gsv-teal);
+    width: 2.2rem;
+    box-sizing: border-box;
+}
+
+html body .ui-selectonemenu-panel {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: var(--gsv-radio-item);
+    box-shadow: var(--gsv-sombra-2);
+}
+
+html body .ui-selectonemenu-panel .ui-selectonemenu-list-item {
+    border-radius: 8px;
+    margin: .15rem .4rem;
+    padding: .5rem .7rem;
+    color: var(--gsv-texto);
+}
+
+html body .ui-selectonemenu-panel .ui-selectonemenu-list-item.ui-state-hover {
+    background: var(--gsv-celeste-2);
+    color: var(--gsv-tinta);
+}
+
+html body .ui-selectonemenu-panel .ui-selectonemenu-list-item.ui-state-highlight {
+    background: var(--gsv-salvia);
+    color: var(--gsv-texto);
+}
+
+/* Panel de fecha (p:calendar) */
+html body .ui-datepicker {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: 14px;
+    box-shadow: var(--gsv-sombra-2);
+    padding: .5rem;
+}
+
+html body .ui-datepicker .ui-datepicker-header {
+    background: transparent;
+    color: var(--gsv-tinta);
+    border: none;
+    padding: .5rem .25rem;
+}
+
+html body .ui-datepicker .ui-datepicker-title {
+    color: var(--gsv-tinta);
+    font-weight: 600;
+}
+
+html body .ui-datepicker td a,
+html body .ui-datepicker td span {
+    border-radius: 8px;
+    transition: background-color var(--gsv-duraccion) ease;
+}
+
+html body .ui-datepicker td a.ui-state-hover {
+    background: var(--gsv-celeste-2);
+}
+
+html body .ui-datepicker td a.ui-state-highlight {
+    background: var(--gsv-teal);
+    color: #ffffff;
+}
+
+/* PanelGrid: celdas limpias y consistentes */
+html body .ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+    background: transparent;
+    padding: .55rem .8rem;
+    vertical-align: middle;
+}
+
+/* ------------------------------------------------------------
+   10. MENSAJES DE VALIDACIÓN Y GROWL
+   ------------------------------------------------------------ */
+html body .ui-message-error,
+html body .ui-message-fatal {
+    background: #FCF3F2;
+    border: 1px solid rgba(181, 82, 74, .35);
+    border-left: 4px solid var(--gsv-error);
+    color: #8C3B35;
+    border-radius: 8px;
+    padding: .35rem .6rem;
+}
+
+html body .ui-message-warn {
+    background: #FCF6EC;
+    border: 1px solid rgba(185, 138, 62, .35);
+    border-left: 4px solid var(--gsv-aviso);
+    color: #7A5A1E;
+    border-radius: 8px;
+    padding: .35rem .6rem;
+}
+
+html body .ui-message-info {
+    background: #F0F6FB;
+    border: 1px solid rgba(63, 120, 168, .35);
+    border-left: 4px solid var(--gsv-info);
+    color: #2C5A80;
+    border-radius: 8px;
+    padding: .35rem .6rem;
+}
+
+html body .ui-messages > div.ui-messages-info,
+html body .ui-messages > div.ui-messages-warn,
+html body .ui-messages > div.ui-messages-error,
+html body .ui-messages > div.ui-messages-fatal {
+    border: 1px solid var(--gsv-borde);
+    border-left-width: 4px;
+    border-radius: var(--gsv-radio-item);
+    box-shadow: var(--gsv-sombra-1);
+    background: #ffffff;
+    color: var(--gsv-texto);
+}
+
+html body .ui-messages > div.ui-messages-error,
+html body .ui-messages > div.ui-messages-fatal {
+    border-left-color: var(--gsv-error);
+}
+
+html body .ui-messages > div.ui-messages-warn {
+    border-left-color: var(--gsv-aviso);
+}
+
+html body .ui-messages > div.ui-messages-info {
+    border-left-color: var(--gsv-info);
+}
+
+/* Growl: tarjetas con borde izquierdo de color apagado */
+html body .ui-growl-item-container {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-left: 4px solid var(--gsv-info);
+    border-radius: var(--gsv-radio-item);
+    box-shadow: var(--gsv-sombra-2);
+    color: var(--gsv-texto);
+    opacity: 1;
+}
+
+html body .ui-growl-item-container.ui-growl-error,
+html body .ui-growl-item-container.ui-growl-fatal {
+    border-left-color: var(--gsv-error);
+}
+
+html body .ui-growl-item-container.ui-growl-warn {
+    border-left-color: var(--gsv-aviso);
+}
+
+html body .ui-growl-item-container.ui-growl-info {
+    border-left-color: var(--gsv-info);
+}
+
+html body .ui-growl-title {
+    color: var(--gsv-tinta);
+    font-weight: 600;
+}
+
+html body .ui-growl-detail {
+    color: var(--gsv-texto-suave);
+}
+
+html body .ui-growl-item .ui-growl-icon {
+    color: var(--gsv-info);
+}
+
+html body .ui-growl-item-container.ui-growl-error .ui-growl-icon,
+html body .ui-growl-item-container.ui-growl-fatal .ui-growl-icon {
+    color: var(--gsv-error);
+}
+
+html body .ui-growl-item-container.ui-growl-warn .ui-growl-icon {
+    color: var(--gsv-aviso);
+}
+
+/* ------------------------------------------------------------
+   11. PESTAÑAS (p:tabView)
+   ------------------------------------------------------------ */
+html body .gsv-contenido .ui-tabs {
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: var(--gsv-radio-tarjeta);
+    box-shadow: var(--gsv-sombra-1);
+    padding: 0;
+}
+
+html body .gsv-contenido .ui-tabs .ui-tabs-nav {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--gsv-borde);
+    border-radius: 0;
+    padding: .4rem .75rem 0;
+}
+
+html body .gsv-contenido .ui-tabs .ui-tabs-nav li {
+    background: transparent;
+    border: none;
+    margin: 0 0 0 .25rem;
+    transition: none;
+}
+
+html body .gsv-contenido .ui-tabs .ui-tabs-nav li .ui-tabs-anchor {
+    color: var(--gsv-texto-suave);
+    font-weight: 600;
+    border-radius: var(--gsv-radio-control) var(--gsv-radio-control) 0 0;
+    padding: .7rem 1.1rem;
+    transition: color var(--gsv-duraccion) ease,
+                background-color var(--gsv-duraccion) ease;
+}
+
+html body .gsv-contenido .ui-tabs .ui-tabs-nav li.ui-state-hover .ui-tabs-anchor {
+    color: var(--gsv-teal);
+    background: var(--gsv-celeste-1);
+}
+
+/* Pestaña activa: subrayado verde azulado */
+html body .gsv-contenido .ui-tabs .ui-tabs-nav li.ui-tabs-selected,
+html body .gsv-contenido .ui-tabs .ui-tabs-nav li.ui-tabs-selected.ui-state-active {
+    background: transparent;
+    border: none;
+    box-shadow: inset 0 -3px 0 var(--gsv-teal);
+}
+
+html body .gsv-contenido .ui-tabs .ui-tabs-nav li.ui-tabs-selected .ui-tabs-anchor {
+    color: var(--gsv-tinta);
+    background: transparent;
+}
+
+html body .gsv-contenido .ui-tabs .ui-tabs-panels {
+    padding: 1.25rem;
+    background: transparent;
+}
+
+/* ------------------------------------------------------------
+   12. DIÁLOGOS Y CONFIRMACIONES
+   ------------------------------------------------------------ */
+html body .ui-dialog {
+    border: 1px solid var(--gsv-borde);
+    border-radius: var(--gsv-radio-tarjeta);
+    box-shadow: var(--gsv-sombra-3);
+    overflow: hidden;
+}
+
+html body .ui-dialog .ui-dialog-content {
+    padding: 1.25rem;
+    background: #ffffff;
+}
+
+html body .ui-dialog .ui-dialog-footer {
+    padding: .75rem 1.25rem 1.25rem;
+    border-top: 1px solid var(--gsv-borde);
+    background: #ffffff;
+}
+
+/* Capa de fondo oscura con desenfoque leve */
+html body .ui-widget-overlay {
+    background: rgba(29, 52, 97, .38);
+    opacity: 1;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+}
+
+/* Icono de severidad del confirmDialog: acento terracota puntual */
+html body .ui-confirm-dialog .ui-confirm-dialog-severity,
+html body .ui-confirm-dialog .ui-dialog-content > .ui-icon {
+    color: var(--gsv-terracota);
+}
+
+/* ------------------------------------------------------------
+   13. PASTILLAS DE ESTADO (columnas booleanas "Activo")
+   Se aplican con styleClass condicional por EL; el texto
+   y el binding originales no cambian.
+   ------------------------------------------------------------ */
+html body .gsv-pill {
+    display: inline-block;
+    padding: .18rem .75rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+html body .gsv-pill.gsv-pill-activa {
+    background: rgba(79, 138, 107, .16);
+    color: #2F6449;
+    border: 1px solid rgba(79, 138, 107, .35);
+}
+
+html body .gsv-pill.gsv-pill-inactiva {
+    background: rgba(93, 107, 122, .14);
+    color: #4C5A68;
+    border: 1px solid rgba(93, 107, 122, .35);
+}
+
+/* ------------------------------------------------------------
+   14. INICIO: héroe de bienvenida y tarjetas de acceso rápido
+   ------------------------------------------------------------ */
+.gsv-hero {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--gsv-borde);
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--gsv-celeste-1) 0%, var(--gsv-celeste-2) 55%, var(--gsv-salvia) 100%);
+    box-shadow: var(--gsv-sombra-1);
+    padding: 2.2rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.gsv-hero-kicker {
+    margin: 0 0 .5rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--gsv-teal-profundo);
+}
+
+.gsv-hero-titulo {
+    margin: 0 0 .6rem;
+    font-size: clamp(1.6rem, 3.4vw, 2rem);
+    line-height: 1.15;
+    font-weight: 700;
+    color: var(--gsv-tinta);
+}
+
+.gsv-hero-subtitulo {
+    margin: 0;
+    color: var(--gsv-texto-suave);
+    max-width: 52ch;
+    line-height: 1.55;
+}
+
+.gsv-hero-arte {
+    flex: 0 0 300px;
+    opacity: .9;
+}
+
+.gsv-hero-arte svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Rejilla de tarjetas */
+.gsv-titulo-seccion-visual {
+    margin: 0 0 1rem .25rem;
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--gsv-teal-profundo);
+}
+
+.gsv-rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+    gap: 1.25rem;
+}
+
+.gsv-tarjeta {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    background: #ffffff;
+    border: 1px solid var(--gsv-borde);
+    border-radius: var(--gsv-radio-tarjeta);
+    padding: 1.3rem 1.2rem 1.2rem;
+    box-shadow: var(--gsv-sombra-1);
+    transition: transform var(--gsv-duraccion) ease,
+                box-shadow var(--gsv-duraccion) ease,
+                border-color var(--gsv-duraccion) ease;
+}
+
+.gsv-tarjeta:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--gsv-sombra-2);
+    border-color: var(--gsv-celeste-4);
+}
+
+.gsv-tarjeta-icono {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gsv-celeste-2);
+    color: var(--gsv-teal-profundo);
+    font-size: 1.25rem;
+    margin-bottom: .4rem;
+    flex: 0 0 auto;
+}
+
+.gsv-tarjeta h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gsv-tinta);
+}
+
+.gsv-tarjeta p {
+    margin: 0 0 .6rem;
+    color: var(--gsv-texto-suave);
+    font-size: .86rem;
+    line-height: 1.5;
+    flex: 1;
+}
+
+/* Botón CTA dentro de la tarjeta (outlined por defecto) */
+html body .gsv-tarjeta .ui-button {
+    align-self: flex-start;
+    font-size: .85rem;
+}
+
+/* ------------------------------------------------------------
+   15. BOTONES — paleta apagada y armónica
+   El tema saga-blue de PrimeFaces 15 define los botones con
+   reglas planas (sin variables CSS), por ejemplo:
+     body .ui-button                    { background:#2196f3; border-radius:4px }
+     body .ui-button.ui-state-hover     { ... }
+     .ui-button.ui-button-success       { background:#689f38 }
+     body .ui-button.ui-button-secondary:not(:disabled):hover { ... }
+   Para ganarle se usan selectores de especificidad superior
+   (html body .ui-button.ui-<severidad>:enabled:...) y, como
+   este archivo carga con la faceta "last" (después de
+   theme.css y components.css), gana también los empates.
+   El tema cambia hover/active/focus con CLASES JS (.ui-state-*),
+   por eso se cubren tanto las pseudo-clases como esas clases.
+   ------------------------------------------------------------ */
+
+/* Base: forma, ritmo y transición (todos los botones) */
+html body .ui-button {
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: none;
+    transition: background-color 150ms ease, color 150ms ease,
+                border-color 150ms ease, box-shadow 150ms ease,
+                opacity 150ms ease;
+}
+
+/* Padding cómodo: el tema lo pone en el span interno */
+html body .ui-button .ui-button-text {
+    padding: .5rem 1rem;
+}
+html body .ui-button.ui-button-icon-only .ui-button-text {
+    padding: .5rem 0;
+}
+
+/* Primario / por defecto: verde azulado profundo (5.8:1 con blanco) */
+html body .ui-button,
+html body .ui-button.ui-button-primary {
+    background-color: #2F6F73;
+    border-color: #2F6F73;
+    color: #ffffff;
+}
+html body .ui-button:enabled:hover,
+html body .ui-button.ui-state-hover,
+html body .ui-button.ui-button-primary:enabled:hover,
+html body .ui-button.ui-button-primary.ui-state-hover {
+    background-color: #245A5E;
+    border-color: #245A5E;
+}
+html body .ui-button:enabled:active,
+html body .ui-button.ui-state-active,
+html body .ui-button.ui-state-down,
+html body .ui-button.ui-button-primary:enabled:active,
+html body .ui-button.ui-button-primary.ui-state-active,
+html body .ui-button.ui-button-primary.ui-state-down {
+    background-color: #1E4B4F;
+    border-color: #1E4B4F;
+}
+html body .ui-button:focus,
+html body .ui-button:focus-visible,
+html body .ui-button.ui-state-focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(47, 111, 115, .35);
+}
+
+/* Sombra muy suave solo al pasar el cursor */
+html body .ui-button:enabled:hover,
+html body .ui-button.ui-state-hover {
+    box-shadow: 0 2px 6px rgba(16, 42, 67, .18);
+}
+
+/* Deshabilitado: atenuado y desaturado */
+html body .ui-button:disabled,
+html body .ui-button.ui-state-disabled {
+    opacity: .55;
+    filter: saturate(.6);
+    box-shadow: none;
+    cursor: default;
+}
+
+/* ---------- Success: verde salvia apagado (4.9:1 con blanco) ---------- */
+html body .ui-button.ui-button-success {
+    background-color: #4E7A5A;
+    border-color: #4E7A5A;
+    color: #ffffff;
+}
+html body .ui-button.ui-button-success:enabled:hover,
+html body .ui-button.ui-button-success.ui-state-hover {
+    background-color: #3F6449;
+    border-color: #3F6449;
+}
+html body .ui-button.ui-button-success:enabled:active,
+html body .ui-button.ui-button-success.ui-state-active,
+html body .ui-button.ui-button-success.ui-state-down {
+    background-color: #345340;
+    border-color: #345340;
+}
+html body .ui-button.ui-button-success:focus,
+html body .ui-button.ui-button-success:focus-visible,
+html body .ui-button.ui-button-success.ui-state-focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(78, 122, 90, .35);
+}
+
+/* ---------- Warning (Modificar): ocre profundo, texto blanco (5.6:1) ---------- */
+html body .ui-button.ui-button-warning {
+    background-color: #8C5E10;
+    border-color: #8C5E10;
+    color: #ffffff;
+}
+html body .ui-button.ui-button-warning:enabled:hover,
+html body .ui-button.ui-button-warning.ui-state-hover {
+    background-color: #754C0A;
+    border-color: #754C0A;
+}
+html body .ui-button.ui-button-warning:enabled:active,
+html body .ui-button.ui-button-warning.ui-state-active,
+html body .ui-button.ui-button-warning.ui-state-down {
+    background-color: #613D07;
+    border-color: #613D07;
+}
+html body .ui-button.ui-button-warning:focus,
+html body .ui-button.ui-button-warning:focus-visible,
+html body .ui-button.ui-button-warning.ui-state-focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(140, 94, 16, .35);
+}
+
+/* ---------- Danger (Eliminar): terracota apagado, nunca rojo puro (4.7:1) ---------- */
+html body .ui-button.ui-button-danger {
+    background-color: #B5524A;
+    border-color: #B5524A;
+    color: #ffffff;
+}
+html body .ui-button.ui-button-danger:enabled:hover,
+html body .ui-button.ui-button-danger.ui-state-hover {
+    background-color: #9C443D;
+    border-color: #9C443D;
+}
+html body .ui-button.ui-button-danger:enabled:active,
+html body .ui-button.ui-button-danger.ui-state-active,
+html body .ui-button.ui-button-danger.ui-state-down {
+    background-color: #843832;
+    border-color: #843832;
+}
+html body .ui-button.ui-button-danger:focus,
+html body .ui-button.ui-button-danger:focus-visible,
+html body .ui-button.ui-button-danger.ui-state-focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(181, 82, 74, .35);
+}
+
+/* ---------- Info: azul marino apagado (9.9:1 con blanco) ---------- */
+html body .ui-button.ui-button-info {
+    background-color: #1D3461;
+    border-color: #1D3461;
+    color: #ffffff;
+}
+html body .ui-button.ui-button-info:enabled:hover,
+html body .ui-button.ui-button-info.ui-state-hover {
+    background-color: #16294D;
+    border-color: #16294D;
+}
+html body .ui-button.ui-button-info:enabled:active,
+html body .ui-button.ui-button-info.ui-state-active,
+html body .ui-button.ui-button-info.ui-state-down {
+    background-color: #11213D;
+    border-color: #11213D;
+}
+html body .ui-button.ui-button-info:focus,
+html body .ui-button.ui-button-info:focus-visible,
+html body .ui-button.ui-button-info.ui-state-focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(29, 52, 97, .35);
+}
+
+/* ---------- Secondary / help: grises azulados suaves (5.4:1 con blanco) ---------- */
+html body .ui-button.ui-button-secondary,
+html body .ui-button.ui-button-help {
+    background-color: #5D6B7A;
+    border-color: #5D6B7A;
+    color: #ffffff;
+}
+html body .ui-button.ui-button-secondary:enabled:hover,
+html body .ui-button.ui-button-secondary.ui-state-hover,
+html body .ui-button.ui-button-help:enabled:hover,
+html body .ui-button.ui-button-help.ui-state-hover {
+    background-color: #4C5A68;
+    border-color: #4C5A68;
+}
+html body .ui-button.ui-button-secondary:enabled:active,
+html body .ui-button.ui-button-secondary.ui-state-active,
+html body .ui-button.ui-button-secondary.ui-state-down,
+html body .ui-button.ui-button-help:enabled:active,
+html body .ui-button.ui-button-help.ui-state-active,
+html body .ui-button.ui-button-help.ui-state-down {
+    background-color: #3D4A57;
+    border-color: #3D4A57;
+}
+html body .ui-button.ui-button-secondary:focus,
+html body .ui-button.ui-button-secondary:focus-visible,
+html body .ui-button.ui-button-secondary.ui-state-focus,
+html body .ui-button.ui-button-help:focus,
+html body .ui-button.ui-button-help:focus-visible,
+html body .ui-button.ui-button-help.ui-state-focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(93, 107, 122, .35);
+}
+
+/* ============================================================
+   Variantes OUTLINED: borde y texto del color, fondo transparente,
+   hover con fondo suave. Se colocan despues de las reglas solidas
+   e incluyen la clase de severidad en hover/active para ganarle
+   al hover solido de cada severidad.
+   ============================================================ */
+
+/* Outlined primario / por defecto */
+html body .ui-button.ui-button-outlined {
+    background-color: transparent;
+    color: #2F6F73;
+    border-color: #2F6F73;
+}
+html body .ui-button.ui-button-outlined:enabled:hover,
+html body .ui-button.ui-button-outlined.ui-state-hover {
+    background-color: rgba(47, 111, 115, .12);
+    color: #245A5E;
+    border-color: #2F6F73;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-outlined:enabled:active,
+html body .ui-button.ui-button-outlined.ui-state-active,
+html body .ui-button.ui-button-outlined.ui-state-down {
+    background-color: rgba(47, 111, 115, .16);
+    color: #1E4B4F;
+    border-color: #2F6F73;
+    box-shadow: none;
+}
+
+html body .ui-button.ui-button-outlined.ui-button-success {
+    background-color: transparent;
+    color: #4E7A5A;
+    border-color: #4E7A5A;
+}
+html body .ui-button.ui-button-outlined.ui-button-success:enabled:hover,
+html body .ui-button.ui-button-outlined.ui-button-success.ui-state-hover {
+    background-color: rgba(78, 122, 90, .12);
+    color: #3F6449;
+    border-color: #4E7A5A;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-outlined.ui-button-success:enabled:active,
+html body .ui-button.ui-button-outlined.ui-button-success.ui-state-active,
+html body .ui-button.ui-button-outlined.ui-button-success.ui-state-down {
+    background-color: rgba(78, 122, 90, .16);
+    color: #345340;
+    border-color: #4E7A5A;
+    box-shadow: none;
+}
+
+html body .ui-button.ui-button-outlined.ui-button-warning {
+    background-color: transparent;
+    color: #8C5E10;
+    border-color: #8C5E10;
+}
+html body .ui-button.ui-button-outlined.ui-button-warning:enabled:hover,
+html body .ui-button.ui-button-outlined.ui-button-warning.ui-state-hover {
+    background-color: rgba(140, 94, 16, .12);
+    color: #754C0A;
+    border-color: #8C5E10;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-outlined.ui-button-warning:enabled:active,
+html body .ui-button.ui-button-outlined.ui-button-warning.ui-state-active,
+html body .ui-button.ui-button-outlined.ui-button-warning.ui-state-down {
+    background-color: rgba(140, 94, 16, .16);
+    color: #613D07;
+    border-color: #8C5E10;
+    box-shadow: none;
+}
+
+html body .ui-button.ui-button-outlined.ui-button-danger {
+    background-color: transparent;
+    color: #B5524A;
+    border-color: #B5524A;
+}
+html body .ui-button.ui-button-outlined.ui-button-danger:enabled:hover,
+html body .ui-button.ui-button-outlined.ui-button-danger.ui-state-hover {
+    background-color: rgba(181, 82, 74, .12);
+    color: #9C443D;
+    border-color: #B5524A;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-outlined.ui-button-danger:enabled:active,
+html body .ui-button.ui-button-outlined.ui-button-danger.ui-state-active,
+html body .ui-button.ui-button-outlined.ui-button-danger.ui-state-down {
+    background-color: rgba(181, 82, 74, .16);
+    color: #843832;
+    border-color: #B5524A;
+    box-shadow: none;
+}
+
+html body .ui-button.ui-button-outlined.ui-button-info {
+    background-color: transparent;
+    color: #1D3461;
+    border-color: #1D3461;
+}
+html body .ui-button.ui-button-outlined.ui-button-info:enabled:hover,
+html body .ui-button.ui-button-outlined.ui-button-info.ui-state-hover {
+    background-color: rgba(29, 52, 97, .12);
+    color: #16294D;
+    border-color: #1D3461;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-outlined.ui-button-info:enabled:active,
+html body .ui-button.ui-button-outlined.ui-button-info.ui-state-active,
+html body .ui-button.ui-button-outlined.ui-button-info.ui-state-down {
+    background-color: rgba(29, 52, 97, .16);
+    color: #11213D;
+    border-color: #1D3461;
+    box-shadow: none;
+}
+
+html body .ui-button.ui-button-outlined.ui-button-secondary,
+html body .ui-button.ui-button-outlined.ui-button-help {
+    background-color: transparent;
+    color: #4C5A68;
+    border-color: #5D6B7A;
+}
+html body .ui-button.ui-button-outlined.ui-button-secondary:enabled:hover,
+html body .ui-button.ui-button-outlined.ui-button-secondary.ui-state-hover,
+html body .ui-button.ui-button-outlined.ui-button-help:enabled:hover,
+html body .ui-button.ui-button-outlined.ui-button-help.ui-state-hover {
+    background-color: rgba(93, 107, 122, .12);
+    color: #3D4A57;
+    border-color: #5D6B7A;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-outlined.ui-button-secondary:enabled:active,
+html body .ui-button.ui-button-outlined.ui-button-secondary.ui-state-active,
+html body .ui-button.ui-button-outlined.ui-button-secondary.ui-state-down,
+html body .ui-button.ui-button-outlined.ui-button-help:enabled:active,
+html body .ui-button.ui-button-outlined.ui-button-help.ui-state-active,
+html body .ui-button.ui-button-outlined.ui-button-help.ui-state-down {
+    background-color: rgba(93, 107, 122, .16);
+    color: #2C3A48;
+    border-color: #5D6B7A;
+    box-shadow: none;
+}
+
+/* ============================================================
+   Variantes FLAT: sin fondo ni borde, texto del color de la
+   severidad; hover con un velo muy suave.
+   ============================================================ */
+html body .ui-button.ui-button-flat {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-flat.ui-button-primary,
+html body .ui-button.ui-button-flat:not(.ui-button-success):not(.ui-button-warning):not(.ui-button-danger):not(.ui-button-info):not(.ui-button-secondary):not(.ui-button-help) {
+    background-color: transparent;
+    border-color: transparent;
+    color: #2F6F73;
+}
+html body .ui-button.ui-button-flat.ui-button-success { color: #4E7A5A; }
+html body .ui-button.ui-button-flat.ui-button-warning { color: #8C5E10; }
+html body .ui-button.ui-button-flat.ui-button-danger  { color: #B5524A; }
+html body .ui-button.ui-button-flat.ui-button-info    { color: #1D3461; }
+html body .ui-button.ui-button-flat.ui-button-secondary,
+html body .ui-button.ui-button-flat.ui-button-help    { color: #4C5A68; }
+
+html body .ui-button.ui-button-flat:enabled:hover,
+html body .ui-button.ui-button-flat.ui-state-hover {
+    background-color: rgba(47, 111, 115, .10);
+    border-color: transparent;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-flat:enabled:active,
+html body .ui-button.ui-button-flat.ui-state-active,
+html body .ui-button.ui-button-flat.ui-state-down {
+    background-color: rgba(47, 111, 115, .16);
+    border-color: transparent;
+    box-shadow: none;
+}
+html body .ui-button.ui-button-flat.ui-button-success:enabled:hover,
+html body .ui-button.ui-button-flat.ui-button-success.ui-state-hover {
+    background-color: rgba(78, 122, 90, .10);
+    border-color: transparent;
+}
+html body .ui-button.ui-button-flat.ui-button-warning:enabled:hover,
+html body .ui-button.ui-button-flat.ui-button-warning.ui-state-hover {
+    background-color: rgba(140, 94, 16, .10);
+    border-color: transparent;
+}
+html body .ui-button.ui-button-flat.ui-button-danger:enabled:hover,
+html body .ui-button.ui-button-flat.ui-button-danger.ui-state-hover {
+    background-color: rgba(181, 82, 74, .10);
+    border-color: transparent;
+}
+html body .ui-button.ui-button-flat.ui-button-info:enabled:hover,
+html body .ui-button.ui-button-flat.ui-button-info.ui-state-hover {
+    background-color: rgba(29, 52, 97, .10);
+    border-color: transparent;
+}
+html body .ui-button.ui-button-flat.ui-button-secondary:enabled:hover,
+html body .ui-button.ui-button-flat.ui-button-secondary.ui-state-hover,
+html body .ui-button.ui-button-flat.ui-button-help:enabled:hover,
+html body .ui-button.ui-button-flat.ui-button-help.ui-state-hover {
+    background-color: rgba(93, 107, 122, .10);
+    border-color: transparent;
+}
+html body .ui-button.ui-button-flat.ui-button-success:enabled:active,
+html body .ui-button.ui-button-flat.ui-button-success.ui-state-active,
+html body .ui-button.ui-button-flat.ui-button-warning:enabled:active,
+html body .ui-button.ui-button-flat.ui-button-warning.ui-state-active,
+html body .ui-button.ui-button-flat.ui-button-danger:enabled:active,
+html body .ui-button.ui-button-flat.ui-button-danger.ui-state-active,
+html body .ui-button.ui-button-flat.ui-button-info:enabled:active,
+html body .ui-button.ui-button-flat.ui-button-info.ui-state-active,
+html body .ui-button.ui-button-flat.ui-button-secondary:enabled:active,
+html body .ui-button.ui-button-flat.ui-button-secondary.ui-state-active,
+html body .ui-button.ui-button-flat.ui-button-help:enabled:active,
+html body .ui-button.ui-button-flat.ui-button-help.ui-state-active {
+    background-color: rgba(16, 42, 67, .10);
+    border-color: transparent;
+}
+
+/* ------------------------------------------------------------
+   16. AJUSTES FINALES (después de los botones para ganar empates)
+   ------------------------------------------------------------ */
+
+/* Paginador como píldoras discretas; página activa verde azulado */
+html body .ui-paginator {
+    background: transparent;
+    border-top: 1px solid #EDF3F5;
+    padding: .5rem .75rem;
+}
+
+html body .ui-paginator .ui-button {
+    border-radius: 999px;
+    min-width: 2.1rem;
+    padding: .25rem .4rem;
+    font-size: .85rem;
+}
+
+html body .ui-paginator .ui-paginator-first,
+html body .ui-paginator .ui-paginator-prev,
+html body .ui-paginator .ui-paginator-next,
+html body .ui-paginator .ui-paginator-last {
+    color: var(--gsv-texto-suave);
+}
+
+html body .ui-paginator .ui-paginator-pages .ui-button.ui-button-flat.ui-state-active,
+html body .ui-paginator .ui-paginator-pages .ui-button.ui-button-flat.ui-state-active.ui-paginator-page {
+    background-color: var(--gsv-teal);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+/* Hover de filas de tablas auxiliares (árbol de pasos) */
+html body .tabla-procedimientos tbody > tr.ui-state-hover,
+html body .tabla-pasos tbody > tr.ui-state-hover {
+    background: #E9F4F8;
+}
+
+/* ------------------------------------------------------------
+   17. RESPONSIVE (320–1920 px)
+   ------------------------------------------------------------ */
+
+/* Tablet y móvil: menú lateral desplegable */
+@media (max-width: 991px) {
+    .gsv-hamburguesa {
+        display: inline-flex;
+    }
+
+    .gsv-principal {
+        display: block;
+        padding: 18px 20px 8px;
+    }
+
+    .gsv-panel-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(320px, 86vw);
+        max-height: none;
+        z-index: 9995;
+        padding: 1rem 0 .75rem;
+        background: linear-gradient(180deg, var(--gsv-menu-a) 0%, var(--gsv-menu-b) 100%);
+        border-right: 1px solid var(--gsv-menu-borde);
+        border-radius: 0 20px 20px 0;
+        box-shadow: var(--gsv-sombra-3);
+        transform: translateX(-105%);
+        transition: transform 250ms ease;
+        overflow-y: auto;
+    }
+
+    .gsv-app.gsv-menu-abierto .gsv-panel-menu {
+        transform: none;
+    }
+
+    .gsv-app.gsv-menu-abierto .gsv-panel-fondo {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .gsv-cabecera-fila {
+        padding: .55rem 20px;
+    }
+}
+
+@media (max-width: 760px) {
+    /* El héroe apila texto y tira decorativa */
+    .gsv-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.6rem 1.4rem;
+    }
+
+    .gsv-hero-arte {
+        flex-basis: auto;
+        width: min(300px, 80%);
+        align-self: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .gsv-rejilla {
+        grid-template-columns: 1fr;
+    }
+
+    /* El chip se reduce para caber con el menubar del encabezado */
+    .gsv-marca-chip {
+        height: 42px;
+        padding: 0 .9rem;
+        font-size: .92rem;
+        letter-spacing: .06em;
+    }
+
+    .gsv-marca-logo {
+        width: 48px;
+        height: 56px;
+    }
+
+    .gsv-principal,
+    .gsv-cabecera-fila {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .gsv-pie {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+@media (max-width: 380px) {
+    .gsv-cabecera-fila {
+        gap: 8px;
+    }
+
+    .gsv-marca {
+        gap: 8px;
+    }
+}
+
+/* Pantallas anchas: respiración generosa */
+@media (min-width: 1600px) {
+    .gsv-principal {
+        padding: 32px 48px 12px;
+    }
+
+    .gsv-cabecera-fila {
+        padding: .55rem 48px;
+    }
+}

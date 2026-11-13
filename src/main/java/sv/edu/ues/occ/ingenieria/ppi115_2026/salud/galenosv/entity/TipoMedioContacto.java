@@ -31,7 +31,8 @@ import java.util.UUID;
     @NamedQuery(name = "TipoMedioContacto.findByNombre", query = "SELECT t FROM TipoMedioContacto t WHERE t.nombre = :nombre"),
     @NamedQuery(name = "TipoMedioContacto.findByIndicaciones", query = "SELECT t FROM TipoMedioContacto t WHERE t.indicaciones = :indicaciones"),
     @NamedQuery(name = "TipoMedioContacto.findByExpresionRegular", query = "SELECT t FROM TipoMedioContacto t WHERE t.expresionRegular = :expresionRegular"),
-    @NamedQuery(name = "TipoMedioContacto.findByActivo", query = "SELECT t FROM TipoMedioContacto t WHERE t.activo = :activo")})
+    @NamedQuery(name = "TipoMedioContacto.findByActivo", query = "SELECT t FROM TipoMedioContacto t WHERE t.activo = :activo"),
+    @NamedQuery(name = "TipoMedioContacto.findByNombreLike", query = "SELECT t FROM TipoMedioContacto t WHERE LOWER(t.nombre) LIKE LOWER(:nombre)")})
 public class TipoMedioContacto implements Serializable {
 
     private static final long serialVersionUID = 1L;

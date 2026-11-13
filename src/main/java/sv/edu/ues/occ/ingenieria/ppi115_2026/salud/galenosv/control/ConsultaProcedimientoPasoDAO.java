@@ -1,15 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimiento;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimientoPaso;
@@ -30,52 +26,23 @@ public class ConsultaProcedimientoPasoDAO extends DefaultDAO<ConsultaProcedimien
     }
 
     public List<ConsultaProcedimientoPaso> buscarPorConsultaProcedimiento(UUID idConsultaProcedimiento) {
-        if (idConsultaProcedimiento == null) {
-            throw new IllegalArgumentException("El idConsultaProcedimiento no puede ser nulo");
-        }
+        validarNoNulo(idConsultaProcedimiento, "El idConsultaProcedimiento no puede ser nulo");
 
-        TypedQuery<ConsultaProcedimientoPaso> q = getEntityManger().createQuery(
-                "SELECT c FROM ConsultaProcedimientoPaso c "
-                + "WHERE c.idConsultaProcedimiento.idConsultaProcedimiento = :id",
-                ConsultaProcedimientoPaso.class
-        );
-
-        q.setParameter("id", idConsultaProcedimiento);
-
-        return q.getResultList();
+        return buscarConNamedQuery("ConsultaProcedimientoPaso.findByConsultaProcedimientoId",
+                ConsultaProcedimientoPaso.class, Map.of("id", idConsultaProcedimiento));
     }
 
     public List<ConsultaProcedimientoPaso> buscarPorPersonaRol(UUID idPersonaRol) {
-        if (idPersonaRol == null) {
-            throw new IllegalArgumentException("El idPersonaRol no puede ser nulo");
-        }
+        validarNoNulo(idPersonaRol, "El idPersonaRol no puede ser nulo");
 
-        TypedQuery<ConsultaProcedimientoPaso> q = getEntityManger().createQuery(
-                "SELECT c FROM ConsultaProcedimientoPaso c "
-                + "WHERE c.idPersonaRol.idPersonaRol = :id",
-                ConsultaProcedimientoPaso.class
-        );
-
-        q.setParameter("id", idPersonaRol);
-
-        return q.getResultList();
+        return buscarConNamedQuery("ConsultaProcedimientoPaso.findByPersonaRolId",
+                ConsultaProcedimientoPaso.class, Map.of("id", idPersonaRol));
     }
 
     public List<PersonaRol> buscarPersonasExcluyendoRol(String nombreRol) {
-        if (nombreRol == null || nombreRol.isBlank()) {
-            throw new IllegalArgumentException("El nombre del rol no puede estar vacío");
-        }
+        validarTexto(nombreRol, "El nombre del rol no puede estar vacío");
 
-        TypedQuery<PersonaRol> q = getEntityManger().createQuery(
-                "SELECT p FROM PersonaRol p "
-                + "JOIN FETCH p.idPersona "
-                + "JOIN FETCH p.idRol "
-                + "WHERE LOWER(p.idRol.nombre) <> :nombre",
-                PersonaRol.class
-        );
-
-        q.setParameter("nombre", nombreRol.toLowerCase());
-
-        return q.getResultList();
+        return buscarConNamedQuery("PersonaRol.findByNombreRolSinEl", PersonaRol.class,
+                Map.of("nombre", nombreRol.toLowerCase()));
     }
 }

@@ -4,8 +4,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ProcedimientoPasoSecuencia;
 
@@ -22,19 +22,16 @@ public class ProcedimientoPasoSecuenciaDAO extends DefaultDAO<ProcedimientoPasoS
     }
 
     public List<ProcedimientoPasoSecuencia> buscarPorProcedimientoPaso(UUID idProcedimientoPaso) {
-        if (idProcedimientoPaso == null) throw new IllegalArgumentException("El idProcedimientoPaso no puede ser nulo");
-        TypedQuery<ProcedimientoPasoSecuencia> q = getEntityManger().createQuery(
-                "SELECT p FROM ProcedimientoPasoSecuencia p WHERE p.idProcedimientoPaso.idProcedimientoPaso = :id", ProcedimientoPasoSecuencia.class);
-        q.setParameter("id", idProcedimientoPaso);
-        return q.getResultList();
+        validarNoNulo(idProcedimientoPaso, "El idProcedimientoPaso no puede ser nulo");
+
+        return buscarConNamedQuery("ProcedimientoPasoSecuencia.findByProcedimientoPasoId", ProcedimientoPasoSecuencia.class,
+                Map.of("id", idProcedimientoPaso));
     }
 
     public List<ProcedimientoPasoSecuencia> buscarPorPasoReferencia(UUID idPasoReferencia) {
-        if (idPasoReferencia == null) throw new IllegalArgumentException("El idPasoReferencia no puede ser nulo");
+        validarNoNulo(idPasoReferencia, "El idPasoReferencia no puede ser nulo");
         // Consulta directa porque no es una relación mapeada
-        TypedQuery<ProcedimientoPasoSecuencia> q = getEntityManger().createQuery(
-                "SELECT p FROM ProcedimientoPasoSecuencia p WHERE p.idProcedimientoPasoReferencia = :id", ProcedimientoPasoSecuencia.class);
-        q.setParameter("id", idPasoReferencia);
-        return q.getResultList();
+        return buscarConNamedQuery("ProcedimientoPasoSecuencia.findByPasoReferenciaId", ProcedimientoPasoSecuencia.class,
+                Map.of("id", idPasoReferencia));
     }
 }

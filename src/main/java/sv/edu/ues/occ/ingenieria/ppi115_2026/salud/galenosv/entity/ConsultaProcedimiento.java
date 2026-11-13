@@ -35,7 +35,8 @@ import java.util.UUID;
     @NamedQuery(name = "ConsultaProcedimiento.findAll", query = "SELECT c FROM ConsultaProcedimiento c"),
     @NamedQuery(name = "ConsultaProcedimiento.findByFechaInicio", query = "SELECT c FROM ConsultaProcedimiento c WHERE c.fechaInicio = :fechaInicio"),
     @NamedQuery(name = "ConsultaProcedimiento.findByFechaFin", query = "SELECT c FROM ConsultaProcedimiento c WHERE c.fechaFin = :fechaFin"),
-    @NamedQuery(name = "ConsultaProcedimiento.findByObservaciones", query = "SELECT c FROM ConsultaProcedimiento c WHERE c.observaciones = :observaciones")})
+    @NamedQuery(name = "ConsultaProcedimiento.findByObservaciones", query = "SELECT c FROM ConsultaProcedimiento c WHERE c.observaciones = :observaciones"),
+    @NamedQuery(name = "ConsultaProcedimiento.findByConsultaId", query = "SELECT c FROM ConsultaProcedimiento c WHERE c.idConsulta.idConsulta = :id")})
 public class ConsultaProcedimiento implements Serializable {
 
     private static final long serialVersionUID = 1L;

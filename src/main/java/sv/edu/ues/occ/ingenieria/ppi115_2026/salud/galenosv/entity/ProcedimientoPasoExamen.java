@@ -32,7 +32,9 @@ import java.util.UUID;
     @NamedQuery(name = "ProcedimientoPasoExamen.findAll", query = "SELECT p FROM ProcedimientoPasoExamen p"),
     @NamedQuery(name = "ProcedimientoPasoExamen.findByFechaCreacion", query = "SELECT p FROM ProcedimientoPasoExamen p WHERE p.fechaCreacion = :fechaCreacion"),
     @NamedQuery(name = "ProcedimientoPasoExamen.findByActivo", query = "SELECT p FROM ProcedimientoPasoExamen p WHERE p.activo = :activo"),
-    @NamedQuery(name = "ProcedimientoPasoExamen.findByObservaciones", query = "SELECT p FROM ProcedimientoPasoExamen p WHERE p.observaciones = :observaciones")})
+    @NamedQuery(name = "ProcedimientoPasoExamen.findByObservaciones", query = "SELECT p FROM ProcedimientoPasoExamen p WHERE p.observaciones = :observaciones"),
+    @NamedQuery(name = "ProcedimientoPasoExamen.findByExamenId", query = "SELECT p FROM ProcedimientoPasoExamen p WHERE p.idExamen.idExamen = :id"),
+    @NamedQuery(name = "ProcedimientoPasoExamen.findByProcedimientoPasoId", query = "SELECT p FROM ProcedimientoPasoExamen p WHERE p.idProcedimientoPaso.idProcedimientoPaso = :id")})
 public class ProcedimientoPasoExamen implements Serializable {
 
     private static final long serialVersionUID = 1L;

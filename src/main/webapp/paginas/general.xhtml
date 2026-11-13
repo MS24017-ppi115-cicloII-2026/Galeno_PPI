@@ -4,6 +4,7 @@
       xmlns:h="jakarta.faces.html"
       xmlns:ui="jakarta.faces.facelets"
       xmlns:f="jakarta.faces.core"
+      xmlns:pt="jakarta.faces.passthrough"
       xmlns:p="http://primefaces.org/ui">
 
     <f:view locale="#{localeBean.idioma}">
@@ -13,7 +14,13 @@
                 <ui:insert name="titulo">GalenoSV</ui:insert>
             </title>
 
-            <h:outputStylesheet library="css" name="estilos.css" />
+            <!-- El tema y components.css de PrimeFaces se inyectan despues
+                 de los outputStylesheet sueltos del head. Con la faceta "last"
+                 estilos.css se renderiza al final y gana los empates de
+                 especificidad contra theme.css / components.css. -->
+            <f:facet name="last">
+                <h:outputStylesheet library="css" name="estilos.css" />
+            </f:facet>
         </h:head>
 
         <h:body>
@@ -22,137 +29,132 @@
                 <p:growl id="growl-sticky" showDetail="true" />
             </h:form>
 
-            <!-- Contenedor Principal del Grid de PrimeFaces -->
-            <div class="ui-g">
+            <div class="gsv-app">
 
-                <!-- ÁREA 1: ENCABEZADO -->
-                <div class="ui-g-12" style="padding:0; margin-bottom: 10px;">
+                <!-- ÁREA 1: CABECERA PEGAJOSA -->
+                <header class="gsv-cabecera">
+                    <div class="gsv-cabecera-fila">
 
-                    <!-- Columna Izquierda: emblema de la institución -->
-                    <div class="ui-g-12 ui-md-4"
-                         style="display: flex; align-items: center; min-height: 72px;">
-                        <ui:insert name="encabezado_institucion">
-                            <div style="
-                                width: 62px;
-                                height: 72px;
-                                overflow: hidden;
-                                position: relative;
-                                margin-left: 8px;">
-                                <h:graphicImage
-                                    library="imagenes"
-                                    name="Icono.png"
-                                    alt="Emblema GalenoSV"
-                                    style="position: absolute; width: 176px; left: -57px; top: -13px;" />
-                            </div>
-                        </ui:insert>
-                    </div>
+                        <!-- Botón hamburguesa: solo visible < 992px -->
+                        <button type="button" class="gsv-hamburguesa"
+                                aria-label="#{msg['menu.abrir_menu']}"
+                                aria-expanded="false"
+                                aria-controls="gsvMenuLateral">
+                            <span class="pi pi-bars" aria-hidden="true"></span>
+                        </button>
 
-                    <!-- Columna Central: título en degradado -->
-                    <div class="ui-g-12 ui-md-4" style="text-align: center;">
-                        <ui:insert name="encabezado">
-                            <div style="
-                                display: inline-block;
-                                width: 280px;
-                                height: 64px;
-                                line-height: 64px;
-                                background: linear-gradient(135deg, #12264a 0%, #1b3a6b 45%, #0f6461 100%);
-                                border-radius: 8px;
-                                color: #ffffff;
-                                font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-                                font-weight: 700;
-                                font-size: 1.35rem;
-                                letter-spacing: .5px;">
-                                GALENO SV
-                            </div>
-                        </ui:insert>
-                    </div>
+                        <!-- Emblema + chip de la institución -->
+                        <div class="gsv-marca">
+                            <ui:insert name="encabezado_institucion">
+                                <span class="gsv-marca-logo">
+                                    <h:graphicImage
+                                        library="imagenes"
+                                        name="Icono.png"
+                                        alt="Emblema GalenoSV"
+                                        style="position: absolute; width: 176px; left: -57px; top: -13px;" />
+                                </span>
+                            </ui:insert>
 
-                    <!-- Columna Derecha -->
-                    <div class="ui-g-12 ui-md-4" style="text-align: right;">
-                        <ui:insert name="menuusuario">
+                            <ui:insert name="encabezado">
+                                <span class="gsv-marca-chip">GALENO SV</span>
+                            </ui:insert>
+                        </div>
 
-                            <h:form id="frmMenuUsuario">
+                        <!-- Idioma + estado de sesión -->
+                        <div class="gsv-cabecera-derecha">
+                            <ui:insert name="menuusuario">
 
-                                <p:menubar style="display: inline-flex; float: right;">
+                                <h:form id="frmMenuUsuario">
 
-                                    <p:submenu
-                                        label="#{msg['menu.idioma']}"
-                                        icon="pi pi-globe">
+                                    <h:panelGroup
+                                        rendered="#{sesionModels.sesionIniciada}"
+                                        styleClass="gsv-avatar"
+                                        pt:aria-hidden="true">
+                                        <h:outputText value="#{empty sesionModels.nombrePersona ? '' : sesionModels.nombrePersona.charAt(0)}" />
+                                    </h:panelGroup>
 
-                                        <p:menuitem
-                                            value="Espa&#241;ol"
-                                            action="#{localeBean.cambiarIdioma('es')}"
-                                            ajax="false"/>
+                                    <p:menubar>
 
-                                        <p:menuitem
-                                            value="English"
-                                            action="#{localeBean.cambiarIdioma('en')}"
-                                            ajax="false"/>
+                                        <p:submenu
+                                            label="#{msg['menu.idioma']}"
+                                            icon="pi pi-globe">
 
-                                        <p:menuitem
-                                            value="&#20013;&#25991;&#65288;&#31616;&#20307;&#65289;"
-                                            action="#{localeBean.cambiarIdioma('zh_CN')}"
-                                            ajax="false"/>
+                                            <p:menuitem
+                                                value="Espa&#241;ol"
+                                                action="#{localeBean.cambiarIdioma('es')}"
+                                                ajax="false"/>
 
-                                    </p:submenu>
+                                            <p:menuitem
+                                                value="English"
+                                                action="#{localeBean.cambiarIdioma('en')}"
+                                                ajax="false"/>
 
-                                    <p:menuitem
-                                        value="#{msg['consulta.sesion_no_iniciada']}"
-                                        icon="pi pi-user"
-                                        disabled="true"
-                                        rendered="#{not sesionModels.sesionIniciada}"/>
+                                            <p:menuitem
+                                                value="&#20013;&#25991;&#65288;&#31616;&#20307;&#65289;"
+                                                action="#{localeBean.cambiarIdioma('zh_CN')}"
+                                                ajax="false"/>
 
-                                    <p:submenu
-                                        label="#{sesionModels.nombrePersona}"
-                                        icon="pi pi-user"
-                                        rendered="#{sesionModels.sesionIniciada}">
+                                        </p:submenu>
 
                                         <p:menuitem
-                                            value="#{msg['menu.cerrar_sesion']}"
-                                            icon="pi pi-sign-out"
-                                            actionListener="#{sesionModels.cerrarSesion}"
-                                            ajax="false"/>
+                                            value="#{msg['consulta.sesion_no_iniciada']}"
+                                            icon="pi pi-user"
+                                            disabled="true"
+                                            rendered="#{not sesionModels.sesionIniciada}"/>
 
-                                    </p:submenu>
+                                        <p:submenu
+                                            label="#{sesionModels.nombrePersona}"
+                                            icon="pi pi-user"
+                                            rendered="#{sesionModels.sesionIniciada}">
 
-                                    <p:submenu
-                                        label="#{msg['consulta.sesion_clinica']}"
-                                        icon="pi pi-building"
-                                        rendered="#{sesionModels.sesionIniciada}">
+                                            <p:menuitem
+                                                value="#{msg['menu.cerrar_sesion']}"
+                                                icon="pi pi-sign-out"
+                                                actionListener="#{sesionModels.cerrarSesion}"
+                                                ajax="false"/>
 
-                                        <p:menuitem
-                                            value="#{empty sesionModels.nombreClinica ? msg['consulta.sesion_sin_clinica'] : sesionModels.nombreClinica}"
+                                        </p:submenu>
+
+                                        <p:submenu
+                                            label="#{msg['consulta.sesion_clinica']}"
                                             icon="pi pi-building"
-                                            disabled="true"/>
+                                            rendered="#{sesionModels.sesionIniciada}">
 
-                                        <p:menuitem
-                                            value="#{sesionModels.nombreRol}"
-                                            icon="pi pi-id-badge"
-                                            disabled="true"/>
+                                            <p:menuitem
+                                                value="#{empty sesionModels.nombreClinica ? msg['consulta.sesion_sin_clinica'] : sesionModels.nombreClinica}"
+                                                icon="pi pi-building"
+                                                disabled="true"/>
 
-                                    </p:submenu>
+                                            <p:menuitem
+                                                value="#{sesionModels.nombreRol}"
+                                                icon="pi pi-id-badge"
+                                                disabled="true"/>
 
-                                </p:menubar>
+                                        </p:submenu>
 
-                            </h:form>
+                                    </p:menubar>
 
-                        </ui:insert>
+                                </h:form>
+
+                            </ui:insert>
+                        </div>
+
                     </div>
+                </header>
 
-                </div>
+                <!-- Capa oscura para cerrar el menú deslizable en móvil -->
+                <div class="gsv-panel-fondo" aria-hidden="true"></div>
 
+                <!-- ÁREA 2: MENÚ LATERAL EN CELESTE + CONTENIDO -->
+                <div class="gsv-principal">
 
-                <!-- ÁREA 2: MENÚ LATERAL Y CONTENIDO CENTRAL -->
-                <div class="ui-g-12" style="padding:0;">
-
-                    <!-- Menú Izquierdo -->
-                    <div class="ui-g-12 ui-md-2" style="padding-top: 20px;">
+                    <aside class="gsv-panel-menu" id="gsvMenuLateral">
 
                         <ui:insert name="menuprincipal">
 
                             <h:form id="frmMenuPrincipal">
 
-                                <p:menu style="width: 100%;">
+                                <p:menu>
 
                                     <!-- Inicio -->
                                     <p:submenu label="#{msg['menu.opciones']}">
@@ -160,7 +162,8 @@
                                         <p:menuitem
                                             value="#{msg['menu.inicio']}"
                                             icon="pi pi-home"
-                                            outcome="/paginas/Inicio.xhtml"/>
+                                            outcome="/paginas/Inicio.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/Inicio.xhtml' ? 'gsv-item-activo' : ''}"/>
 
                                     </p:submenu>
 
@@ -171,33 +174,38 @@
                                         <p:menuitem
                                             value="Tipo de Documento"
                                             icon="pi pi-id-card"
-                                            outcome="/paginas/TipoDocumento.xhtml" />
+                                            outcome="/paginas/TipoDocumento.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/TipoDocumento.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                         <p:menuitem
                                             value="Tipo de Medio de Contacto"
                                             icon="pi pi-phone"
-                                            outcome="/paginas/TipoMedioContacto.xhtml" />
+                                            outcome="/paginas/TipoMedioContacto.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/TipoMedioContacto.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                         <p:menuitem
                                             value="Roles"
                                             icon="pi pi-users"
-                                            outcome="/paginas/Rol.xhtml" />
-                                        
+                                            outcome="/paginas/Rol.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/Rol.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                         <p:menuitem
                                             value="Personas"
                                             icon="pi pi-user"
-                                            outcome="/paginas/Persona.xhtml" />
+                                            outcome="/paginas/Persona.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/Persona.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                         <p:menuitem
                                             value="Clínicas"
                                             icon="pi pi-building"
-                                            outcome="/paginas/Clinica.xhtml" />
+                                            outcome="/paginas/Clinica.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/Clinica.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                         <p:menuitem
                                             value="Cambio de Rol"
                                             icon="pi pi-users"
-                                            outcome="/paginas/CambioRol.xhtml" />
+                                            outcome="/paginas/CambioRol.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/CambioRol.xhtml' ? 'gsv-item-activo' : ''}" />
 
 
                                     </p:submenu>
@@ -209,14 +217,15 @@
                                         <p:menuitem
                                             value="Tipos de Examen"
                                             icon="pi pi-tags"
-                                            outcome="/paginas/TipoExamen.xhtml" />
+                                            outcome="/paginas/TipoExamen.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/TipoExamen.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                         <p:menuitem
                                             value="Exámenes"
                                             icon="pi pi-file"
-                                            outcome="/paginas/Examen.xhtml" />
+                                            outcome="/paginas/Examen.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/Examen.xhtml' ? 'gsv-item-activo' : ''}" />
 
-                                   
                                     </p:submenu>
 
 
@@ -226,9 +235,9 @@
                                         <p:menuitem
                                             value="Procedimientos"
                                             icon="pi pi-briefcase"
-                                            outcome="/paginas/Procedimiento.xhtml" />
+                                            outcome="/paginas/Procedimiento.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/Procedimiento.xhtml' ? 'gsv-item-activo' : ''}" />
 
- 
                                     </p:submenu>
 
 
@@ -239,17 +248,20 @@
                                         <p:menuitem
                                             value="Consultas"
                                             icon="pi pi-search"
-                                            outcome="/paginas/Consulta.xhtml" />
+                                            outcome="/paginas/Consulta.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/Consulta.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                         <p:menuitem
                                             value="Órdenes de Examen"
                                             icon="pi pi-file-edit"
-                                            outcome="/paginas/OrdenExamen.xhtml" />
+                                            outcome="/paginas/OrdenExamen.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/OrdenExamen.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                         <p:menuitem
                                             value="Resultados de Examen"
                                             icon="pi pi-check-circle"
-                                            outcome="/paginas/ExamenResultado.xhtml" />
+                                            outcome="/paginas/ExamenResultado.xhtml"
+                                            styleClass="#{facesContext.viewRoot.viewId eq '/paginas/ExamenResultado.xhtml' ? 'gsv-item-activo' : ''}" />
 
                                     </p:submenu>
 
@@ -259,39 +271,81 @@
 
                         </ui:insert>
 
-                    </div>
+                    </aside>
 
 
                     <!-- Cuerpo Central -->
-                    <div class="ui-g-12 ui-md-10" style="padding: 20px;">
+                    <main class="gsv-contenido">
 
                         <ui:insert name="cuerpo">
                             Contenido por defecto
                         </ui:insert>
 
-                    </div>
+                    </main>
 
                 </div>
 
 
                 <!-- ÁREA 3: PIE DE PÁGINA -->
-                <div
-                    class="ui-g-12"
-                    style="padding:0; text-align: center; margin-top: 20px; border-top: 1px solid #ccc;">
+                <footer class="gsv-pie">
 
                     <ui:insert name="pie">
-                        <p style="color: gray;">
-                            © 2026 GalenoSV
-                        </p>
+                        <p>© 2026 GalenoSV</p>
                     </ui:insert>
 
-                </div>
+                </footer>
 
             </div>
+
+            <!-- Control mínimo del menú deslizable en pantallas pequeñas:
+                 abre/cierra con el botón hamburguesa, se cierra con la capa
+                 de fondo, con la tecla Escape y al navegar a otra página. -->
+            <script type="text/javascript">
+                // <![CDATA[
+                (function () {
+                    var app = document.querySelector('.gsv-app');
+                    var btn = document.querySelector('.gsv-hamburguesa');
+                    var fondo = document.querySelector('.gsv-panel-fondo');
+                    if (!app || !btn) {
+                        return;
+                    }
+                    function cerrar() {
+                        app.classList.remove('gsv-menu-abierto');
+                        btn.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    }
+                    function abrir() {
+                        app.classList.add('gsv-menu-abierto');
+                        btn.setAttribute('aria-expanded', 'true');
+                        document.body.style.overflow = 'hidden';
+                    }
+                    btn.addEventListener('click', function () {
+                        if (app.classList.contains('gsv-menu-abierto')) {
+                            cerrar();
+                        } else {
+                            abrir();
+                        }
+                    });
+                    if (fondo) {
+                        fondo.addEventListener('click', cerrar);
+                    }
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape') {
+                            cerrar();
+                        }
+                    });
+                    app.addEventListener('click', function (e) {
+                        var enlace = e.target.closest ? e.target.closest('.gsv-panel-menu a') : null;
+                        if (enlace && window.innerWidth < 992) {
+                            cerrar();
+                        }
+                    });
+                })();
+                // ]]>
+            </script>
 
         </h:body>
 
     </f:view>
 
 </html>
-

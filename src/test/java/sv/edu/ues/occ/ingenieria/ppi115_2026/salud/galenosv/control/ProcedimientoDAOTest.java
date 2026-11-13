@@ -1,6 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
 public class ProcedimientoDAOTest {
@@ -34,10 +33,14 @@ public class ProcedimientoDAOTest {
         String nombre = "Cirugía";
         ProcedimientoDAO cut = new ProcedimientoDAO();
         EntityManager mockEM = Mockito.mock(EntityManager.class);
-        TypedQuery mockQuery = Mockito.mock(TypedQuery.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<Procedimiento> mockQuery = Mockito.mock(TypedQuery.class);
         
-        Mockito.when(mockEM.createQuery(any(String.class), eq(Procedimiento.class))).thenReturn(mockQuery);
-        Mockito.when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new Procedimiento()));
+        Mockito.when(mockEM.createNamedQuery(
+                "Procedimiento.findByNombreLike", Procedimiento.class))
+                .thenReturn(mockQuery);
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(Collections.singletonList(new Procedimiento()));
         
         ProcedimientoDAO espia = Mockito.spy(cut);
         Mockito.doReturn(mockEM).when(espia).getEntityManger();
@@ -45,6 +48,8 @@ public class ProcedimientoDAOTest {
         List<Procedimiento> resultado = espia.buscarPorNombre(nombre);
         assertNotNull(resultado);
         assertFalse(resultado.isEmpty());
+        Mockito.verify(mockEM)
+                .createNamedQuery("Procedimiento.findByNombreLike", Procedimiento.class);
         Mockito.verify(mockQuery).setParameter("nombre", "%" + nombre + "%");
     }
 
@@ -52,23 +57,191 @@ public class ProcedimientoDAOTest {
     public void testBuscarPorNombreNulo() {
         System.out.println("buscarPorNombre nulo");
         ProcedimientoDAO cut = new ProcedimientoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        cut.em = mockEM;
         
         IllegalArgumentException excepcion = assertThrows(IllegalArgumentException.class, () -> {
             cut.buscarPorNombre(null);
         });
         assertEquals("El nombre no puede ser nulo o vacío", excepcion.getMessage());
+        Mockito.verifyNoInteractions(mockEM);
     }
 
     @Test
     public void testBuscarPorNombreVacio() {
         System.out.println("buscarPorNombre vacio");
         ProcedimientoDAO cut = new ProcedimientoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        cut.em = mockEM;
         
         IllegalArgumentException excepcion = assertThrows(IllegalArgumentException.class, () -> {
             cut.buscarPorNombre("   ");
         });
         assertEquals("El nombre no puede ser nulo o vacío", excepcion.getMessage());
+        Mockito.verifyNoInteractions(mockEM);
     }
+
+    @Test
+    public void testBuscarPorNombreListaVacia() {
+        System.out.println("buscarPorNombre lista vacía");
+        String nombre = "Cirugía";
+        ProcedimientoDAO cut = new ProcedimientoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<Procedimiento> mockQuery = Mockito.mock(TypedQuery.class);
+        
+        Mockito.when(mockEM.createNamedQuery(
+                "Procedimiento.findByNombreLike", Procedimiento.class))
+                .thenReturn(mockQuery);
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(Collections.emptyList());
+        
+        ProcedimientoDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+        
+        List<Procedimiento> resultado = espia.buscarPorNombre(nombre);
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    public void testBuscarPorNombreExcepcionServidor() {
+        System.out.println("buscarPorNombre lanza DAOException");
+        String nombre = "Cirugía";
+        ProcedimientoDAO cut = new ProcedimientoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<Procedimiento> mockQuery = Mockito.mock(TypedQuery.class);
+        
+        Mockito.when(mockEM.createNamedQuery(
+                "Procedimiento.findByNombreLike", Procedimiento.class))
+                .thenReturn(mockQuery);
+        
+        PersistenceException causa = new PersistenceException("Fallo simulado de BD");
+        Mockito.when(mockQuery.getResultList()).thenThrow(causa);
+        
+        ProcedimientoDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+        
+        DAOException excepcion = assertThrows(DAOException.class, () -> {
+            espia.buscarPorNombre(nombre);
+        });
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    public void testBuscarPorNombreEntityManagerNulo() {
+        System.out.println("buscarPorNombre EntityManager nulo");
+        ProcedimientoDAO cut = new ProcedimientoDAO();
+        cut.em = null;
+        
+        IllegalStateException excepcion = assertThrows(IllegalStateException.class, () -> {
+            cut.buscarPorNombre("Cirugía");
+        });
+        assertTrue(excepcion.getMessage()
+                .contains("EntityManager no está disponible"));
+    }
+
+    // --- buscarPorActivo ---
+
+    @Test
+    public void testBuscarPorActivoExito() {
+        System.out.println("buscarPorActivo éxito");
+        ProcedimientoDAO cut = new ProcedimientoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<Procedimiento> mockQuery = Mockito.mock(TypedQuery.class);
+        
+        Mockito.when(mockEM.createNamedQuery(
+                "Procedimiento.findByActivoOrdenadoPorNombre", Procedimiento.class))
+                .thenReturn(mockQuery);
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(Collections.singletonList(new Procedimiento()));
+        
+        ProcedimientoDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+        
+        List<Procedimiento> resultado = espia.buscarPorActivo(Boolean.TRUE);
+        assertNotNull(resultado);
+        assertFalse(resultado.isEmpty());
+        Mockito.verify(mockEM)
+                .createNamedQuery("Procedimiento.findByActivoOrdenadoPorNombre", Procedimiento.class);
+        Mockito.verify(mockQuery).setParameter("activo", Boolean.TRUE);
+    }
+
+    @Test
+    public void testBuscarPorActivoNulo() {
+        System.out.println("buscarPorActivo nulo");
+        ProcedimientoDAO cut = new ProcedimientoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        cut.em = mockEM;
+        
+        IllegalArgumentException excepcion = assertThrows(IllegalArgumentException.class, () -> {
+            cut.buscarPorActivo(null);
+        });
+        assertEquals("El estado activo no puede ser nulo", excepcion.getMessage());
+        Mockito.verifyNoInteractions(mockEM);
+    }
+
+    @Test
+    public void testBuscarPorActivoListaVacia() {
+        System.out.println("buscarPorActivo lista vacía");
+        ProcedimientoDAO cut = new ProcedimientoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<Procedimiento> mockQuery = Mockito.mock(TypedQuery.class);
+        
+        Mockito.when(mockEM.createNamedQuery(
+                "Procedimiento.findByActivoOrdenadoPorNombre", Procedimiento.class))
+                .thenReturn(mockQuery);
+        Mockito.when(mockQuery.getResultList())
+                .thenReturn(Collections.emptyList());
+        
+        ProcedimientoDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+        
+        List<Procedimiento> resultado = espia.buscarPorActivo(Boolean.FALSE);
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    public void testBuscarPorActivoExcepcionServidor() {
+        System.out.println("buscarPorActivo lanza DAOException");
+        ProcedimientoDAO cut = new ProcedimientoDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery<Procedimiento> mockQuery = Mockito.mock(TypedQuery.class);
+        
+        Mockito.when(mockEM.createNamedQuery(
+                "Procedimiento.findByActivoOrdenadoPorNombre", Procedimiento.class))
+                .thenReturn(mockQuery);
+        
+        PersistenceException causa = new PersistenceException("Fallo simulado de BD");
+        Mockito.when(mockQuery.getResultList()).thenThrow(causa);
+        
+        ProcedimientoDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+        
+        DAOException excepcion = assertThrows(DAOException.class, () -> {
+            espia.buscarPorActivo(Boolean.TRUE);
+        });
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    public void testBuscarPorActivoEntityManagerNulo() {
+        System.out.println("buscarPorActivo EntityManager nulo");
+        ProcedimientoDAO cut = new ProcedimientoDAO();
+        cut.em = null;
+        
+        IllegalStateException excepcion = assertThrows(IllegalStateException.class, () -> {
+            cut.buscarPorActivo(Boolean.TRUE);
+        });
+        assertTrue(excepcion.getMessage()
+                .contains("EntityManager no está disponible"));
+    }
+
     @Test
     public void testCrearNulo() {
         System.out.println("crear nulo");

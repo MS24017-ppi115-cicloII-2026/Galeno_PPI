@@ -33,7 +33,17 @@ import java.util.UUID;
 @Table(name = "persona_rol")
 @NamedQueries({
     @NamedQuery(name = "PersonaRol.findAll", query = "SELECT p FROM PersonaRol p"),
-    @NamedQuery(name = "PersonaRol.findByFechaCreacion", query = "SELECT p FROM PersonaRol p WHERE p.fechaCreacion = :fechaCreacion")})
+    @NamedQuery(name = "PersonaRol.findByFechaCreacion", query = "SELECT p FROM PersonaRol p WHERE p.fechaCreacion = :fechaCreacion"),
+    @NamedQuery(name = "PersonaRol.findByPersona", query = "SELECT p FROM PersonaRol p WHERE p.idPersona = :persona"),
+    @NamedQuery(name = "PersonaRol.findByClinica", query = "SELECT p FROM PersonaRol p WHERE p.idClinica = :clinica"),
+    @NamedQuery(name = "PersonaRol.findByRolConRelaciones", query = "SELECT p FROM PersonaRol p JOIN FETCH p.idPersona JOIN FETCH p.idRol LEFT JOIN FETCH p.idClinica WHERE p.idRol = :rol"),
+    @NamedQuery(name = "PersonaRol.findByNombreRolConRelaciones", query = "SELECT p FROM PersonaRol p JOIN FETCH p.idPersona JOIN FETCH p.idRol WHERE LOWER(p.idRol.nombre) = :nombre"),
+    @NamedQuery(name = "PersonaRol.findByNombreRolSinEl", query = "SELECT p FROM PersonaRol p JOIN FETCH p.idPersona JOIN FETCH p.idRol WHERE LOWER(p.idRol.nombre) <> :nombre"),
+    @NamedQuery(name = "PersonaRol.findPorIdConRelaciones", query = "SELECT pr FROM PersonaRol pr JOIN FETCH pr.idPersona JOIN FETCH pr.idRol LEFT JOIN FETCH pr.idClinica WHERE pr.idPersonaRol = :id"),
+    @NamedQuery(name = "PersonaRol.buscarPacientesPorCriterio", query = "SELECT DISTINCT p FROM PersonaRol p JOIN FETCH p.idPersona per JOIN FETCH p.idRol r LEFT JOIN FETCH p.idClinica cl LEFT JOIN FETCH per.documentoCollection LEFT JOIN FETCH per.medioContactoCollection WHERE LOWER(r.nombre) = :nombreRol AND (LOWER(per.nombres) LIKE :c OR LOWER(per.apellidos) LIKE :c OR EXISTS (SELECT d FROM Documento d WHERE d.idPersona = per AND LOWER(d.valor) LIKE :c) OR EXISTS (SELECT m FROM MedioContacto m WHERE m.idPersona = per AND LOWER(m.valor) LIKE :c))"),
+    @NamedQuery(name = "PersonaRol.buscarPacientesPorCriterioEnClinica", query = "SELECT DISTINCT p FROM PersonaRol p JOIN FETCH p.idPersona per JOIN FETCH p.idRol r LEFT JOIN FETCH p.idClinica cl LEFT JOIN FETCH per.documentoCollection LEFT JOIN FETCH per.medioContactoCollection WHERE LOWER(r.nombre) = :nombreRol AND (LOWER(per.nombres) LIKE :c OR LOWER(per.apellidos) LIKE :c OR EXISTS (SELECT d FROM Documento d WHERE d.idPersona = per AND LOWER(d.valor) LIKE :c) OR EXISTS (SELECT m FROM MedioContacto m WHERE m.idPersona = per AND LOWER(m.valor) LIKE :c)) AND cl.idClinica = :idClinica"),
+    @NamedQuery(name = "PersonaRol.countDuplicados", query = "SELECT COUNT(pr) FROM PersonaRol pr WHERE pr.idPersona = :persona AND pr.idRol = :rol AND pr.idClinica = :clinica"),
+    @NamedQuery(name = "PersonaRol.countDuplicadosExcluyendoRegistro", query = "SELECT COUNT(pr) FROM PersonaRol pr WHERE pr.idPersona = :persona AND pr.idRol = :rol AND pr.idClinica = :clinica AND pr.idPersonaRol <> :idPersonaRol")})
 public class PersonaRol implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -36,7 +36,8 @@ import java.util.UUID;
     @NamedQuery(name = "Consulta.findByFechaInicio", query = "SELECT c FROM Consulta c WHERE c.fechaInicio = :fechaInicio"),
     @NamedQuery(name = "Consulta.findByFechaFin", query = "SELECT c FROM Consulta c WHERE c.fechaFin = :fechaFin"),
     @NamedQuery(name = "Consulta.findByReferenciaExterna", query = "SELECT c FROM Consulta c WHERE c.referenciaExterna = :referenciaExterna"),
-    @NamedQuery(name = "Consulta.findByObservaciones", query = "SELECT c FROM Consulta c WHERE c.observaciones = :observaciones")})
+    @NamedQuery(name = "Consulta.findByObservaciones", query = "SELECT c FROM Consulta c WHERE c.observaciones = :observaciones"),
+    @NamedQuery(name = "Consulta.findByPersonaRolId", query = "SELECT c FROM Consulta c WHERE c.idPersonaRol.idPersonaRol = :id")})
 public class Consulta implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -31,7 +31,9 @@ import java.util.UUID;
     @NamedQuery(name = "Clinica.findByNombre", query = "SELECT c FROM Clinica c WHERE c.nombre = :nombre"),
     @NamedQuery(name = "Clinica.findByActivo", query = "SELECT c FROM Clinica c WHERE c.activo = :activo"),
     @NamedQuery(name = "Clinica.findByTipo", query = "SELECT c FROM Clinica c WHERE c.tipo = :tipo"),
-    @NamedQuery(name = "Clinica.findByComentarios", query = "SELECT c FROM Clinica c WHERE c.comentarios = :comentarios")})
+    @NamedQuery(name = "Clinica.findByComentarios", query = "SELECT c FROM Clinica c WHERE c.comentarios = :comentarios"),
+    @NamedQuery(name = "Clinica.findByNombreLike", query = "SELECT c FROM Clinica c WHERE LOWER(c.nombre) LIKE LOWER(:nombre)"),
+    @NamedQuery(name = "Clinica.findByTipoLike", query = "SELECT c FROM Clinica c WHERE LOWER(c.tipo) LIKE LOWER(:tipo)")})
 public class Clinica implements Serializable {
 
     private static final long serialVersionUID = 1L;

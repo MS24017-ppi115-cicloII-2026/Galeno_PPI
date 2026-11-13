@@ -33,7 +33,13 @@ import java.util.UUID;
     @NamedQuery(name = "Persona.findByFechaNacimiento",
             query = "SELECT p FROM Persona p WHERE p.fechaNacimiento = :fechaNacimiento"),
     @NamedQuery(name = "Persona.findByFechaCreacion",
-            query = "SELECT p FROM Persona p WHERE p.fechaCreacion = :fechaCreacion")
+            query = "SELECT p FROM Persona p WHERE p.fechaCreacion = :fechaCreacion"),
+    @NamedQuery(name = "Persona.findByNombresLike",
+            query = "SELECT p FROM Persona p WHERE LOWER(p.nombres) LIKE LOWER(:nombres)"),
+    @NamedQuery(name = "Persona.findByApellidosLike",
+            query = "SELECT p FROM Persona p WHERE LOWER(p.apellidos) LIKE LOWER(:apellidos)"),
+    @NamedQuery(name = "Persona.findPersonasSinRol",
+            query = "SELECT p FROM Persona p WHERE NOT EXISTS (SELECT pr FROM PersonaRol pr WHERE pr.idPersona = p) ORDER BY p.nombres, p.apellidos")
 })
 public class Persona implements Serializable {
 

@@ -47,7 +47,7 @@ template="./general.xhtml">
                     </p:column>
                     
                     <p:column headerText="#{msg['global.estado']}" width="15%" style="text-align: center;">
-                        <h:outputText value="#{r.activo ? msg['global.activo'] : msg['global.inactivo']}" />
+                        <h:outputText value="#{r.activo ? msg['global.activo'] : msg['global.inactivo']}" styleClass="#{r.activo ? 'gsv-pill gsv-pill-activa' : 'gsv-pill gsv-pill-inactiva'}" />
                     </p:column>
 
                     <f:facet name="footer">

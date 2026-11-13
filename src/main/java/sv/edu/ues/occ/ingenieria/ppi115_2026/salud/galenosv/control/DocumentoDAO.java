@@ -8,8 +8,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Documento;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Persona;
@@ -30,33 +30,17 @@ public class DocumentoDAO extends DefaultDAO<Documento> {
     }
 
     public List<Documento> buscarPorPersona(UUID idPersona) {
-        if (idPersona == null) {
-            throw new IllegalArgumentException("El idPersona no puede ser nulo");
-        }
+        validarNoNulo(idPersona, "El idPersona no puede ser nulo");
 
-        TypedQuery<Documento> q = getEntityManger().createQuery(
-                "SELECT d FROM Documento d WHERE d.idPersona.idPersona = :id",
-                Documento.class
-        );
-
-        q.setParameter("id", idPersona);
-
-        return q.getResultList();
+        return buscarConNamedQuery("Documento.findByPersonaId", Documento.class,
+                Map.of("id", idPersona));
     }
 
     public List<Documento> buscarPorTipoDocumento(UUID idTipoDocumento) {
-        if (idTipoDocumento == null) {
-            throw new IllegalArgumentException("El idTipoDocumento no puede ser nulo");
-        }
+        validarNoNulo(idTipoDocumento, "El idTipoDocumento no puede ser nulo");
 
-        TypedQuery<Documento> q = getEntityManger().createQuery(
-                "SELECT d FROM Documento d WHERE d.idTipoDocumento.idTipoDocumento = :id",
-                Documento.class
-        );
-
-        q.setParameter("id", idTipoDocumento);
-
-        return q.getResultList();
+        return buscarConNamedQuery("Documento.findByTipoDocumentoId", Documento.class,
+                Map.of("id", idTipoDocumento));
     }
 
     public boolean existeDuplicado(UUID idPersona, UUID idTipoDocumento,
@@ -69,21 +53,14 @@ public class DocumentoDAO extends DefaultDAO<Documento> {
 
         UUID excluir = (idExcluir != null) ? idExcluir : new UUID(0L, 0L);
 
-        TypedQuery<Long> q = getEntityManger().createQuery(
-                "SELECT COUNT(d) FROM Documento d "
-                + "WHERE d.idPersona.idPersona = :persona "
-                + "AND d.idTipoDocumento.idTipoDocumento = :tipo "
-                + "AND LOWER(d.valor) = :valor "
-                + "AND d.idDocumento <> :excluir",
-                Long.class
-        );
+        Long cantidad = buscarUnicoConNamedQuery("Documento.countDuplicados", Long.class,
+                Map.of(
+                        "persona", idPersona,
+                        "tipo", idTipoDocumento,
+                        "valor", valor.trim().toLowerCase(),
+                        "excluir", excluir));
 
-        q.setParameter("persona", idPersona);
-        q.setParameter("tipo", idTipoDocumento);
-        q.setParameter("valor", valor.trim().toLowerCase());
-        q.setParameter("excluir", excluir);
-
-        return q.getSingleResult() > 0;
+        return cantidad != null && cantidad > 0;
     }
 
     public boolean existeValorEnOtraPersona(UUID idPersona,
@@ -96,21 +73,14 @@ public class DocumentoDAO extends DefaultDAO<Documento> {
 
         UUID excluir = (idExcluir != null) ? idExcluir : new UUID(0L, 0L);
 
-        TypedQuery<Long> q = getEntityManger().createQuery(
-                "SELECT COUNT(d) FROM Documento d "
-                + "WHERE d.idTipoDocumento.idTipoDocumento = :tipo "
-                + "AND LOWER(d.valor) = :valor "
-                + "AND d.idPersona.idPersona <> :persona "
-                + "AND d.idDocumento <> :excluir",
-                Long.class
-        );
+        Long cantidad = buscarUnicoConNamedQuery("Documento.countDuplicadosEnOtraPersona", Long.class,
+                Map.of(
+                        "tipo", idTipoDocumento,
+                        "valor", valor.trim().toLowerCase(),
+                        "persona", idPersona,
+                        "excluir", excluir));
 
-        q.setParameter("tipo", idTipoDocumento);
-        q.setParameter("valor", valor.trim().toLowerCase());
-        q.setParameter("persona", idPersona);
-        q.setParameter("excluir", excluir);
-
-        return q.getSingleResult() > 0;
+        return cantidad != null && cantidad > 0;
     }
 
     public boolean existeOtroDocumentoDelTipo(UUID idPersona,
@@ -122,18 +92,12 @@ public class DocumentoDAO extends DefaultDAO<Documento> {
 
         UUID excluir = (idExcluir != null) ? idExcluir : new UUID(0L, 0L);
 
-        TypedQuery<Long> q = getEntityManger().createQuery(
-                "SELECT COUNT(d) FROM Documento d "
-                + "WHERE d.idPersona.idPersona = :persona "
-                + "AND d.idTipoDocumento.idTipoDocumento = :tipo "
-                + "AND d.idDocumento <> :excluir",
-                Long.class
-        );
+        Long cantidad = buscarUnicoConNamedQuery("Documento.countOtrosDelTipo", Long.class,
+                Map.of(
+                        "persona", idPersona,
+                        "tipo", idTipoDocumento,
+                        "excluir", excluir));
 
-        q.setParameter("persona", idPersona);
-        q.setParameter("tipo", idTipoDocumento);
-        q.setParameter("excluir", excluir);
-
-        return q.getSingleResult() > 0;
+        return cantidad != null && cantidad > 0;
     }
 }

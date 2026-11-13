@@ -4,8 +4,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.TipoDocumento;
 
 @Stateless
@@ -21,72 +21,33 @@ public class TipoDocumentoDAO extends DefaultDAO<TipoDocumento> {
     }
 
     public List<TipoDocumento> buscarPorNombre(String nombre) {
-        if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException(
-                    "El nombre no puede ser nulo o vacío"
-            );
-        }
+        validarTexto(nombre, "El nombre no puede ser nulo o vacío");
 
-        TypedQuery<TipoDocumento> query = getEntityManger().createNamedQuery(
-                "TipoDocumento.findByNombre",
-                TipoDocumento.class
-        );
-
-        query.setParameter("nombre", nombre);
-
-        return query.getResultList();
+        return buscarConNamedQuery("TipoDocumento.findByNombre", TipoDocumento.class,
+                Map.of("nombre", nombre));
     }
 
     public List<TipoDocumento> buscarPorIndicaciones(String indicaciones) {
-        if (indicaciones == null || indicaciones.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Las indicaciones no pueden ser nulas o vacías"
-            );
-        }
+        validarTexto(indicaciones, "Las indicaciones no pueden ser nulas o vacías");
 
-        TypedQuery<TipoDocumento> query = getEntityManger().createNamedQuery(
-                "TipoDocumento.findByIndicaciones",
-                TipoDocumento.class
-        );
-
-        query.setParameter("indicaciones", indicaciones);
-
-        return query.getResultList();
+        return buscarConNamedQuery("TipoDocumento.findByIndicaciones", TipoDocumento.class,
+                Map.of("indicaciones", indicaciones));
     }
 
     public List<TipoDocumento> buscarPorExpresionRegular(
             String expresionRegular) {
 
-        if (expresionRegular == null || expresionRegular.isBlank()) {
-            throw new IllegalArgumentException(
-                    "La expresión regular no puede ser nula o vacía"
-            );
-        }
+        validarTexto(expresionRegular,
+                "La expresión regular no puede ser nula o vacía");
 
-        TypedQuery<TipoDocumento> query = getEntityManger().createNamedQuery(
-                "TipoDocumento.findByExpresionRegular",
-                TipoDocumento.class
-        );
-
-        query.setParameter("expresionRegular", expresionRegular);
-
-        return query.getResultList();
+        return buscarConNamedQuery("TipoDocumento.findByExpresionRegular", TipoDocumento.class,
+                Map.of("expresionRegular", expresionRegular));
     }
 
     public List<TipoDocumento> buscarPorActivo(Boolean activo) {
-        if (activo == null) {
-            throw new IllegalArgumentException(
-                    "El estado activo no puede ser nulo"
-            );
-        }
+        validarNoNulo(activo, "El estado activo no puede ser nulo");
 
-        TypedQuery<TipoDocumento> query = getEntityManger().createNamedQuery(
-                "TipoDocumento.findByActivo",
-                TipoDocumento.class
-        );
-
-        query.setParameter("activo", activo);
-
-        return query.getResultList();
+        return buscarConNamedQuery("TipoDocumento.findByActivo", TipoDocumento.class,
+                Map.of("activo", activo));
     }
 }

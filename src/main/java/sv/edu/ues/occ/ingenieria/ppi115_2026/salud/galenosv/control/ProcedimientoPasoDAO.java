@@ -4,8 +4,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ProcedimientoPaso;
 
@@ -22,24 +22,16 @@ public class ProcedimientoPasoDAO extends DefaultDAO<ProcedimientoPaso> {
     }
 
     public List<ProcedimientoPaso> buscarPorProcedimiento(UUID idProcedimiento) {
-        if (idProcedimiento == null) {
-            throw new IllegalArgumentException("El idProcedimiento no puede ser nulo");
-        }
-        
-        TypedQuery<ProcedimientoPaso> q = getEntityManger().createQuery(
-                "SELECT p FROM ProcedimientoPaso p WHERE p.idProcedimiento.idProcedimiento = :id", ProcedimientoPaso.class);
-        q.setParameter("id", idProcedimiento);
-        return q.getResultList();
+        validarNoNulo(idProcedimiento, "El idProcedimiento no puede ser nulo");
+
+        return buscarConNamedQuery("ProcedimientoPaso.findByProcedimientoId", ProcedimientoPaso.class,
+                Map.of("id", idProcedimiento));
     }
 
     public List<ProcedimientoPaso> buscarPorRol(UUID idRol) {
-        if (idRol == null) {
-            throw new IllegalArgumentException("El idRol no puede ser nulo");
-        }
-        
-        TypedQuery<ProcedimientoPaso> q = getEntityManger().createQuery(
-                "SELECT p FROM ProcedimientoPaso p WHERE p.idRol.idRol = :id", ProcedimientoPaso.class);
-        q.setParameter("id", idRol);
-        return q.getResultList();
+        validarNoNulo(idRol, "El idRol no puede ser nulo");
+
+        return buscarConNamedQuery("ProcedimientoPaso.findByRolId", ProcedimientoPaso.class,
+                Map.of("id", idRol));
     }
 }

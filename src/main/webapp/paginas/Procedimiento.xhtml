@@ -40,7 +40,7 @@
                         </p:column>
 
                         <p:column headerText="#{msg['global.estado']}" width="12%" style="text-align: center;">
-                            <h:outputText value="#{p.activo ? msg['global.activo'] : msg['global.inactivo']}" />
+                            <h:outputText value="#{p.activo ? msg['global.activo'] : msg['global.inactivo']}" styleClass="#{p.activo ? 'gsv-pill gsv-pill-activa' : 'gsv-pill gsv-pill-inactiva'}" />
                         </p:column>
 
                         <p:column headerText="#{msg['global.observaciones']}" width="26%">

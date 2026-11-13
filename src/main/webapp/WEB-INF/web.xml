@@ -4,6 +4,22 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
+    <!--
+        CACHE DE RECURSOS JSF (documentacion para desarrollo):
+        MyFaces (la implementacion JSF que Liberty usa por defecto con
+        webProfile-11) sirve los recursos como css/estilos.css con
+        "Cache-Control: max-age=604800": el navegador puede conservar una
+        version vieja del CSS hasta 7 dias. Para ver cambios de estilos:
+          1) Recarga forzada del navegador (Ctrl+Shift+R), o
+          2) Si hiciera falta durante el desarrollo, desactivar el cache
+             de recursos TEMPORALMENTE agregando este context-param y
+             quitarlo antes de pasar a produccion:
+             <context-param>
+                 <param-name>org.apache.myfaces.RESOURCE_MAX_TIME_EXPIRE</param-name>
+                 <param-value>0</param-value>
+             </context-param>
+    -->
+
     <session-config>
         <session-timeout>
             30

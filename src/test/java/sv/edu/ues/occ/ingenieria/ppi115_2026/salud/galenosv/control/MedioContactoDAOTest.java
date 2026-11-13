@@ -1,5 +1,6 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
@@ -43,9 +44,8 @@ class MedioContactoDAOTest {
                 new MedioContacto()
         );
 
-        when(em.createQuery(
-                "SELECT m FROM MedioContacto m "
-                + "WHERE LOWER(m.valor) LIKE LOWER(:valor)",
+        when(em.createNamedQuery(
+                "MedioContacto.findByValorLike",
                 MedioContacto.class
         )).thenReturn(query);
 
@@ -61,9 +61,8 @@ class MedioContactoDAOTest {
         assertEquals(2, resultado.size());
         assertEquals(esperados, resultado);
 
-        verify(em).createQuery(
-                "SELECT m FROM MedioContacto m "
-                + "WHERE LOWER(m.valor) LIKE LOWER(:valor)",
+        verify(em).createNamedQuery(
+                "MedioContacto.findByValorLike",
                 MedioContacto.class
         );
 
@@ -74,34 +73,123 @@ class MedioContactoDAOTest {
     @Test
     void testBuscarPorValorConNull() {
 
-        assertThrows(
+        IllegalArgumentException excepcion = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorValor(null)
         );
 
+        assertEquals("El valor no puede ser nulo o vacío",
+                excepcion.getMessage());
         verifyNoInteractions(em);
     }
 
     @Test
     void testBuscarPorValorConValorVacio() {
 
-        assertThrows(
+        IllegalArgumentException excepcion = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorValor("")
         );
 
+        assertEquals("El valor no puede ser nulo o vacío",
+                excepcion.getMessage());
         verifyNoInteractions(em);
     }
 
     @Test
     void testBuscarPorValorConEspacios() {
 
-        assertThrows(
+        IllegalArgumentException excepcion = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorValor("   ")
         );
 
+        assertEquals("El valor no puede ser nulo o vacío",
+                excepcion.getMessage());
         verifyNoInteractions(em);
+    }
+
+    @Test
+    void testBuscarPorValorListaVacia() {
+
+        when(em.createNamedQuery(
+                "MedioContacto.findByValorLike",
+                MedioContacto.class
+        )).thenReturn(query);
+
+        when(query.setParameter("valor", "%correo%"))
+                .thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        List<MedioContacto> resultado = dao.buscarPorValor("correo");
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void testBuscarPorValorExcepcionServidor() {
+
+        RuntimeException causa = new RuntimeException("Fallo simulado de BD");
+
+        when(em.createNamedQuery(
+                "MedioContacto.findByValorLike",
+                MedioContacto.class
+        )).thenReturn(query);
+
+        when(query.setParameter("valor", "%correo%"))
+                .thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException excepcion = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPorValor("correo")
+        );
+
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    void testBuscarPorValorExcepcionPersistencia() {
+
+        PersistenceException causa
+                = new PersistenceException("Fallo simulado de BD");
+
+        when(em.createNamedQuery(
+                "MedioContacto.findByValorLike",
+                MedioContacto.class
+        )).thenReturn(query);
+
+        when(query.setParameter("valor", "%correo%"))
+                .thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException excepcion = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPorValor("correo")
+        );
+
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    void testBuscarPorValorEntityManagerNulo() {
+
+        MedioContactoDAO daoSinEm = new MedioContactoDAO();
+
+        IllegalStateException excepcion = assertThrows(
+                IllegalStateException.class,
+                () -> daoSinEm.buscarPorValor("correo")
+        );
+
+        assertTrue(excepcion.getMessage()
+                .contains("EntityManager no está disponible"));
     }
 
 
@@ -114,9 +202,8 @@ class MedioContactoDAOTest {
                 new MedioContacto()
         );
 
-        when(em.createQuery(
-                "SELECT m FROM MedioContacto m "
-                + "WHERE m.idPersona = :persona",
+        when(em.createNamedQuery(
+                "MedioContacto.findByPersona",
                 MedioContacto.class
         )).thenReturn(query);
 
@@ -133,9 +220,8 @@ class MedioContactoDAOTest {
         assertEquals(1, resultado.size());
         assertEquals(esperados, resultado);
 
-        verify(em).createQuery(
-                "SELECT m FROM MedioContacto m "
-                + "WHERE m.idPersona = :persona",
+        verify(em).createNamedQuery(
+                "MedioContacto.findByPersona",
                 MedioContacto.class
         );
 
@@ -146,12 +232,77 @@ class MedioContactoDAOTest {
     @Test
     void testBuscarPorPersonaConNull() {
 
-        assertThrows(
+        IllegalArgumentException excepcion = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorPersona(null)
         );
 
+        assertEquals("La persona no puede ser nula",
+                excepcion.getMessage());
         verifyNoInteractions(em);
+    }
+
+    @Test
+    void testBuscarPorPersonaListaVacia() {
+
+        Persona persona = new Persona();
+
+        when(em.createNamedQuery(
+                "MedioContacto.findByPersona",
+                MedioContacto.class
+        )).thenReturn(query);
+
+        when(query.setParameter("persona", persona))
+                .thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        List<MedioContacto> resultado =
+                dao.buscarPorPersona(persona);
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void testBuscarPorPersonaExcepcionServidor() {
+
+        Persona persona = new Persona();
+
+        RuntimeException causa = new RuntimeException("Fallo simulado de BD");
+
+        when(em.createNamedQuery(
+                "MedioContacto.findByPersona",
+                MedioContacto.class
+        )).thenReturn(query);
+
+        when(query.setParameter("persona", persona))
+                .thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException excepcion = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPorPersona(persona)
+        );
+
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    void testBuscarPorPersonaEntityManagerNulo() {
+
+        MedioContactoDAO daoSinEm = new MedioContactoDAO();
+
+        IllegalStateException excepcion = assertThrows(
+                IllegalStateException.class,
+                () -> daoSinEm.buscarPorPersona(new Persona())
+        );
+
+        assertTrue(excepcion.getMessage()
+                .contains("EntityManager no está disponible"));
     }
 
 
@@ -165,9 +316,8 @@ class MedioContactoDAOTest {
                 new MedioContacto()
         );
 
-        when(em.createQuery(
-                "SELECT m FROM MedioContacto m "
-                + "WHERE m.idTipoMedioContacto = :tipoMedioContacto",
+        when(em.createNamedQuery(
+                "MedioContacto.findByTipoMedioContacto",
                 MedioContacto.class
         )).thenReturn(query);
 
@@ -186,9 +336,8 @@ class MedioContactoDAOTest {
         assertEquals(2, resultado.size());
         assertEquals(esperados, resultado);
 
-        verify(em).createQuery(
-                "SELECT m FROM MedioContacto m "
-                + "WHERE m.idTipoMedioContacto = :tipoMedioContacto",
+        verify(em).createNamedQuery(
+                "MedioContacto.findByTipoMedioContacto",
                 MedioContacto.class
         );
 
@@ -203,11 +352,80 @@ class MedioContactoDAOTest {
     @Test
     void testBuscarPorTipoMedioContactoConNull() {
 
-        assertThrows(
+        IllegalArgumentException excepcion = assertThrows(
                 IllegalArgumentException.class,
                 () -> dao.buscarPorTipoMedioContacto(null)
         );
 
+        assertEquals("El tipo de medio de contacto no puede ser nulo",
+                excepcion.getMessage());
         verifyNoInteractions(em);
+    }
+
+    @Test
+    void testBuscarPorTipoMedioContactoListaVacia() {
+
+        TipoMedioContacto tipo = new TipoMedioContacto();
+
+        when(em.createNamedQuery(
+                "MedioContacto.findByTipoMedioContacto",
+                MedioContacto.class
+        )).thenReturn(query);
+
+        when(query.setParameter(
+                "tipoMedioContacto",
+                tipo
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenReturn(List.of());
+
+        List<MedioContacto> resultado =
+                dao.buscarPorTipoMedioContacto(tipo);
+
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void testBuscarPorTipoMedioContactoExcepcionServidor() {
+
+        TipoMedioContacto tipo = new TipoMedioContacto();
+
+        RuntimeException causa = new RuntimeException("Fallo simulado de BD");
+
+        when(em.createNamedQuery(
+                "MedioContacto.findByTipoMedioContacto",
+                MedioContacto.class
+        )).thenReturn(query);
+
+        when(query.setParameter(
+                "tipoMedioContacto",
+                tipo
+        )).thenReturn(query);
+
+        when(query.getResultList())
+                .thenThrow(causa);
+
+        DAOException excepcion = assertThrows(
+                DAOException.class,
+                () -> dao.buscarPorTipoMedioContacto(tipo)
+        );
+
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    void testBuscarPorTipoMedioContactoEntityManagerNulo() {
+
+        MedioContactoDAO daoSinEm = new MedioContactoDAO();
+
+        IllegalStateException excepcion = assertThrows(
+                IllegalStateException.class,
+                () -> daoSinEm.buscarPorTipoMedioContacto(new TipoMedioContacto())
+        );
+
+        assertTrue(excepcion.getMessage()
+                .contains("EntityManager no está disponible"));
     }
 }

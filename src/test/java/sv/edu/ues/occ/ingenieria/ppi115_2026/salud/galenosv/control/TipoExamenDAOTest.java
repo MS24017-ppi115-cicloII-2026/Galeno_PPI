@@ -1,6 +1,7 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 @ExtendWith(MockitoExtension.class)
 public class TipoExamenDAOTest {
@@ -34,14 +33,14 @@ public class TipoExamenDAOTest {
         TipoExamen registro = new TipoExamen(UUID.randomUUID());
         TipoExamenDAO cut = new TipoExamenDAO();
         EntityManager mockEM = Mockito.mock(EntityManager.class);
-        
+
         TipoExamenDAO espia = Mockito.spy(cut);
         Mockito.doReturn(mockEM).when(espia).getEntityManger();
-        
+
         espia.crear(registro);
         Mockito.verify(mockEM, Mockito.times(1)).persist(registro);
     }
-    
+
     @Test
     public void testBuscarExito() {
         System.out.println("buscar éxito");
@@ -49,12 +48,12 @@ public class TipoExamenDAOTest {
         TipoExamen esperado = new TipoExamen(id);
         TipoExamenDAO cut = new TipoExamenDAO();
         EntityManager mockEM = Mockito.mock(EntityManager.class);
-        
+
         Mockito.when(mockEM.find(TipoExamen.class, id)).thenReturn(esperado);
-        
+
         TipoExamenDAO espia = Mockito.spy(cut);
         Mockito.doReturn(mockEM).when(espia).getEntityManger();
-        
+
         TipoExamen resultado = espia.buscar(id);
         assertEquals(esperado, resultado);
     }
@@ -65,12 +64,12 @@ public class TipoExamenDAOTest {
         UUID id = UUID.randomUUID();
         TipoExamenDAO cut = new TipoExamenDAO();
         EntityManager mockEM = Mockito.mock(EntityManager.class);
-        
+
         Mockito.when(mockEM.find(TipoExamen.class, id)).thenReturn(null);
-        
+
         TipoExamenDAO espia = Mockito.spy(cut);
         Mockito.doReturn(mockEM).when(espia).getEntityManger();
-        
+
         assertThrows(IllegalArgumentException.class, () -> {
             espia.eliminar(id);
         });
@@ -91,28 +90,32 @@ public class TipoExamenDAOTest {
         String nombre = "Sangre";
         TipoExamenDAO cut = new TipoExamenDAO();
         EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
         TypedQuery mockQuery = Mockito.mock(TypedQuery.class);
-        
-        Mockito.when(mockEM.createQuery(any(String.class), eq(TipoExamen.class))).thenReturn(mockQuery);
+
+        Mockito.when(mockEM.createNamedQuery("TipoExamen.findByNombreLike", TipoExamen.class)).thenReturn(mockQuery);
         Mockito.when(mockQuery.getResultList()).thenReturn(Collections.singletonList(new TipoExamen()));
-        
+
         TipoExamenDAO espia = Mockito.spy(cut);
         Mockito.doReturn(mockEM).when(espia).getEntityManger();
-        
+
         List<TipoExamen> resultado = espia.buscarPorNombre(nombre);
         assertNotNull(resultado);
         assertFalse(resultado.isEmpty());
+        Mockito.verify(mockEM).createNamedQuery("TipoExamen.findByNombreLike", TipoExamen.class);
         Mockito.verify(mockQuery).setParameter("nombre", "%" + nombre + "%");
+        Mockito.verify(mockQuery).getResultList();
     }
+
     @Test
     public void testGetEntityManger() {
         System.out.println("getEntityManger");
         TipoExamenDAO cut = new TipoExamenDAO();
         EntityManager mockEM = Mockito.mock(EntityManager.class);
-        
+
         // Asignamos manualmente el mock a la variable (simulando al servidor)
-        cut.em = mockEM; 
-        
+        cut.em = mockEM;
+
         // Verificamos que el método devuelva la variable asignada
         assertEquals(mockEM, cut.getEntityManger());
     }
@@ -121,21 +124,79 @@ public class TipoExamenDAOTest {
     public void testBuscarPorNombreNulo() {
         System.out.println("buscarPorNombre nulo");
         TipoExamenDAO cut = new TipoExamenDAO();
-        
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        cut.em = mockEM;
+
         IllegalArgumentException excepcion = assertThrows(IllegalArgumentException.class, () -> {
             cut.buscarPorNombre(null);
         });
         assertEquals("El nombre no puede ser nulo o vacío", excepcion.getMessage());
+        Mockito.verifyNoInteractions(mockEM);
     }
 
     @Test
     public void testBuscarPorNombreVacio() {
         System.out.println("buscarPorNombre vacio");
         TipoExamenDAO cut = new TipoExamenDAO();
-        
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        cut.em = mockEM;
+
         IllegalArgumentException excepcion = assertThrows(IllegalArgumentException.class, () -> {
             cut.buscarPorNombre("   "); // Espacios en blanco
         });
         assertEquals("El nombre no puede ser nulo o vacío", excepcion.getMessage());
+        Mockito.verifyNoInteractions(mockEM);
+    }
+
+    @Test
+    public void testBuscarPorNombreSinResultados() {
+        System.out.println("buscarPorNombre sin resultados");
+        TipoExamenDAO cut = new TipoExamenDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery mockQuery = Mockito.mock(TypedQuery.class);
+
+        Mockito.when(mockEM.createNamedQuery("TipoExamen.findByNombreLike", TipoExamen.class)).thenReturn(mockQuery);
+        Mockito.when(mockQuery.getResultList()).thenReturn(Collections.emptyList());
+
+        TipoExamenDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+
+        List<TipoExamen> resultado = espia.buscarPorNombre("Inexistente");
+        assertNotNull(resultado);
+        assertTrue(resultado.isEmpty());
+        Mockito.verify(mockQuery).setParameter("nombre", "%Inexistente%");
+    }
+
+    @Test
+    public void testBuscarPorNombreErrorEnConsulta() {
+        System.out.println("buscarPorNombre error en consulta");
+        TipoExamenDAO cut = new TipoExamenDAO();
+        EntityManager mockEM = Mockito.mock(EntityManager.class);
+        @SuppressWarnings("unchecked")
+        TypedQuery mockQuery = Mockito.mock(TypedQuery.class);
+        PersistenceException causa = new PersistenceException("fallo de BD");
+
+        Mockito.when(mockEM.createNamedQuery("TipoExamen.findByNombreLike", TipoExamen.class)).thenReturn(mockQuery);
+        Mockito.when(mockQuery.getResultList()).thenThrow(causa);
+
+        TipoExamenDAO espia = Mockito.spy(cut);
+        Mockito.doReturn(mockEM).when(espia).getEntityManger();
+
+        DAOException excepcion = assertThrows(DAOException.class, () -> {
+            espia.buscarPorNombre("Sangre");
+        });
+        assertSame(causa, excepcion.getCause());
+    }
+
+    @Test
+    public void testBuscarPorNombreSinEntityManager() {
+        System.out.println("buscarPorNombre sin EntityManager");
+        TipoExamenDAO cut = new TipoExamenDAO();
+
+        IllegalStateException excepcion = assertThrows(IllegalStateException.class, () -> {
+            cut.buscarPorNombre("Sangre");
+        });
+        assertTrue(excepcion.getMessage().contains("EntityManager no está disponible"));
     }
 }

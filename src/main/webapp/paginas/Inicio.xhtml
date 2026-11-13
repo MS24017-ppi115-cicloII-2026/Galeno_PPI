@@ -13,923 +13,167 @@
 
     <ui:define name="cuerpo">
 
-        <!-- ENCABEZADO DE BIENVENIDA -->
-        <div class="ui-g">
+        <!-- ═══ HÉROE DE BIENVENIDA ═══ -->
+        <section class="gsv-hero">
 
-            <div class="ui-g-12">
+            <div class="gsv-hero-texto">
+                <p class="gsv-hero-kicker">#{msg['inicio.kicker']}</p>
+                <h1 class="gsv-hero-titulo">#{msg['inicio.bienvenida']}</h1>
+                <p class="gsv-hero-subtitulo">#{msg['inicio.subtitulo']}</p>
+            </div>
 
-                <p:panel
-                    style="
-                        border-radius: 12px;
-                        border: none;
-                        box-shadow: 0 3px 12px rgba(0,0,0,0.10);
-                        background: linear-gradient(135deg, #f8fbff, #eef5ff);
-                        margin-bottom: 20px;">
+            <!-- Tira decorativa: pulso y cruces estilizadas (solo SVG propio) -->
+            <div class="gsv-hero-arte" aria-hidden="true">
+                <svg viewBox="0 0 300 110" fill="none"
+                     xmlns="http://www.w3.org/2000/svg" focusable="false">
+                    <path d="M4 62 H86 L100 30 L118 84 L134 44 L144 62 H162 L172 40 L182 62 H296"
+                          stroke="#2F6F73" stroke-width="3"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="162" cy="62" r="4.5" fill="#C9775B"/>
+                    <g stroke="#CFE3DD" stroke-width="4" stroke-linecap="round">
+                        <path d="M40 22 v12 M34 28 h12"/>
+                        <path d="M244 78 v12 M238 84 h12"/>
+                        <path d="M276 18 v10 M271 23 h10"/>
+                    </g>
+                    <g stroke="#B5D8E8" stroke-width="4" stroke-linecap="round">
+                        <path d="M120 12 v10 M115 17 h10"/>
+                    </g>
+                </svg>
+            </div>
 
-                    <div style="padding: 10px 15px;">
+        </section>
 
-                        <p style="
-                            margin: 0 0 8px 0;
-                            font-size: 14px;
-                            color: #607d8b;
-                            font-weight: 600;">
-                            SISTEMA DE GESTIÓN MÉDICA
-                        </p>
+        <!-- ═══ ACCESO RÁPIDO A LOS MÓDULOS ═══ -->
+        <section aria-label="#{msg['inicio.acceso_rapido']}">
 
-                        <h1 style="
-                            margin: 0;
-                            font-size: 32px;
-                            color: #263238;
-                            font-weight: 700;">
-                            Bienvenido a GalenoSV
-                        </h1>
+            <h2 class="gsv-titulo-seccion-visual">#{msg['inicio.acceso_rapido']}</h2>
 
-                        <p style="
-                            margin: 12px 0 0 0;
-                            font-size: 16px;
-                            line-height: 1.6;
-                            color: #546e7a;
-                            max-width: 900px;">
-                            Sistema diseñado para centralizar y facilitar la gestión
-                            de información clínica, pacientes, exámenes, procedimientos
-                            y consultas desde un solo lugar.
-                        </p>
+            <div class="gsv-rejilla">
 
-                    </div>
+                <!-- Personas -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-user"></span></span>
+                    <h3>#{msg['inicio.tarjeta_personas']}</h3>
+                    <p>#{msg['inicio.tarjeta_personas_desc']}</p>
+                    <p:button outcome="/paginas/Persona.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
 
-                </p:panel>
+                <!-- Clínicas -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-building"></span></span>
+                    <h3>#{msg['inicio.tarjeta_clinicas']}</h3>
+                    <p>#{msg['inicio.tarjeta_clinicas_desc']}</p>
+                    <p:button outcome="/paginas/Clinica.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Roles -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-users"></span></span>
+                    <h3>#{msg['inicio.tarjeta_roles']}</h3>
+                    <p>#{msg['inicio.tarjeta_roles_desc']}</p>
+                    <p:button outcome="/paginas/Rol.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Cambio de Rol -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-refresh"></span></span>
+                    <h3>#{msg['inicio.tarjeta_cambio_rol']}</h3>
+                    <p>#{msg['inicio.tarjeta_cambio_rol_desc']}</p>
+                    <p:button outcome="/paginas/CambioRol.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Tipos de Documento -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-id-card"></span></span>
+                    <h3>#{msg['inicio.tarjeta_tipos_documento']}</h3>
+                    <p>#{msg['inicio.tarjeta_tipos_documento_desc']}</p>
+                    <p:button outcome="/paginas/TipoDocumento.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Tipos de Medio de Contacto -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-phone"></span></span>
+                    <h3>#{msg['inicio.tarjeta_tipos_medio']}</h3>
+                    <p>#{msg['inicio.tarjeta_tipos_medio_desc']}</p>
+                    <p:button outcome="/paginas/TipoMedioContacto.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Tipos de Examen -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-tags"></span></span>
+                    <h3>#{msg['inicio.tarjeta_tipos_examen']}</h3>
+                    <p>#{msg['inicio.tarjeta_tipos_examen_desc']}</p>
+                    <p:button outcome="/paginas/TipoExamen.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Exámenes -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-file"></span></span>
+                    <h3>#{msg['inicio.tarjeta_examenes']}</h3>
+                    <p>#{msg['inicio.tarjeta_examenes_desc']}</p>
+                    <p:button outcome="/paginas/Examen.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Procedimientos -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-briefcase"></span></span>
+                    <h3>#{msg['inicio.tarjeta_procedimientos']}</h3>
+                    <p>#{msg['inicio.tarjeta_procedimientos_desc']}</p>
+                    <p:button outcome="/paginas/Procedimiento.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Consultas -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-search"></span></span>
+                    <h3>#{msg['inicio.tarjeta_consultas']}</h3>
+                    <p>#{msg['inicio.tarjeta_consultas_desc']}</p>
+                    <p:button outcome="/paginas/Consulta.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Órdenes de Examen -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-file-edit"></span></span>
+                    <h3>#{msg['inicio.tarjeta_ordenes']}</h3>
+                    <p>#{msg['inicio.tarjeta_ordenes_desc']}</p>
+                    <p:button outcome="/paginas/OrdenExamen.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
+
+                <!-- Resultados de Examen -->
+                <div class="gsv-tarjeta">
+                    <span class="gsv-tarjeta-icono" aria-hidden="true"><span class="pi pi-check-circle"></span></span>
+                    <h3>#{msg['inicio.tarjeta_resultados']}</h3>
+                    <p>#{msg['inicio.tarjeta_resultados_desc']}</p>
+                    <p:button outcome="/paginas/ExamenResultado.xhtml"
+                             value="#{msg['global.abrir']}"
+                             styleClass="ui-button-outlined"/>
+                </div>
 
             </div>
 
-
-            <!-- ESTADÍSTICAS -->
-            <div class="ui-g-12 ui-md-4">
-
-                <p:panel
-                    style="
-                        border-radius: 10px;
-                        border: none;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        height: 100%;">
-
-                    <div style="display: flex; align-items: center;">
-
-                        <div style="
-                            background: #e3f2fd;
-                            border-radius: 10px;
-                            width: 55px;
-                            height: 55px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            margin-right: 15px;">
-
-                            <i
-                                class="pi pi-users"
-                                style="font-size: 24px; color: #1976d2;">
-                            </i>
-
-                        </div>
-
-                        <div>
-                            <div style="
-                                font-size: 13px;
-                                color: #78909c;">
-                                Pacientes
-                            </div>
-
-                            <div style="
-                                font-size: 25px;
-                                font-weight: bold;
-                                color: #263238;">
-                                Gestión centralizada
-                            </div>
-                        </div>
-
-                    </div>
-
-                </p:panel>
-
-            </div>
-
-
-            <div class="ui-g-12 ui-md-4">
-
-                <p:panel
-                    style="
-                        border-radius: 10px;
-                        border: none;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        height: 100%;">
-
-                    <div style="display: flex; align-items: center;">
-
-                        <div style="
-                            background: #e0f2f1;
-                            border-radius: 10px;
-                            width: 55px;
-                            height: 55px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            margin-right: 15px;">
-
-                            <i
-                                class="pi pi-file"
-                                style="font-size: 24px; color: #00897b;">
-                            </i>
-
-                        </div>
-
-                        <div>
-                            <div style="
-                                font-size: 13px;
-                                color: #78909c;">
-                                Expedientes
-                            </div>
-
-                            <div style="
-                                font-size: 25px;
-                                font-weight: bold;
-                                color: #263238;">
-                                Información organizada
-                            </div>
-                        </div>
-
-                    </div>
-
-                </p:panel>
-
-            </div>
-
-
-            <div class="ui-g-12 ui-md-4">
-
-                <p:panel
-                    style="
-                        border-radius: 10px;
-                        border: none;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        height: 100%;">
-
-                    <div style="display: flex; align-items: center;">
-
-                        <div style="
-                            background: #fff3e0;
-                            border-radius: 10px;
-                            width: 55px;
-                            height: 55px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            margin-right: 15px;">
-
-                            <i
-                                class="pi pi-shield"
-                                style="font-size: 24px; color: #ef6c00;">
-                            </i>
-
-                        </div>
-
-                        <div>
-                            <div style="
-                                font-size: 13px;
-                                color: #78909c;">
-                                Administración
-                            </div>
-
-                            <div style="
-                                font-size: 25px;
-                                font-weight: bold;
-                                color: #263238;">
-                                Procesos integrados
-                            </div>
-                        </div>
-
-                    </div>
-
-                </p:panel>
-
-            </div>
-
-
-            <!-- FUNCIONES PRINCIPALES -->
-            <div class="ui-g-12">
-
-                <p:panel
-                    header="Módulos principales"
-                    style="
-                        border-radius: 10px;
-                        border: none;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        margin-top: 10px;">
-
-                    <p style="
-                        margin: 0 0 20px 0;
-                        color: #607d8b;
-                        font-size: 15px;">
-                        Desde el menú lateral puedes acceder a los diferentes módulos
-                        del sistema.
-                    </p>
-
-
-                    <div class="ui-g">
-
-                        <!-- PERSONAS -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-users"
-                                    style="
-                                        font-size: 34px;
-                                        color: #1976d2;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Personas
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Administración de personas,
-                                    documentos y medios de contacto.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Personas"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/Persona.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- CLÍNICAS -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-building"
-                                    style="
-                                        font-size: 34px;
-                                        color: #00897b;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Clínicas
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Consulta y administración
-                                    de las clínicas registradas.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Clínicas"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/Clinica.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- EXÁMENES -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-file"
-                                    style="
-                                        font-size: 34px;
-                                        color: #7e57c2;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Exámenes
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Gestión de exámenes
-                                    y sus tipos asociados.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Exámenes"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/Examen.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- PROCEDIMIENTOS -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-briefcase"
-                                    style="
-                                        font-size: 34px;
-                                        color: #ef6c00;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Procedimientos
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Administración de procedimientos
-                                    y pasos médicos.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Procedimientos"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/Procedimiento.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- TIPO DE DOCUMENTO -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-id-card"
-                                    style="
-                                        font-size: 34px;
-                                        color: #1976d2;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Tipo de Documento
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Catálogo de tipos de
-                                    documento de identificación.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Tipo de Documento"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/TipoDocumento.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- TIPO DE MEDIO DE CONTACTO -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-phone"
-                                    style="
-                                        font-size: 34px;
-                                        color: #00897b;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Tipo de Medio de Contacto
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Catálogo de medios de
-                                    contacto registrados.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Tipo de Medio de Contacto"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/TipoMedioContacto.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- ROLES -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-users"
-                                    style="
-                                        font-size: 34px;
-                                        color: #7e57c2;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Roles
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Administración de roles
-                                    disponibles en el sistema.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Roles"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/Rol.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- CAMBIO DE ROL -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-id-badge"
-                                    style="
-                                        font-size: 34px;
-                                        color: #ef6c00;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Cambio de Rol
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Asignación y cambio de
-                                    rol de cada persona.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Cambio de Rol"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/CambioRol.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- TIPOS DE EXAMEN -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-tags"
-                                    style="
-                                        font-size: 34px;
-                                        color: #1976d2;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Tipos de Examen
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Catálogo de tipos de
-                                    examen médicos.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Tipos de Examen"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/TipoExamen.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- CONSULTAS -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-search"
-                                    style="
-                                        font-size: 34px;
-                                        color: #00897b;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Consultas
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Registro y gestión de
-                                    consultas médicas.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Consultas"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/Consulta.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- ÓRDENES DE EXAMEN -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-file-edit"
-                                    style="
-                                        font-size: 34px;
-                                        color: #7e57c2;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Órdenes de Examen
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Emisión y seguimiento de
-                                    órdenes de examen.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Órdenes de Examen"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/OrdenExamen.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-
-                        <!-- RESULTADOS DE EXAMEN -->
-                        <div class="ui-g-12 ui-md-6 ui-lg-3">
-
-                            <p:panel
-                                style="
-                                    border-radius: 10px;
-                                    border: 1px solid #e0e0e0;
-                                    box-shadow: none;
-                                    text-align: center;
-                                    height: 100%;">
-
-                                <i
-                                    class="pi pi-check-circle"
-                                    style="
-                                        font-size: 34px;
-                                        color: #ef6c00;
-                                        margin-bottom: 12px;">
-                                </i>
-
-                                <h3 style="
-                                    margin: 0 0 8px 0;
-                                    color: #37474f;">
-                                    Resultados de Examen
-                                </h3>
-
-                                <p style="
-                                    margin: 0 0 15px 0;
-                                    color: #78909c;
-                                    font-size: 14px;
-                                    line-height: 1.5;">
-                                    Carga y consulta de
-                                    resultados de examen.
-                                </p>
-
-                                <p:button
-                                    value="Ir a Resultados de Examen"
-                                    icon="pi pi-arrow-right"
-                                    outcome="/paginas/ExamenResultado.xhtml"
-                                    styleClass="ui-button-outlined"/>
-
-                            </p:panel>
-
-                        </div>
-
-                    </div>
-
-                </p:panel>
-
-            </div>
-
-
-            <!-- INFORMACIÓN DEL SISTEMA -->
-            <div class="ui-g-12 ui-md-8">
-
-                <p:panel
-                    header="Sobre GalenoSV"
-                    style="
-                        border-radius: 10px;
-                        border: none;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        margin-top: 10px;
-                        height: 100%;">
-
-                    <p style="
-                        color: #546e7a;
-                        line-height: 1.7;
-                        margin-top: 0;">
-                        GalenoSV es una plataforma orientada a la gestión de
-                        información médica y administrativa. Su objetivo es
-                        centralizar los diferentes elementos relacionados con
-                        la atención de pacientes y facilitar el acceso a la
-                        información desde una interfaz organizada.
-                    </p>
-
-                    <p style="
-                        color: #546e7a;
-                        line-height: 1.7;">
-                        Utiliza el menú lateral para navegar entre los
-                        diferentes módulos disponibles.
-                    </p>
-
-                </p:panel>
-
-            </div>
-
-
-            <!-- ACCESO RÁPIDO -->
-            <div class="ui-g-12 ui-md-4">
-
-                <p:panel
-                    header="Acceso rápido"
-                    style="
-                        border-radius: 10px;
-                        border: none;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-                        margin-top: 10px;
-                        height: 100%;">
-
-                    <p:menu style="width: 100%;">
-
-                        <p:menuitem
-                            value="Personas"
-                            icon="pi pi-user"
-                            outcome="/paginas/Persona.xhtml"/>
-
-                        <p:menuitem
-                            value="Clínicas"
-                            icon="pi pi-building"
-                            outcome="/paginas/Clinica.xhtml"/>
-
-                        <p:menuitem
-                            value="Exámenes"
-                            icon="pi pi-file"
-                            outcome="/paginas/Examen.xhtml"/>
-
-                        <p:menuitem
-                            value="Procedimientos"
-                            icon="pi pi-briefcase"
-                            outcome="/paginas/Procedimiento.xhtml"/>
-
-                        <p:menuitem
-                            value="Tipo de Documento"
-                            icon="pi pi-id-card"
-                            outcome="/paginas/TipoDocumento.xhtml"/>
-
-                        <p:menuitem
-                            value="Tipo de Medio de Contacto"
-                            icon="pi pi-phone"
-                            outcome="/paginas/TipoMedioContacto.xhtml"/>
-
-                        <p:menuitem
-                            value="Roles"
-                            icon="pi pi-users"
-                            outcome="/paginas/Rol.xhtml"/>
-
-                        <p:menuitem
-                            value="Cambio de Rol"
-                            icon="pi pi-id-badge"
-                            outcome="/paginas/CambioRol.xhtml"/>
-
-                        <p:menuitem
-                            value="Tipos de Examen"
-                            icon="pi pi-tags"
-                            outcome="/paginas/TipoExamen.xhtml"/>
-
-                        <p:menuitem
-                            value="Consultas"
-                            icon="pi pi-search"
-                            outcome="/paginas/Consulta.xhtml"/>
-
-                        <p:menuitem
-                            value="Órdenes de Examen"
-                            icon="pi pi-file-edit"
-                            outcome="/paginas/OrdenExamen.xhtml"/>
-
-                        <p:menuitem
-                            value="Resultados de Examen"
-                            icon="pi pi-check-circle"
-                            outcome="/paginas/ExamenResultado.xhtml"/>
-
-                    </p:menu>
-
-                </p:panel>
-
-            </div>
-
-
-            <!-- MENSAJE FINAL -->
-            <div class="ui-g-12">
-
-                <p:panel
-                    style="
-                        border-radius: 10px;
-                        border: none;
-                        background: #f8f9fa;
-                        margin-top: 10px;
-                        text-align: center;">
-
-                    <p style="
-                        margin: 5px 0;
-                        color: #607d8b;
-                        font-size: 14px;">
-
-                        <i
-                            class="pi pi-heart"
-                            style="margin-right: 5px;">
-                        </i>
-
-                        GalenoSV — Sistema de gestión de expedientes médicos
-
-                    </p>
-
-                </p:panel>
-
-            </div>
-
-        </div>
+        </section>
 
     </ui:define>
 
 </ui:composition>
-
-

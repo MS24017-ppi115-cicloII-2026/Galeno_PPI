@@ -59,7 +59,7 @@
                 </p:column>
 
                 <p:column headerText="#{msg['tipoMedioContacto.col_activo']}">
-                    <h:outputText value="#{r.activo ? 'Sí' : 'No'}"/>
+                    <h:outputText value="#{r.activo ? 'Sí' : 'No'}" styleClass="#{r.activo ? 'gsv-pill gsv-pill-activa' : 'gsv-pill gsv-pill-inactiva'}"/>
                 </p:column>
 
                 <f:facet name="footer">

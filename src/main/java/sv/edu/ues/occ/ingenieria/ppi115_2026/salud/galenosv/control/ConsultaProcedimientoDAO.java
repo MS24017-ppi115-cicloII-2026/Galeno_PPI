@@ -5,8 +5,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Consulta;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimiento;
@@ -22,17 +22,9 @@ EntityManager em;
        return em;
     }
     public List<ConsultaProcedimiento> buscarPorConsulta(UUID idConsulta) {
-    if (idConsulta == null) {
-        throw new IllegalArgumentException("El idConsulta no puede ser nulo");
+        validarNoNulo(idConsulta, "El idConsulta no puede ser nulo");
+
+        return buscarConNamedQuery("ConsultaProcedimiento.findByConsultaId",
+                ConsultaProcedimiento.class, Map.of("id", idConsulta));
     }
-
-    TypedQuery<ConsultaProcedimiento> q = getEntityManger().createQuery(
-            "SELECT c FROM ConsultaProcedimiento c WHERE c.idConsulta.idConsulta = :id",
-            ConsultaProcedimiento.class
-    );
-
-    q.setParameter("id", idConsulta);
-
-    return q.getResultList();
-}
 }

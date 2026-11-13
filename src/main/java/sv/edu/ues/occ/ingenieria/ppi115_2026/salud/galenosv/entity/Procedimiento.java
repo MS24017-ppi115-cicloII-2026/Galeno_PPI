@@ -30,7 +30,9 @@ import java.util.UUID;
     @NamedQuery(name = "Procedimiento.findAll", query = "SELECT p FROM Procedimiento p"),
     @NamedQuery(name = "Procedimiento.findByNombre", query = "SELECT p FROM Procedimiento p WHERE p.nombre = :nombre"),
     @NamedQuery(name = "Procedimiento.findByActivo", query = "SELECT p FROM Procedimiento p WHERE p.activo = :activo"),
-    @NamedQuery(name = "Procedimiento.findByObservaciones", query = "SELECT p FROM Procedimiento p WHERE p.observaciones = :observaciones")})
+    @NamedQuery(name = "Procedimiento.findByObservaciones", query = "SELECT p FROM Procedimiento p WHERE p.observaciones = :observaciones"),
+    @NamedQuery(name = "Procedimiento.findByNombreLike", query = "SELECT p FROM Procedimiento p WHERE LOWER(p.nombre) LIKE LOWER(:nombre)"),
+    @NamedQuery(name = "Procedimiento.findByActivoOrdenadoPorNombre", query = "SELECT p FROM Procedimiento p WHERE p.activo = :activo ORDER BY p.nombre")})
 public class Procedimiento implements Serializable {
 
     private static final long serialVersionUID = 1L;

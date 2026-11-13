@@ -29,7 +29,12 @@ import java.util.UUID;
 @NamedQueries({
     @NamedQuery(name = "Documento.findAll", query = "SELECT d FROM Documento d"),
     @NamedQuery(name = "Documento.findByValor", query = "SELECT d FROM Documento d WHERE d.valor = :valor"),
-    @NamedQuery(name = "Documento.findByRutaFisica", query = "SELECT d FROM Documento d WHERE d.rutaFisica = :rutaFisica")})
+    @NamedQuery(name = "Documento.findByRutaFisica", query = "SELECT d FROM Documento d WHERE d.rutaFisica = :rutaFisica"),
+    @NamedQuery(name = "Documento.findByPersonaId", query = "SELECT d FROM Documento d WHERE d.idPersona.idPersona = :id"),
+    @NamedQuery(name = "Documento.findByTipoDocumentoId", query = "SELECT d FROM Documento d WHERE d.idTipoDocumento.idTipoDocumento = :id"),
+    @NamedQuery(name = "Documento.countDuplicados", query = "SELECT COUNT(d) FROM Documento d WHERE d.idPersona.idPersona = :persona AND d.idTipoDocumento.idTipoDocumento = :tipo AND LOWER(d.valor) = :valor AND d.idDocumento <> :excluir"),
+    @NamedQuery(name = "Documento.countDuplicadosEnOtraPersona", query = "SELECT COUNT(d) FROM Documento d WHERE d.idTipoDocumento.idTipoDocumento = :tipo AND LOWER(d.valor) = :valor AND d.idPersona.idPersona <> :persona AND d.idDocumento <> :excluir"),
+    @NamedQuery(name = "Documento.countOtrosDelTipo", query = "SELECT COUNT(d) FROM Documento d WHERE d.idPersona.idPersona = :persona AND d.idTipoDocumento.idTipoDocumento = :tipo AND d.idDocumento <> :excluir")})
 public class Documento implements Serializable {
 
     private static final long serialVersionUID = 1L;

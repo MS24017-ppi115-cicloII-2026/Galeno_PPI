@@ -30,7 +30,8 @@ import java.util.UUID;
     @NamedQuery(name = "TipoExamen.findAll", query = "SELECT t FROM TipoExamen t"),
     @NamedQuery(name = "TipoExamen.findByNombre", query = "SELECT t FROM TipoExamen t WHERE t.nombre = :nombre"),
     @NamedQuery(name = "TipoExamen.findByActivo", query = "SELECT t FROM TipoExamen t WHERE t.activo = :activo"),
-    @NamedQuery(name = "TipoExamen.findByObservaciones", query = "SELECT t FROM TipoExamen t WHERE t.observaciones = :observaciones")})
+    @NamedQuery(name = "TipoExamen.findByObservaciones", query = "SELECT t FROM TipoExamen t WHERE t.observaciones = :observaciones"),
+    @NamedQuery(name = "TipoExamen.findByNombreLike", query = "SELECT t FROM TipoExamen t WHERE LOWER(t.nombre) LIKE LOWER(:nombre)")})
 public class TipoExamen implements Serializable {
 
     private static final long serialVersionUID = 1L;

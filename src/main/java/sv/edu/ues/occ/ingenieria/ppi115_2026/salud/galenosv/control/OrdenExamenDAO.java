@@ -8,8 +8,8 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimientoPaso;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.OrdenExamen;
@@ -18,7 +18,7 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.OrdenExamen;
 @LocalBean
 public class OrdenExamenDAO extends DefaultDAO<OrdenExamen>{
     private ConsultaProcedimientoPaso idConsultaProcedimientoPaso;
-    @PersistenceContext(unitName = "GalenoSV") 
+    @PersistenceContext(unitName = "GalenoSV")
     EntityManager em;
 
     @Override
@@ -26,20 +26,10 @@ public class OrdenExamenDAO extends DefaultDAO<OrdenExamen>{
 return em ;
     }
     public List<OrdenExamen> buscarPorConsultaProcedimientoPaso(UUID idConsultaProcedimientoPaso) {
-    if (idConsultaProcedimientoPaso == null) {
-        throw new IllegalArgumentException(
-                "El idConsultaProcedimientoPaso no puede ser nulo"
-        );
+        validarNoNulo(idConsultaProcedimientoPaso,
+                "El idConsultaProcedimientoPaso no puede ser nulo");
+
+        return buscarConNamedQuery("OrdenExamen.findByConsultaProcedimientoPasoId",
+                OrdenExamen.class, Map.of("id", idConsultaProcedimientoPaso));
     }
-
-    TypedQuery<OrdenExamen> q = getEntityManger().createQuery(
-            "SELECT o FROM OrdenExamen o "
-            + "WHERE o.idConsultaProcedimientoPaso.idConsultaProcedimientoPaso = :id",
-            OrdenExamen.class
-    );
-
-    q.setParameter("id", idConsultaProcedimientoPaso);
-
-    return q.getResultList();
-}
 }
