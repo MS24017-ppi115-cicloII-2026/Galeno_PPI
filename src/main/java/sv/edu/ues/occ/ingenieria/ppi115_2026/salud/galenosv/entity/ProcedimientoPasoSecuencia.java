@@ -28,7 +28,7 @@ import java.util.UUID;
 @NamedQueries({
     @NamedQuery(name = "ProcedimientoPasoSecuencia.findAll", query = "SELECT p FROM ProcedimientoPasoSecuencia p"),
     @NamedQuery(name = "ProcedimientoPasoSecuencia.findByTipoSecuencia", query = "SELECT p FROM ProcedimientoPasoSecuencia p WHERE p.tipoSecuencia = :tipoSecuencia"),
-    @NamedQuery(name = "ProcedimientoPasoSecuencia.findByProcedimientoPasoId", query = "SELECT p FROM ProcedimientoPasoSecuencia p WHERE p.idProcedimientoPaso.idProcedimientoPaso = :id"),
+    @NamedQuery(name = "ProcedimientoPasoSecuencia.findByProcedimientoPasoId", query = "SELECT p FROM ProcedimientoPasoSecuencia p LEFT JOIN FETCH p.idProcedimientoPaso WHERE p.idProcedimientoPaso.idProcedimientoPaso = :id"),
     @NamedQuery(name = "ProcedimientoPasoSecuencia.findByPasoReferenciaId", query = "SELECT p FROM ProcedimientoPasoSecuencia p WHERE p.idProcedimientoPasoReferencia = :id")})
 public class ProcedimientoPasoSecuencia implements Serializable {
 

@@ -1,26 +1,16 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control;
 
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Datos que lleva el ticket PDF de una cita (consulta). Es un objeto simple, sin JPA,
- * para que el generador del PDF no dependa de la base de datos.
- *
- * @param codigo         identificador de la consulta (UUID en texto)
- * @param inicio         fecha y hora de inicio de la consulta
- * @param fin            fecha y hora de fin (null si todavia esta en curso)
- * @param clinica        nombre de la clinica donde se atiende
- * @param paciente       nombre completo del paciente
- * @param procedimientos detalle de los procedimientos que se siguen en la cita
- * @param observaciones  observaciones de la consulta (puede ser null)
- * @param examenes       órdenes de examen vinculadas a los procedimientos de la cita
- */
-public record TicketCita(String codigo, Date inicio, Date fin, String clinica, String paciente,
-                         List<String> procedimientos, String observaciones, List<String> examenes) {
+/** Datos del comprobante, independientes de JPA. */
+public record TicketCita(String codigo, Date inicio, Date fin, String clinica, PacienteTicket paciente,
+                         List<ProcedimientoTicket> procedimientos, String observaciones, String referenciaExterna) {
+    public static final ZoneId ZONA = ZoneId.of("America/El_Salvador");
 
-    public TicketCita(String codigo, Date inicio, Date fin, String clinica, String paciente,
-                      List<String> procedimientos, String observaciones) {
-        this(codigo, inicio, fin, clinica, paciente, procedimientos, observaciones, List.of());
-    }
+    public record PacienteTicket(String nombre, String edad, String tipoDocumento, String documento, String contacto) {}
+    public record ProcedimientoTicket(String nombre, List<PasoTicket> pasos, List<String> examenes,
+                                      List<String> observaciones) {}
+    public record PasoTicket(String nombre, String rol) {}
 }

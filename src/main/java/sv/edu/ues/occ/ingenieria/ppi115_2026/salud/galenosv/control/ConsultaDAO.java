@@ -23,6 +23,13 @@ EntityManager em;
     public EntityManager getEntityManger() {
         return  em;
     }
+    public Consulta buscarParaTicket(UUID id) {
+        var em = getEntityManger();
+        var grafo = em.createEntityGraph(Consulta.class);
+        grafo.addSubgraph("idPersonaRol").addAttributeNodes("idPersona", "idClinica");
+        return em.find(Consulta.class, id, java.util.Map.of("jakarta.persistence.fetchgraph", grafo));
+    }
+
     public List<Consulta> buscarPorPersonaRol(UUID idPersonaRol) {
         validarNoNulo(idPersonaRol, "El idPersonaRol no puede ser nulo");
 
