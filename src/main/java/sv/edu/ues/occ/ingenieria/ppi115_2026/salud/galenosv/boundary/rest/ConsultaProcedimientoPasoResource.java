@@ -1,5 +1,5 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary.rest;
-
+//listo
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import java.io.Serializable;
