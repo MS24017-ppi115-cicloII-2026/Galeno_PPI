@@ -5,6 +5,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.control.TicketCita;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Consulta;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimiento;
 import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.Procedimiento;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.ConsultaProcedimientoPaso;
+import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.OrdenExamen;
 
 @Path("consulta")
 public class ConsultaResource extends DefaultResource<Consulta> implements Serializable {
@@ -53,6 +56,7 @@ public class ConsultaResource extends DefaultResource<Consulta> implements Seria
     @GET
     @Path("{id}/ticket")
     @Produces("application/pdf")
+    @Transactional
     public Response ticket(@PathParam("id") UUID id) {
         Consulta consulta = consultaDAO.buscar(id);
         if (consulta == null) {
@@ -82,13 +86,36 @@ public class ConsultaResource extends DefaultResource<Consulta> implements Seria
             }
         }
         List<String> procedimientos = new ArrayList<>();
+        List<String> examenes = new ArrayList<>();
         for (ConsultaProcedimiento cp : seguidos) {
             String nombre = cp.getIdProcedimiento() == null ? null : nombreDe.apply(cp.getIdProcedimiento());
-            procedimientos.add(nombre == null ? "Procedimiento sin nombre" : nombre);
+            nombre = nombre == null || nombre.isBlank() ? "Procedimiento sin nombre" : nombre;
+            String detalle = nombre + (cp.getFechaFin() == null ? " | En curso" : " | Finalizado");
+            if (cp.getFechaInicio() != null) {
+                detalle += " | Inicio: " + GeneradorTicketPdf.fecha(cp.getFechaInicio());
+            }
+            if (cp.getFechaFin() != null) {
+                detalle += " | Fin: " + GeneradorTicketPdf.fecha(cp.getFechaFin());
+            }
+            procedimientos.add(detalle);
+            if (cp.getConsultaProcedimientoPasoCollection() == null) continue;
+            for (ConsultaProcedimientoPaso paso : cp.getConsultaProcedimientoPasoCollection()) {
+                if (paso.getOrdenExamenCollection() == null) continue;
+                for (OrdenExamen orden : paso.getOrdenExamenCollection()) {
+                    String examen = nombre;
+                    if (orden.getFechaCreacion() != null) {
+                        examen += " | Orden del " + GeneradorTicketPdf.fecha(orden.getFechaCreacion());
+                    }
+                    String indicaciones = orden.getIndicaciones();
+                    examen += indicaciones == null || indicaciones.isBlank()
+                            ? " | Sin indicaciones registradas" : " | Indicaciones: " + indicaciones.trim();
+                    examenes.add(examen);
+                }
+            }
         }
         return new TicketCita(consulta.getIdConsulta() == null ? null : consulta.getIdConsulta().toString(),
                 consulta.getFechaInicio(), consulta.getFechaFin(), clinica, paciente, procedimientos,
-                consulta.getObservaciones());
+                consulta.getObservaciones(), examenes);
     }
 
     private String nombreProcedimiento(UUID idProcedimiento) {

@@ -25,26 +25,32 @@ public class GeneradorTicketPdf {
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("hh:mm a", Locale.of("es", "SV"));
     private static final int ANCHO_LINEA = 78;      // caracteres por linea antes de cortar el texto
 
-    /** Devuelve el PDF completo (una pagina carta) como arreglo de bytes. */
+    /** Devuelve el PDF completo en páginas tamaño carta como arreglo de bytes. */
     public byte[] generar(TicketCita t) {
         if (t == null) {
             throw new IllegalArgumentException("El ticket no puede ser nulo");
         }
-        String contenido = armarContenido(t);
-        byte[] flujo = contenido.getBytes(StandardCharsets.ISO_8859_1);
-
+        List<String> paginas = armarContenido(t);
         List<byte[]> objetos = new ArrayList<>();
         objetos.add(texto("<< /Type /Catalog /Pages 2 0 R >>"));
-        objetos.add(texto("<< /Type /Pages /Kids [3 0 R] /Count 1 >>"));
-        objetos.add(texto("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
-                + "/Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>"));
+        StringBuilder hijos = new StringBuilder();
+        for (int i = 0; i < paginas.size(); i++) {
+            hijos.append(5 + i * 2).append(" 0 R ");
+        }
+        objetos.add(texto("<< /Type /Pages /Kids [" + hijos + "] /Count " + paginas.size() + " >>"));
         objetos.add(texto("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>"));
         objetos.add(texto("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>"));
-        ByteArrayOutputStream flujoObjeto = new ByteArrayOutputStream();
-        flujoObjeto.writeBytes(texto("<< /Length " + flujo.length + " >>\nstream\n"));
-        flujoObjeto.writeBytes(flujo);
-        flujoObjeto.writeBytes(texto("\nendstream"));
-        objetos.add(flujoObjeto.toByteArray());
+        for (String pagina : paginas) {
+            int idFlujo = objetos.size() + 2;
+            objetos.add(texto("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
+                    + "/Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents " + idFlujo + " 0 R >>"));
+            byte[] flujo = texto(pagina);
+            ByteArrayOutputStream flujoObjeto = new ByteArrayOutputStream();
+            flujoObjeto.writeBytes(texto("<< /Length " + flujo.length + " >>\nstream\n"));
+            flujoObjeto.writeBytes(flujo);
+            flujoObjeto.writeBytes(texto("\nendstream"));
+            objetos.add(flujoObjeto.toByteArray());
+        }
 
         ByteArrayOutputStream salida = new ByteArrayOutputStream();
         salida.writeBytes(texto("%PDF-1.4\n"));
@@ -76,50 +82,91 @@ public class GeneradorTicketPdf {
 
     // ---------------------------------------------------------------- contenido de la pagina
 
-    private String armarContenido(TicketCita t) {
-        StringBuilder c = new StringBuilder();
-        // franja azul con el titulo
-        c.append("0.114 0.204 0.38 rg 0 712 612 80 re f\n");
-        c.append("BT /F2 22 Tf 1 1 1 rg 50 750 Td (").append(esc("GalenoSV")).append(") Tj ET\n");
-        c.append("BT /F1 12 Tf 1 1 1 rg 50 728 Td (").append(esc("Ticket de cita médica")).append(") Tj ET\n");
-
-        int y = 680;
-        y = campo(c, y, "Fecha", t.inicio() == null ? "—" : FECHA.format(t.inicio().toInstant().atZone(ZONA)));
-        y = campo(c, y, "Hora", t.inicio() == null ? "—" : HORA.format(t.inicio().toInstant().atZone(ZONA)));
-        y = campo(c, y, "Clínica", vacio(t.clinica()));
-        y = campo(c, y, "Paciente", vacio(t.paciente()));
-        y = campo(c, y, "Estado", t.fin() == null ? "En curso"
-                : "Finalizada el " + FECHA.format(t.fin().toInstant().atZone(ZONA)));
-
-        y -= 10;
-        c.append("0.4 0.62 0.8 RG 1 w 50 ").append(y + 12).append(" m 562 ").append(y + 12).append(" l S\n");
-        c.append("BT /F2 13 Tf 0.114 0.204 0.38 rg 50 ").append(y - 8).append(" Td (Procedimientos) Tj ET\n");
-        y -= 28;
-        List<String> procs = t.procedimientos() == null ? List.of() : t.procedimientos();
-        if (procs.isEmpty()) {
-            y = linea(c, y, "F1", "Sin procedimientos registrados", 50);
-        }
-        for (String p : procs) {
-            for (String parte : cortar("- " + p, ANCHO_LINEA)) {
-                y = linea(c, y, "F1", parte, 60);
-            }
-        }
-        if (t.observaciones() != null && !t.observaciones().isBlank()) {
-            y -= 14;
-            c.append("BT /F2 13 Tf 0.114 0.204 0.38 rg 50 ").append(y).append(" Td (Observaciones) Tj ET\n");
-            y -= 20;
-            for (String parte : cortar(t.observaciones().trim(), ANCHO_LINEA)) {
-                y = linea(c, y, "F1", parte, 50);
-            }
-        }
-        // pie
-        c.append("0.4 0.4 0.4 rg BT /F1 9 Tf 50 40 Td (")
-                .append(esc("Código de la cita: " + vacio(t.codigo()))).append(") Tj ET\n");
-        c.append("BT /F1 9 Tf 50 28 Td (").append(esc("Presente este ticket en recepción. Generado por GalenoSV."))
-                .append(") Tj ET\n");
-        return c.toString();
+    public static String fecha(Date fecha) {
+        return FECHA.format(fecha.toInstant().atZone(ZONA));
     }
 
+    private List<String> armarContenido(TicketCita t) {
+        Paginas contenido = new Paginas(t);
+        contenido.y = campo(contenido.actual, contenido.y, "Fecha", t.inicio() == null ? "-" : fecha(t.inicio()));
+        contenido.y = campo(contenido.actual, contenido.y, "Hora", t.inicio() == null ? "-"
+                : HORA.format(t.inicio().toInstant().atZone(ZONA)));
+        contenido.y = campo(contenido.actual, contenido.y, "Clínica", vacio(t.clinica()));
+        contenido.y = campo(contenido.actual, contenido.y, "Paciente", vacio(t.paciente()));
+        contenido.y = campo(contenido.actual, contenido.y, "Estado", t.fin() == null ? "En curso"
+                : "Finalizada el " + fecha(t.fin()));
+
+        contenido.seccion("Procedimientos", t.procedimientos(), "Sin procedimientos registrados");
+        contenido.seccion("Órdenes de examen", t.examenes(), "Sin órdenes de examen registradas");
+        if (t.observaciones() != null && !t.observaciones().isBlank()) {
+            contenido.titulo("Observaciones");
+            contenido.parrafo(t.observaciones().trim(), 50);
+        }
+        contenido.cerrarPagina();
+        return contenido.paginas;
+    }
+
+    private class Paginas {
+        private final TicketCita ticket;
+        private final List<String> paginas = new ArrayList<>();
+        private StringBuilder actual;
+        private int y;
+
+        Paginas(TicketCita ticket) {
+            this.ticket = ticket;
+            iniciarPagina();
+        }
+
+        private void iniciarPagina() {
+            actual = new StringBuilder();
+            actual.append("0.114 0.204 0.38 rg 0 712 612 80 re f\n")
+                    .append("BT /F2 22 Tf 1 1 1 rg 50 750 Td (GalenoSV) Tj ET\n")
+                    .append("BT /F1 12 Tf 1 1 1 rg 50 728 Td (")
+                    .append(esc("Ticket de cita médica")).append(") Tj ET\n");
+            y = 680;
+        }
+
+        private void cerrarPagina() {
+            actual.append("0.4 0.4 0.4 rg BT /F1 9 Tf 50 40 Td (")
+                    .append(esc("Código de la cita: " + vacio(ticket.codigo()))).append(") Tj ET\n")
+                    .append("BT /F1 9 Tf 50 28 Td (")
+                    .append(esc("Presente este ticket en recepción. Generado por GalenoSV.")).append(") Tj ET\n");
+            paginas.add(actual.toString());
+        }
+
+        private void reservar(int alto) {
+            if (y - alto < 64) {
+                cerrarPagina();
+                iniciarPagina();
+            }
+        }
+
+        private void titulo(String titulo) {
+            reservar(48);
+            y -= 10;
+            actual.append("BT /F2 13 Tf 0.114 0.204 0.38 rg 50 ").append(y).append(" Td (")
+                    .append(esc(titulo)).append(") Tj ET\n");
+            y -= 22;
+        }
+
+        private void parrafo(String texto, int x) {
+            for (String parte : cortar(texto, ANCHO_LINEA)) {
+                reservar(16);
+                y = linea(actual, y, "F1", parte, x);
+            }
+        }
+
+        private void seccion(String titulo, List<String> entradas, String vacio) {
+            titulo(titulo);
+            if (entradas == null || entradas.isEmpty()) {
+                parrafo(vacio, 50);
+                return;
+            }
+            for (String entrada : entradas) {
+                parrafo("- " + entrada, 60);
+            }
+        }
+    }
     private int campo(StringBuilder c, int y, String etiqueta, String valor) {
         c.append("BT /F2 12 Tf 0.114 0.204 0.38 rg 50 ").append(y).append(" Td (").append(esc(etiqueta + ":")).append(") Tj ET\n");
         c.append("BT /F1 12 Tf 0 0 0 rg 140 ").append(y).append(" Td (").append(esc(valor)).append(") Tj ET\n");

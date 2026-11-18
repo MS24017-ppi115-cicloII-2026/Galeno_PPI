@@ -12,9 +12,15 @@ import java.util.List;
  * @param fin            fecha y hora de fin (null si todavia esta en curso)
  * @param clinica        nombre de la clinica donde se atiende
  * @param paciente       nombre completo del paciente
- * @param procedimientos nombres de los procedimientos que se siguen en la cita
+ * @param procedimientos detalle de los procedimientos que se siguen en la cita
  * @param observaciones  observaciones de la consulta (puede ser null)
+ * @param examenes       órdenes de examen vinculadas a los procedimientos de la cita
  */
 public record TicketCita(String codigo, Date inicio, Date fin, String clinica, String paciente,
-                         List<String> procedimientos, String observaciones) {
+                         List<String> procedimientos, String observaciones, List<String> examenes) {
+
+    public TicketCita(String codigo, Date inicio, Date fin, String clinica, String paciente,
+                      List<String> procedimientos, String observaciones) {
+        this(codigo, inicio, fin, clinica, paciente, procedimientos, observaciones, List.of());
+    }
 }
