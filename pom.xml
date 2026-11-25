@@ -53,16 +53,20 @@
             <version>5.17.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- PrimeFaces -->
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <version>15.0.6</version>
             <classifier>jakarta</classifier>
-</dependency>
-        
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
+        <finalName>galeno</finalName>
         <plugins>
 
             <!-- Compilador Java -->
@@ -117,9 +121,9 @@
             <plugin>
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
-               <version>3.12.1</version>
-               <configuration>
-                    <installDirectory>/opt/wlp_26.0.0.6/</installDirectory>
+                <version>3.12.1</version>
+                <configuration>
+                    <installDirectory>/opt/wlp_26.0.0.8/</installDirectory>
                     <serverName>PPI_CLinica</serverName>
                 </configuration>
             </plugin>
