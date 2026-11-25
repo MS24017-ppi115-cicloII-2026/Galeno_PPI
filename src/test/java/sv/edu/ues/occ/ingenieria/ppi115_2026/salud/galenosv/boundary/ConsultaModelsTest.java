@@ -5,6 +5,7 @@ import jakarta.faces.context.FacesContext;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ public class ConsultaModelsTest {
     }
 
     private Date fecha(int anio, int mes, int dia, int hora) {
-        Calendar calendario = Calendar.getInstance();
+        Calendar calendario = Calendar.getInstance(TimeZone.getTimeZone("America/El_Salvador"));
         calendario.set(anio, mes, dia, hora, 0, 0);
         calendario.set(Calendar.MILLISECOND, 0);
         return calendario.getTime();
@@ -274,10 +275,24 @@ public class ConsultaModelsTest {
     }
 
     @Test
-    void fechaDesdeYHastaPorDefectoSonNulas() {
+    void alInicializarSoloMuestraConsultasDeHoy() {
+        Calendar dia = Calendar.getInstance(TimeZone.getTimeZone("America/El_Salvador"));
+        Date inicioHoy = fecha(dia.get(Calendar.YEAR), dia.get(Calendar.MONTH),
+                dia.get(Calendar.DAY_OF_MONTH), 0);
+        dia.setTime(inicioHoy);
+        dia.add(Calendar.DAY_OF_MONTH, 1);
+        Date inicioManana = dia.getTime();
+        Consulta ayer = crearConsulta(UUID.randomUUID(), null, new Date(inicioHoy.getTime() - 1));
+        Consulta hoy = crearConsulta(UUID.randomUUID(), null, inicioHoy);
+        Consulta ultimaDeHoy = crearConsulta(UUID.randomUUID(), null, new Date(inicioManana.getTime() - 1));
+        Consulta manana = crearConsulta(UUID.randomUUID(), null, inicioManana);
+        when(consultaDAO.findRange(0, 100)).thenReturn(List.of(ayer, hoy, ultimaDeHoy, manana));
 
-        assertNull(model.getFechaDesde());
-        assertNull(model.getFechaHasta());
+        model.inicializar();
+
+        assertEquals(inicioHoy, model.getFechaDesde());
+        assertEquals(inicioHoy, model.getFechaHasta());
+        assertEquals(List.of(hoy, ultimaDeHoy), model.getregistros());
     }
 
     @Test

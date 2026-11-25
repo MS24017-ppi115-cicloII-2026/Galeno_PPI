@@ -4,11 +4,11 @@
         <h:form id="frmTabla">
             <p:toolbar>
                 <p:toolbarGroup>
-                    <p:commandButton value="#{msg['persona.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaModel.btnNuevoHandler}" update=":tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles @form" styleClass="ui-button-success"/>
+                    <p:commandButton value="#{msg['persona.btn_nuevo']}" icon="pi pi-plus" actionListener="#{personaModel.btnNuevoHandler}" resetValues="true" update=":tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles @form" styleClass="ui-button-success"/>
                 </p:toolbarGroup>
             </p:toolbar>
             <p:dataTable id="tablaRegistros" value="#{personaModel.registros}" var="r" emptyMessage="#{msg['persona.msg_vacio']}" paginator="true" rows="10" style="margin-top: 10px;" selectionMode="single" selection="#{personaModel.registro}" rowKey="#{r.idPersona}">
-                <p:ajax event="rowSelect" listener="#{personaModel.btnSeleccionarRegistro(personaModel.registro.idPersona)}" update="@form :tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles"/>
+                <p:ajax event="rowSelect" listener="#{personaModel.btnSeleccionarRegistro(personaModel.registro.idPersona)}" resetValues="true" update="@form :tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles"/>
                 <p:ajax event="rowUnselect" listener="#{personaModel.btnCancelar}" update="@form :tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles"/>
                 <p:column headerText="#{msg['global.id']}">
                     <h:outputText value="#{r.idPersona}"/>
@@ -30,7 +30,7 @@
                     </h:outputText>
                 </p:column>
                 <f:facet name="footer">
-                    <p:commandButton id="btnModificar" value="#{msg['persona.btn_modificar']}" icon="pi pi-pencil" actionListener="#{personaModel.btnSeleccionarRegistro(personaModel.registro.idPersona)}" update=":tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles" oncomplete="PF('wTabsPersona').select(0);document.getElementById('tabsPersona').scrollIntoView({behavior:'smooth'});" disabled="#{empty personaModel.registro.idPersona}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
+                    <p:commandButton id="btnModificar" value="#{msg['persona.btn_modificar']}" icon="pi pi-pencil" actionListener="#{personaModel.btnSeleccionarRegistro(personaModel.registro.idPersona)}" resetValues="true" update=":tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles" oncomplete="PF('wTabsPersona').select(0);document.getElementById('tabsPersona').scrollIntoView({behavior:'smooth'});" disabled="#{empty personaModel.registro.idPersona}" styleClass="ui-button-warning" style="margin-right: 5px;"/>
                     <p:commandButton id="btnEliminar" value="#{msg['global.eliminar']}" icon="pi pi-trash" actionListener="#{personaModel.btnEliminarHandler(personaModel.registro.idPersona)}" update=":mensajesGlobales:growl-sticky :tabsPersona:frmDetalle :tabsPersona:pnlDocumentos :tabsPersona:pnlMedios :tabsPersona:pnlRoles @form" disabled="#{empty personaModel.registro.idPersona}" styleClass="ui-button-danger">
                         <p:confirm header="#{msg['global.confirmacion']}" message="#{msg['persona.msg_eliminar']}" icon="pi pi-info-circle"/>
                     </p:commandButton>

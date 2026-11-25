@@ -1,5 +1,6 @@
 package sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.boundary;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.faces.event.ActionEvent;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.primefaces.event.SelectEvent;
@@ -26,6 +28,8 @@ import sv.edu.ues.occ.ingenieria.ppi115_2026.salud.galenosv.entity.PersonaRol;
 @ViewScoped
 public class ConsultaModels extends AbstractModel<Consulta> {
 
+    private static final TimeZone ZONA_HORARIA = TimeZone.getTimeZone("America/El_Salvador");
+
     @Inject
     ConsultaDAO consultaDAO;
 
@@ -37,6 +41,19 @@ public class ConsultaModels extends AbstractModel<Consulta> {
 
     private Date fechaDesde;
     private Date fechaHasta;
+
+    @Override
+    @PostConstruct
+    public void inicializar() {
+        super.inicializar();
+        Calendar hoy = Calendar.getInstance(ZONA_HORARIA);
+        hoy.set(Calendar.HOUR_OF_DAY, 0);
+        hoy.set(Calendar.MINUTE, 0);
+        hoy.set(Calendar.SECOND, 0);
+        hoy.set(Calendar.MILLISECOND, 0);
+        fechaDesde = hoy.getTime();
+        fechaHasta = hoy.getTime();
+    }
 
     public Date getFechaDesde() {
         return fechaDesde;
@@ -101,7 +118,7 @@ public class ConsultaModels extends AbstractModel<Consulta> {
     }
 
     private static Date finDelDia(Date fecha) {
-        Calendar calendario = Calendar.getInstance();
+        Calendar calendario = Calendar.getInstance(ZONA_HORARIA);
         calendario.setTime(fecha);
         calendario.set(Calendar.HOUR_OF_DAY, 23);
         calendario.set(Calendar.MINUTE, 59);
